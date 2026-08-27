@@ -593,7 +593,7 @@ function dlgWay3() {
   flags.way3Done = true;
   startDlg([
     { say: "At the stile Paley sits, and his manner sharpens. Paley: I will tell you what my reviewers will say, because a Scotsman said it all before I ever took up my pen, in dialogues printed after his death." },
-    { say: "First, that my analogy limps. The world is not much like a watch. It grows, it reproduces, it repairs itself. It resembles an animal, or a vegetable, more than an engine, and no one infers a watchmaker from a cabbage." },
+    { say: "First, that my analogy is weak. The world is not much like a watch. It grows, it reproduces, it repairs itself. It resembles an animal, or a vegetable, more than an engine, and no one infers a watchmaker from a cabbage." },
     { say: "Paley: Second, that my artificer explains nothing, since a mind able to design a world is at least as much in need of explanation as the world. And third, that even granting a designer, the evidence cannot tell one author from a committee, or a master from an apprentice working through discarded drafts. The workmanship, they will say, does not certify the workman." },
     { note: true, say: "All three objections appear in David Hume's Dialogues Concerning Natural Religion, published in 1779, more than twenty years before Natural Theology. Paley knew the arguments and wrote anyway. Whether his book answers Hume or ignores him is still debated." }
   ], () => {
@@ -607,10 +607,10 @@ function dlgWay4() {
   flags.way4Done = true;
   startDlg([
     { say: "At the field gate Paley leans and looks over the pasture. Paley: Whatever the philosophers say, I hold one thing with confidence. Contrivance must have a cause somewhere." },
-    { say: "Show me a process with no mind in it that shapes an eye to see, and I will surrender the living world to it. Until then, my watch keeps my argument." },
+    { say: "Show me a process with no mind in it that shapes an eye to see, and I will surrender the living world to it. Until then, the watch makes my argument for me." },
     { note: true, say: "In 1859 Charles Darwin published On the Origin of Species. He had admired Paley's book as a student, and he supplied the very thing Paley asked for, a process with no mind in it that shapes instruments. Variation, inheritance, and selection build up over vast stretches of time, and they produce contrivance without foresight. Debate since has moved along two lines, whether selection fully discharges the living cases, and whether design reasoning survives by moving to the physical constants that make selection possible at all." },
     { say: "Paley: And if such a process were shown to me? Then I would ask what shaped a world in which such a process runs, and we would walk this heath again." },
-    { say: "An argument this old rarely dies from a single objection. It moves to new ground." }
+    { say: "An argument this old rarely disappears after a single objection. It gets restated on new ground." }
   ], () => {
     openPrompt("darwin", () => {
       flags.darwinDone = true;
@@ -620,7 +620,7 @@ function dlgWay4() {
 }
 function dlgClose() {
   startDlg([
-    { say: "Paley returns the watch to his coat. Paley: Keep the habit, whichever side you land on. When you meet an arrangement of parts that accomplishes an end, ask what the arrangement asks of you." },
+    { say: "Paley returns the watch to his coat. Paley: Keep the habit, whichever side you land on. When you meet an arrangement of parts that accomplishes an end, ask what could explain it." },
     { say: "Sometimes the answer is a maker. Sometimes it is a process. The failure is to stop asking." }
   ], () => {
     openPrompt("verdict", () => {

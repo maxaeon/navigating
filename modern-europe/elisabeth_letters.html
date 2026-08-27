@@ -280,19 +280,19 @@ const prompts = {
     requireText: true
   },
   compare: {
-    title: "Stage 5: Two objections, compared",
-    text: "Elisabeth asks how a mind with no size could move a body. Amo denies that a body ever acts on a mind at all, since being acted upon is something only bodies can be. Both are aimed at the same joint. Which is the more serious problem for Descartes?",
+    title: "Stage 5: Comparing the two objections",
+    text: "Elisabeth asks how a mind with no size could move a body. Amo denies that a body ever acts on a mind at all, since being acted upon is something only bodies can be. Both are aimed at the same point in Descartes' system. Which is the more serious problem for him?",
     mcq: ["Elisabeth's, since it asks for a mechanism and none is offered", "Amo's, since it says half the picture was never coherent", "They are the same objection stated twice", "Amo's makes Elisabeth's worse, since it leaves her traffic as the only traffic"],
     requireText: true
   },
   amo: {
-    title: "Stage 5: Two objections compared",
-    text: "Elisabeth accepts that the mind is acted on by the body and asks how. Amo denies that the mind is acted on at all, and says sensing belongs to the living body while the mind only knows. Which is the stronger move against Descartes?",
+    title: "Stage 6: The stronger objection",
+    text: "Elisabeth accepts that the mind is acted on by the body and asks how. Amo denies that the mind is acted on at all, and says sensing belongs to the living body while the mind only knows. Which is the stronger objection to Descartes?",
     mcq: ["Elisabeth's, since she works inside his own picture and shows it failing", "Amo's, since he removes the need for anything to cross", "Neither, since Amo still owes an account of voluntary motion", "Both, and together they show the picture cannot be repaired"],
     requireText: true
   },
   verdict: {
-    title: "Stage 6: Your verdict",
+    title: "Stage 7: Your verdict",
     text: "You have the claim, two objections, and Descartes' replies. Write your judgment: does this line of attack defeat the two-substance picture, wound it, or leave it standing? Then say what you think a good objection is for, given that neither of these changed Descartes' mind and both are still taught.",
     mcq: null,
     requireText: true,
@@ -666,23 +666,23 @@ function dlgAmo() {
   flags.beat5Done = true;
   startDlg([
     { note: true, say: "What follows did not happen. Anton Wilhelm Amo was born around 1703, more than twenty years after Elisabeth died, and the two never met, never corresponded, and could not have. This activity puts them in a room together because their objections belong side by side. Everything either of them says here is drawn from what they actually wrote." },
-    { say: "A man in a scholar's gown is waiting by the fire, with a thin printed dissertation under his arm. Amo: Forgive the intrusion. I read your letters, madam, and I have spent four years on the same joint you put your finger on." },
+    { say: "A man in a scholar's gown is waiting by the fire, with a thin printed dissertation under his arm. Amo: Forgive the intrusion. I read your letters, madam, and I have spent four years on the same weak point you identified." },
     { say: "Amo: Anton Wilhelm Amo. I was born on the Gold Coast, at Axim, and brought to Europe as a small child. I took my degree at Halle and defended this at Wittenberg." },
     { say: "Elisabeth: Then you have the advantage of me, since I was never permitted to take a degree anywhere. What does it say?" },
     { say: "Amo: That the human mind does not sense. Not that it senses poorly, or indirectly. That sensing is not something a mind does at all." },
     { say: "Elisabeth: Explain that, because on the face of it I appear to be sensing this fire." },
     { say: "Amo: Your body is. It is a living, organic thing, and it is affected by the fire, and the affection is bodily throughout. What your mind does is understand, and will, and act. To say the mind is acted upon is to give it a property that only bodies can have." },
-    { say: "Elisabeth: So where his account has the body pressing on the mind, you cut the wire entirely." },
-    { say: "Amo: I cut one of the two. You asked how the mind can push the body. I ask the reverse question, how the body could ever push the mind, and I answer that it does not and cannot." },
-    { say: "Elisabeth: Then we are working the same joint from opposite ends. I demand a mechanism for the traffic going out. You deny there is any traffic coming in.",
+    { say: "Elisabeth: So where his account has the body pressing on the mind, you deny any such action entirely." },
+    { say: "Amo: I deny one of the two directions. You asked how the mind can push the body. I ask the reverse question, how the body could ever push the mind, and I answer that it does not and cannot." },
+    { say: "Elisabeth: Then we are attacking the same point from opposite ends. I demand a mechanism for the mind's action on the body. You deny that the body acts on the mind at all.",
       choices: [
         { tag: "help", text: "Does that help her question, or leave it standing?",
-          reply: ["Amo: It leaves hers standing, and I will not pretend otherwise. Cutting the inbound wire makes the picture cleaner and halves the problem. It does not tell her how a thing with no surface moves an arm."] },
+          reply: ["Amo: It leaves hers standing, and I will not pretend otherwise. Denying the inbound action makes the picture cleaner and halves the problem. It does not tell her how a thing with no surface moves an arm."] },
         { tag: "harder", text: "Does it not make her question harder?",
-          reply: ["Amo: You have seen it. If the mind is purely active and never acted upon, the outbound traffic is now the only traffic there is, and every weight her question carries falls on it alone. I have tidied the house and left the roof open."] }
+          reply: ["Amo: You have seen it. If the mind is purely active and never acted upon, its action on the body is the only influence left, and her whole question now falls on that alone. I have answered one question and left the other standing."] }
       ] },
     { say: "Elisabeth: I would rather have a clean question than a comfortable answer. Yours is cleaner than mine." },
-    { say: "Amo: Yours is older than mine, and I would not have known where to cut without people who had already found the joint." },
+    { say: "Amo: Yours is older than mine, and I would not have known where to press without people who had already found the weak point." },
     { note: true, say: "Amo's dissertation, On the Impassivity of the Human Mind, was defended at Wittenberg in 1734. He also published a treatise on method in 1738, and an earlier disputation on the legal standing of Africans in Europe, which survives only as a notice of its title. He returned to the Gold Coast around 1747. His work was little read for two centuries and is now studied both as early modern philosophy of mind and as the earliest surviving philosophical work by an African writing in the European academy." }
   ], () => {
     openPrompt("compare", () => {
@@ -707,10 +707,10 @@ function dlgBeat6() {
   startDlg([
     { say: "The room is bare and cold, with benches and a lectern. A man in a scholar's gown is marking a printed disputation. Amo: You are late for the defence, though not by much. It went well enough. My name is Anton Wilhelm Amo." },
     { say: "Amo: I was born at Axim, on the coast of Guinea, taken as a child, and given as a gift to a German duke. He had me educated instead of kept, which was not the ordinary outcome, and I took my doctorate here at Wittenberg. I now teach in this room." },
-    { say: "Amo: You have come from a study at The Hague, I think, with a question in your hand. Elisabeth's question. I know it well. I am answering it this year, in print, and not the way you expect." },
+    { say: "Amo: You have come from a study at The Hague, I think, and you carry Elisabeth's question. I know it well. I am answering it this year, in print, and not the way you expect." },
     { note: true, say: "Anton Wilhelm Amo, born about 1703 at Axim in what is now Ghana, was taken to Europe as a child and educated at Halle and Wittenberg. He took his doctorate in 1734 with a disputation titled On the Impassivity of the Human Mind, and taught at Halle, Wittenberg, and Jena. He returned to the Gold Coast around 1747. An earlier work of his on the legal position of Africans in Europe is lost." },
     { say: "Amo: She asks how a mind with no extension can push a body. I say the question is put wrongly, and that both of them, she and Descartes, have already conceded too much." },
-    { say: "Amo: Descartes says the mind senses. He says it feels pain, that it is affected by the body, that it undergoes things. Elisabeth accepts that much and asks how the traffic runs. I deny the traffic." },
+    { say: "Amo: Descartes says the mind senses. He says it feels pain, that it is affected by the body, that it undergoes things. Elisabeth accepts that much and asks how the influence works. I deny the influence." },
     { say: "Amo: On my account the mind does not sense at all. It knows, and knowing is its own operation. What senses is the living organic body. Pain is in the flesh. The mind is aware of the pain without ever undergoing it, the way I am aware of what happens in this room without the room happening to me." },
     { say: "Amo: So I do not soften the division between mind and body. I sharpen it until nothing has to cross.",
       choices: [
@@ -720,7 +720,7 @@ function dlgBeat6() {
           reply: ["Amo: Just so, and I would rather be told that than praised. Nothing needs to reach the mind on my account. But when she decides to lift her arm, the arm rises, and I still owe an account of that."] }
       ] },
     { say: "Amo: Notice how the two of us differ. She takes his picture and asks him to make it work. I take his picture and tell him one of its pieces was misdescribed from the start. Hers is the harder question. Mine is the more radical answer." },
-    { say: "Amo: And I will tell you what we have in common, since it matters more. Neither of us was in the room when the system was built. She read it as a woman who was not to be lectured to, and I read it as an African in a German university, and we both did the same thing with it. We took it seriously enough to find where it breaks." }
+    { say: "Amo: And I will tell you what we have in common, since it matters more. Neither of us was among the people this system was written for. She read it as a woman who was not to be lectured to, and I read it as an African in a German university, and we both did the same thing with it. We took it seriously enough to find where it breaks." }
   ], () => {
     openPrompt("amo", () => {
       flags.amoDone = true;
@@ -730,8 +730,8 @@ function dlgBeat6() {
 }
 function dlgClose() {
   startDlg([
-    { say: "Amo sets the disputation down. Amo: You have two objections now, from two people who never met and never could have, ninety years apart, working on the same crack in the same wall." },
-    { say: "Amo: Take both. An objection is not a demolition. It is a place to put your weight and see whether the floor holds." }
+    { say: "Amo sets the disputation down. Amo: You have two objections now, from two people who never met and never could have, ninety years apart, aimed at the same weak point in the same system." },
+    { say: "Amo: Take both. An objection does not destroy a position by itself. It marks the exact place where the position must be defended." }
   ], () => {
     openPrompt("verdict", () => {
       flags.finalDone = true;

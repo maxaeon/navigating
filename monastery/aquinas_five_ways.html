@@ -256,7 +256,7 @@ const prompts = {
   },
   regress: {
     title: "Stage 1: The regress",
-    text: "The first two Ways both turn on the same hinge: a chain of movers, or of causes, cannot run back forever, so there must be a first. Is an infinite regress of causes actually impossible?",
+    text: "The first two Ways rest on the same claim: a chain of movers, or of causes, cannot run back forever, so there must be a first. Is an infinite regress of causes actually impossible?",
     mcq: ["Yes, without a first nothing later could ever happen", "No, every member can have a cause without the series having a first", "It is impossible for some kinds of chains and fine for others", "Nobody knows, and the argument leans on that gap"],
     requireText: true
   },
@@ -596,7 +596,7 @@ function dlgWay3() {
     { say: "You and I are the same kind of thing: possible, not necessary. What can fail to exist, at some time does not exist." },
     { say: "Aquinas: Suppose everything were like that, able not to be. Then given endless time, at some point everything would have been absent at once." },
     { say: "And nothing comes from nothing, so there would be nothing now. But the church is here, and so are you. So not everything is contingent. Something exists that cannot fail to exist, a necessary being." },
-    { note: true, say: "Anselm's reply to Gaunilo turned on the same idea from the other direction: a being whose nonexistence cannot be thought. Aquinas reaches necessity by observation and elimination, Anselm by definition. The two activities of this region so far are the same destination approached by opposite roads." }
+    { note: true, say: "Anselm's reply to Gaunilo turned on the same idea from the other direction: a being whose nonexistence cannot be thought. Aquinas reaches necessity by observation and elimination, Anselm by definition. The two activities of this region so far reach the same conclusion by opposite methods." }
   ], () => {
     setObjective("Walk to the next station, " + STATIONS[3].name + ", and press E.");
   });
@@ -629,7 +629,7 @@ function dlgWay5() {
 }
 function dlgClose() {
   startDlg([
-    { say: "Aquinas: You have walked all five, and you have seen what they are and what they are not. They begin from the world, because that is where we begin. Reason walks this far on its own legs, to a first mover, a first cause, a necessary being, a maximum, a director of ends." },
+    { say: "Aquinas: You have walked all five, and you have seen what they are and what they are not. They begin from the world, because that is where we begin. Reason, on its own, reaches a first mover, a first cause, a necessary being, a maximum, a director of ends." },
     { say: "Aquinas: Whether that first cause has a face, whether it hears, whether it loves, reason alone does not deliver, and I never claimed it did. But the distance reason does cover is real, and the man who has walked it knows something about the world that he did not know this morning." }
   ], () => {
     openPrompt("verdict", () => {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Analytic Room</title>
+<title>The House of Wisdom</title>
 <style>
 :root{
   --page:#141721;
@@ -35,11 +35,6 @@ canvas#mapCanvas{
 }
 #progressLine{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:15px; min-height:22px}
 .cards{max-width:900px; margin:18px auto 0}
-.roomlinks{max-width:900px; margin:14px auto 0; display:flex; gap:12px; flex-wrap:wrap; align-items:center}
-.roomlinks span{color:var(--muted); font-size:14px}
-.roomlinks a{color:var(--sea); font-size:14px; text-decoration:none;
-  border:1px solid var(--line); border-radius:8px; padding:7px 13px}
-.roomlinks a:hover{background:var(--panel-2)}
 .card{
   background:var(--panel); border:1px solid var(--line); border-radius:10px;
   padding:14px 16px; margin-bottom:12px; display:flex; gap:14px; align-items:center;
@@ -79,21 +74,15 @@ canvas#mapCanvas{
 
 <header class="wrap">
   <div class="about-wrap">
-    <h1>The Analytic Room</h1>
+    <h1>The House of Wisdom</h1>
     <p class="about-cue">About this page</p>
-    <div class="about" id="aboutText"><p>Philosophy done by taking claims apart, testing them against clear cases, and keeping arguments short enough to check. The stops here are set in the twentieth century and each states its own time and place. This room and The Continental Room are two habits of doing philosophy rather than two sets of doctrines, and a student can walk either or both.</p></div>
+    <div class="about" id="aboutText"><p>Baghdad, and the road that leads to it and out of it. The region covers the movement that carried Greek philosophy and science into Arabic, and the falsafa tradition that grew from it. The route runs from the road in, through the city, to the road out toward India. The stops jump across decades and cities on purpose. The unit is organized by its question, what happens to philosophy when it changes languages and lands, and each activity states its real time and place.</p></div>
   </div>
 </header>
 
 <div class="wrap">
   <canvas id="mapCanvas" width="900" height="520"></canvas>
   <p id="progressLine"></p>
-  <div class="roomlinks">
-    <span>Other rooms in Europe:</span>
-    <a href="../modern-europe/modern_europe_map.html">Early Modern European Philosophy</a>
-    <a href="../continental/continental_map.html">The Continental Room</a>
-  </div>
-
   <div class="cards" id="cardList"></div>
   <p id="storageNote"></p>
 </div>
@@ -103,36 +92,54 @@ canvas#mapCanvas{
 
 const ACTIVITIES = [
   {
-    key: "phil_map_gettier",
-    title: "Knowledge and the Gettier Cases",
-    place: "A seminar room",
-    desc: "A stopped clock, a rock that looks like a sheep, and a valley of barn fronts, set against the definition of knowledge as justified true belief.",
-    file: "gettier_classroom.html",
-    node: { x: 245, y: 215 }
+    key: "phil_map_gyges",
+    optional: true,
+    title: "The Ring of Gyges",
+    place: "A night camp on the road through Lydia",
+    desc: "A situation on the road rather than a destination. A storyteller retells the oldest thought experiment about justice, from the Republic, and the tale ends by asking what you would do with the ring.",
+    file: "../travel/ring_of_gyges.html",
+    node: { x: 96, y: 402 }
   },
   {
-    key: "phil_map_mary",
-    title: "Mary in the Black and White Room",
-    place: "A viewing gallery",
-    desc: "Every physical fact about colour vision, and no colour ever seen. What happens when she walks out, and the three standard ways of denying that anything follows.",
-    file: "marys_room.html",
-    node: { x: 234, y: 234 }
+    key: "phil_map_translation",
+    title: "The Translation Movement",
+    place: "Baghdad, the 830s",
+    desc: "Enter the round city with books in your baggage, learn Hunayn's method for settling a trustworthy text, restore an equation with al-Khwarizmi, and hear al-Kindi defend taking truth from any source.",
+    file: "translation_movement.html",
+    node: { x: 400, y: 322 }
   },
   {
-    key: "phil_map_logic",
-    title: "Taking the Sentence Apart",
-    place: "Cambridge",
-    desc: "What a sentence is made of, and what changes when you can see its structure.",
-    file: null,
-    node: { x: 234, y: 221 }
+    key: "phil_map_avicenna",
+    title: "Avicenna's Flying Man",
+    place: "Hamadan, around 1020, at night",
+    desc: "Sit at the vizier's night table for the most famous thought experiment of the falsafa, a person created in mid-air who senses nothing, and weigh what such a person would still know against the deer park's report.",
+    file: "avicenna_flying_man.html",
+    node: { x: 540, y: 254 }
   },
   {
-    key: "phil_map_meaning",
-    title: "What a Word Does",
-    place: "Oxford",
-    desc: "Meaning as use, and what happens to old puzzles when you ask how a word is actually handled.",
-    file: null,
-    node: { x: 375, y: 266 }
+    key: "phil_map_ghazali",
+    title: "Al-Ghazali's Challenge",
+    place: "The Nizamiyya, Baghdad, 1095",
+    desc: "Watch cotton meet the flame with the professor who argued that necessity is never observed, and set his conclusion beside the one Hume drew from the same observation centuries later.",
+    file: "ghazali_challenge.html",
+    node: { x: 452, y: 226 }
+  },
+  {
+    key: "phil_map_averroes",
+    title: "The Answer from Cordoba",
+    place: "Cordoba, around 1180",
+    desc: "Hear the judge answer al-Ghazali, that a world without natures has no why in it, and follow his commentaries north into the Latin Europe you visited at the monastery.",
+    file: "answer_from_cordoba.html",
+    node: { x: 236, y: 190 }
+  },
+  {
+    key: "phil_map_rescue",
+    optional: true,
+    title: "The Rescue and the Promise",
+    place: "A river ford on the road east, past the city",
+    desc: "A situation on the road rather than a destination. You gave your word to be somewhere by sundown, and someone in the river needs the same hour.",
+    file: "../travel/river_rescue.html",
+    node: { x: 790, y: 380 }
   }
 ];
 const ENFORCE_ORDER = true;
@@ -147,7 +154,7 @@ function isDone(key) {
    difficult stop never blocks the rest of the route. */
 function skipKey(k) { return k + "_skipped"; }
 
-const MINUTES = {"phil_map_mary": "about 20 minutes", "phil_map_kant": "about 25 minutes", "phil_map_berkeley": "about 20 minutes", "phil_map_elisabeth": "about 20 minutes", "phil_map_hume": "about 25 minutes", "phil_map_berkeley": "about 25 minutes", "phil_map_prologue": "about 10 minutes", "phil_map_presocratics": "about 20 minutes", "phil_map_ship": "about 15 minutes", "phil_map_clouds": "about 15 minutes", "phil_map_apology": "about 25 minutes", "phil_map_academy": "about 20 minutes", "phil_map_cave": "about 20 minutes", "phil_map_phaedo": "about 20 minutes", "phil_map_aristotle": "about 25 minutes", "phil_map_anselm": "about 20 minutes", "phil_map_aquinas": "about 20 minutes", "phil_map_evil": "about 20 minutes", "phil_map_pascal": "about 20 minutes", "phil_map_paley": "about 20 minutes", "phil_map_footbridge": "about 10 minutes"};
+const MINUTES = {"phil_map_gyges": "about 15 minutes", "phil_map_translation": "about 20 minutes", "phil_map_avicenna": "about 15 minutes", "phil_map_ghazali": "about 20 minutes", "phil_map_averroes": "about 20 minutes", "phil_map_rescue": "about 10 minutes", "phil_map_footbridge": "about 10 minutes", "phil_map_prologue": "about 10 minutes", "phil_map_presocratics": "about 20 minutes", "phil_map_ship": "about 15 minutes", "phil_map_clouds": "about 15 minutes", "phil_map_apology": "about 25 minutes", "phil_map_academy": "about 20 minutes", "phil_map_cave": "about 20 minutes", "phil_map_phaedo": "about 20 minutes", "phil_map_aristotle": "about 25 minutes", "phil_map_anselm": "about 20 minutes", "phil_map_aquinas": "about 20 minutes", "phil_map_evil": "about 20 minutes", "phil_map_pascal": "about 20 minutes", "phil_map_paley": "about 20 minutes", "phil_map_footbridge": "about 10 minutes"};
 function isSkipped(k) {
   try { return localStorage.getItem(skipKey(k)) === "1"; }
   catch (err) { return false; }
@@ -172,53 +179,67 @@ const canvas = document.getElementById("mapCanvas");
 const ctx = canvas.getContext("2d");
 const MW = 900, MH = 520;
 
-const MAP_IMG = typeof Image !== "undefined" ? new Image() : null;
-if (MAP_IMG) {
-  MAP_IMG.onload = () => drawMap();
-  MAP_IMG.src = "../shared/img/map_west.png";
-}
-
-/* A compass, so north is never in doubt. */
-function drawCompass(cx, cy, r) {
-  ctx.save();
-  ctx.fillStyle = "rgba(12,16,22,0.55)";
-  ctx.beginPath(); ctx.arc(cx, cy, r + 8, 0, Math.PI * 2); ctx.fill();
-  ctx.strokeStyle = "rgba(238,242,246,0.85)";
-  ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.arc(cx, cy, r + 8, 0, Math.PI * 2); ctx.stroke();
-  // The north half, filled.
-  ctx.fillStyle = "#eef2f6";
-  ctx.beginPath();
-  ctx.moveTo(cx, cy - r);
-  ctx.lineTo(cx + r * 0.34, cy + r * 0.28);
-  ctx.lineTo(cx, cy + r * 0.06);
-  ctx.closePath(); ctx.fill();
-  // The south half, outlined.
-  ctx.fillStyle = "rgba(238,242,246,0.35)";
-  ctx.beginPath();
-  ctx.moveTo(cx, cy - r);
-  ctx.lineTo(cx - r * 0.34, cy + r * 0.28);
-  ctx.lineTo(cx, cy + r * 0.06);
-  ctx.closePath(); ctx.fill();
-  ctx.fillStyle = "#eef2f6";
-  ctx.font = "bold 12px 'Segoe UI', sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText("N", cx, cy - r - 12);
-  ctx.textAlign = "left";
-  ctx.restore();
-}
-
 function drawMap() {
   ctx.clearRect(0, 0, MW, MH);
-  if (MAP_IMG && MAP_IMG.complete) {
-    ctx.drawImage(MAP_IMG, 0, 0, MW, MH);
-  } else {
-    ctx.fillStyle = "#2c5a80";
-    ctx.fillRect(0, 0, MW, MH);
-  }
-  ctx.fillStyle = "rgba(238,242,246,0.6)";
+  // Late afternoon over the river plain.
+  const sky = ctx.createLinearGradient(0, 0, 0, MH);
+  sky.addColorStop(0, "#4a5a86");
+  sky.addColorStop(0.6, "#8a7a7c");
+  sky.addColorStop(1, "#c0a06a");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, MW, 280);
+  ctx.fillStyle = "#a89a74";
+  ctx.fillRect(0, 280, MW, MH - 280);
+  // The Tigris, crossing the plain past the city.
+  ctx.fillStyle = "#3f5876";
+  ctx.beginPath();
+  ctx.moveTo(0, 150); ctx.quadraticCurveTo(260, 200, 400, 300);
+  ctx.quadraticCurveTo(520, 386, 900, 428);
+  ctx.lineTo(900, 468); ctx.quadraticCurveTo(500, 420, 370, 322);
+  ctx.quadraticCurveTo(240, 226, 0, 186);
+  ctx.closePath(); ctx.fill();
+  // The round city on the near bank.
+  ctx.strokeStyle = "#8a7450";
+  ctx.lineWidth = 8;
+  ctx.beginPath(); ctx.arc(430, 300, 64, 0, Math.PI * 2); ctx.stroke();
+  ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.arc(430, 300, 42, 0, Math.PI * 2); ctx.stroke();
+  ctx.fillStyle = "#4a8a6a";
+  ctx.beginPath(); ctx.arc(430, 300, 14, 0, Math.PI * 2); ctx.fill();
+  // Hills to the west, where the road comes in.
+  ctx.fillStyle = "rgba(90,84,100,0.55)";
+  ctx.beginPath();
+  ctx.moveTo(0, 340); ctx.quadraticCurveTo(90, 280, 190, 350);
+  ctx.lineTo(190, 520); ctx.lineTo(0, 520); ctx.closePath(); ctx.fill();
+  // Palm clusters along the water.
+  ctx.strokeStyle = "#3f6248";
+  ctx.lineWidth = 2;
+  [[560, 372], [610, 396], [250, 236], [680, 416]].forEach(p => {
+    for (let a2 = 0; a2 < 5; a2++) {
+      const ang = -Math.PI / 2 + (a2 - 2) * 0.5;
+      ctx.beginPath();
+      ctx.moveTo(p[0], p[1]);
+      ctx.lineTo(p[0] + Math.cos(ang) * 14, p[1] + Math.sin(ang) * 14 - 4);
+      ctx.stroke();
+    }
+  });
+  // The road: in from the southwest, through the city, out to the ford.
+  ctx.strokeStyle = "rgba(240,234,208,0.9)";
+  ctx.lineWidth = 5;
+  ctx.setLineDash([10, 8]);
+  ctx.beginPath();
+  ctx.moveTo(20, 470);
+  ctx.quadraticCurveTo(90, 430, 96, 402);
+  ctx.quadraticCurveTo(220, 360, 400, 322);
+  ctx.quadraticCurveTo(620, 350, 790, 380);
+  ctx.quadraticCurveTo(860, 392, 898, 398);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  // Labels.
+  ctx.fillStyle = "rgba(20,23,33,0.7)";
   ctx.font = "italic 13px Georgia, serif";
-
+  ctx.fillText("the Tigris", 96, 196);
+  ctx.fillText("the round city", 386, 238);
   // The route between the stops.
   ctx.strokeStyle = "rgba(240,234,208,0.9)";
   ctx.lineWidth = 2.5;
@@ -251,8 +272,6 @@ function drawMap() {
     ctx.fillStyle = done || unlocked ? "#eef1f7" : "#8b93a8";
     ctx.fillText(label, lx, ly + 2);
   });
-
-  drawCompass(838, 74, 22);
 
   // The way back to the world map.
   ctx.fillStyle = "rgba(20,23,33,0.8)";
@@ -308,11 +327,9 @@ function refresh() {
     }
     list.appendChild(card);
   });
-  const anyLive = ACTIVITIES.some(a => a.file !== null);
   const next = ACTIVITIES.find((a, i) => a.file !== null && !isDone(a.key) && isUnlocked(i));
   document.getElementById("progressLine").textContent =
-    !anyLive ? "The stops of this region are in preparation."
-    : next ? "Next: " + next.title + "." : "Every open stop in this region is complete.";
+    next ? "Next: " + next.title + "." : "Every open stop in this region is complete.";
   document.getElementById("storageNote").textContent = storageOk ? "" :
     "This browser is blocking saved progress, so completion cannot be tracked automatically here.";
 }

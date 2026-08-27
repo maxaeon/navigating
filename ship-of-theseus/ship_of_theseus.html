@@ -667,7 +667,7 @@ function dlgCollector() {
           reply: ["Collector: Then I am selling a pile of famous firewood. I hope you are wrong."] },
         { text: "Yours. It is the original wood in the original arrangement.", tag: "material",
           reply: ["Collector: My thinking exactly. And yet yours is the one the harbor master registers. Strange business, identity."] },
-        { text: "Both of them, or neither. The question is broken.", tag: "neither",
+        { text: "Both of them, or neither. There is no fact of the matter.", tag: "neither",
           reply: ["Collector: Both cannot owe one set of harbor fees, friend. Somebody will have to decide."] }
       ] },
     { note: true, say: "This is the sharpened version of the puzzle, put by Thomas Hobbes in the seventeenth century: if the removed planks are kept and reassembled, two ships each have a claim, one through continuous history and one through original material. Whatever principle of identity you choose, it must handle both claimants." }
@@ -682,7 +682,7 @@ function dlgCollector() {
 function dlgLeaveDelos() {
   flags.delosLeft = true;
   startDlg([
-    { say: "Captain: Done gawking at your ghost ship? Cast off. Aegina next." }
+    { say: "Captain: Done looking at the second ship? Cast off. Aegina next." }
   ], () => { leg = 2; setSail(); });
 }
 function dlgKeel() {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Bridge Crossing</title>
+<title>The Translation Movement</title>
 <style>
 :root{
   --page:#131318;
@@ -117,9 +117,9 @@ textarea{
 
 <header class="wrap">
   <div class="about-wrap">
-    <h1>The Bridge Crossing</h1>
+    <h1>The Translation Movement</h1>
     <p class="about-cue">What this activity covers</p>
-    <div class="about" id="aboutText"><p>A mountain pass on the road between regions, at dusk. This is a situation on the road. It was not on your itinerary, and it will not wait for a convenient moment. Below the footbridge runs a rail line, and something is wrong on it. You faced a version of this once before, at a lever, in the prologue. This version is harder, and the difference between the two versions is what this activity examines. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+    <div class="about" id="aboutText"><p>Baghdad in the 830s, at the height of the Abbasid caliphate. The traveler arrives carrying books, which turns out to be the right thing to carry. The activity visits the translators who moved Greek philosophy and science into Arabic, the mathematician whose book named algebra, and the philosopher who defended taking truth from any source. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
   </div>
 </header>
 
@@ -165,7 +165,7 @@ textarea{
 <div id="endScreen">
   <div class="wrap">
     <h1>Activity completed</h1>
-    <p id="nextStop">The road continues where it was going. The world map remembers this crossing.</p>
+    <p id="nextStop">The road continues from the world map, which remembers Baghdad.</p>
 
     <div class="section-box">
       <h3>Your responses at each stage</h3>
@@ -174,30 +174,30 @@ textarea{
 
     <div class="section-box">
       <h3>Discussion questions</h3>
-      <p>1. Design a third variant of the situation that isolates exactly one difference from the footbridge, physical contact, intention, or the use of a person as a means, and predict how people would answer it.</p>
+      <p>1. Name the closest thing your own time has to the translation movement, and apply Hunayn's two rules to it, comparing the copies and carrying the sense. What would following those rules change?</p>
       <textarea id="discussion1"></textarea>
-      <p>2. Self-driving vehicles, triage protocols, and military targeting rules all encode answers to cases like these in advance. Should such answers be written down before the emergency, and by whom?</p>
+      <p>2. When Aristotle reached Europe in Latin, the Arabic commentaries arrived with him, and Europe's first arguments about him were arguments with those commentators. Can a text ever travel without interpretation attached, and would a bare text even be usable?</p>
       <textarea id="discussion2"></textarea>
-      <p>3. Suppose someone answers the lever and the footbridge differently and cannot state a principle that separates them. Is that a defect in their reasoning, or evidence that morality does not reduce to statable principles?</p>
+      <p>3. Hypatia's editions, Hunayn's collations, and the copyists between them are mostly unnamed in what survives. Whose names tend to survive transmission and whose are lost, and does the pattern matter?</p>
       <textarea id="discussion3"></textarea>
     </div>
 
     <div class="section-box" id="quizSection">
       <h3>Quiz</h3>
-      <p><strong>1.</strong> Across many surveys, most people say</p>
-      <label><input type="radio" name="q1" value="Pull the lever, but do not push the man"> pull the lever, but do not push the man</label>
-      <label><input type="radio" name="q1" value="Push the man, but do not pull the lever"> push the man, but do not pull the lever</label>
-      <label><input type="radio" name="q1" value="The same thing in both cases"> the same thing in both cases</label>
+      <p><strong>1.</strong> Al-jabr, the word behind algebra, means</p>
+      <label><input type="radio" name="q1" value="Restoration, moving what is taken from one side to the other"> restoration, moving what is taken from one side to the other</label>
+      <label><input type="radio" name="q1" value="The unknown quantity"> the unknown quantity</label>
+      <label><input type="radio" name="q1" value="Calculation with Indian numerals"> calculation with Indian numerals</label>
 
-      <p><strong>2.</strong> The doctrine of double effect distinguishes</p>
-      <label><input type="radio" name="q2" value="Harm intended as a means from harm foreseen as a side effect"> harm intended as a means from harm foreseen as a side effect</label>
-      <label><input type="radio" name="q2" value="Harm to strangers from harm to friends"> harm to strangers from harm to friends</label>
-      <label><input type="radio" name="q2" value="Action from inaction in every case"> action from inaction in every case</label>
+      <p><strong>2.</strong> Before translating a text, Hunayn would</p>
+      <label><input type="radio" name="q2" value="Collect and compare every copy he could find"> collect and compare every copy he could find</label>
+      <label><input type="radio" name="q2" value="Translate the oldest copy word for word"> translate the oldest copy word for word</label>
+      <label><input type="radio" name="q2" value="Memorize the text in Greek"> memorize the text in Greek</label>
 
-      <p><strong>3.</strong> In the footbridge case, the large man's death is</p>
-      <label><input type="radio" name="q3" value="The means by which the five are saved"> the means by which the five are saved</label>
-      <label><input type="radio" name="q3" value="A side effect of redirecting the threat"> a side effect of redirecting the threat</label>
-      <label><input type="radio" name="q3" value="Unrelated to whether the five are saved"> unrelated to whether the five are saved</label>
+      <p><strong>3.</strong> Al-Kindi argued that truth</p>
+      <label><input type="radio" name="q3" value="It should be accepted from any source, foreign or ancient"> should be accepted from any source, foreign or ancient</label>
+      <label><input type="radio" name="q3" value="It belongs to the Greeks who found it first"> belongs to the Greeks who found it first</label>
+      <label><input type="radio" name="q3" value="It cannot survive translation"> cannot survive translation</label>
 
       <p><button id="gradeBtn">Grade the quiz</button></p>
       <p id="quizResult"></p>
@@ -213,49 +213,49 @@ textarea{
 
 <script>
 "use strict";
-const ACTIVITY_KEY = "phil_map_footbridge";
+const ACTIVITY_KEY = "phil_map_translation";
 
 /* =========================================================
    Prompts, quiz key, and log
    ========================================================= */
 const prompts = {
   first: {
-    title: "Stage 0: Your answer at the lever",
-    text: "At the prologue you stood at a lever: divert the trolley and one person dies instead of five. Before this situation unfolds, record what you chose there, or would choose now.",
-    mcq: ["I pulled it, one death instead of five", "I did not pull it", "Not sure, but I would pull it now", "Not sure, but I would not pull it now"],
-    requireText: true
+    title: "Stage 0: Who owns knowledge",
+    text: "You arrive carrying books written by Greeks, copied in Alexandria, and bought from a Syrian dealer. Before the city takes an interest in them, answer this. Does a piece of knowledge belong to the people who first wrote it down?",
+    mcq: ["Yes, and everyone after holds it on loan", "No, knowledge belongs to whoever can use it", "It belongs to whoever preserves it, since without them it is lost", "The question confuses knowledge with books"],
+    requireText: false
   },
-  push: {
-    title: "Stage 1: The bridge",
-    text: "The numbers are the lever's numbers: one life against five. The only difference is what you would have to do. Record your decision.",
-    mcq: ["I push him, five lives outweigh one", "I do not push him, this feels different", "I do neither, here or at the lever", "I cannot decide"],
-    requireText: true
+  method: {
+    title: "Stage 1: The translator's method",
+    text: "Hunayn gathers every manuscript of a text he can buy before translating a sentence, because the copies disagree, and then he translates for the sense of each passage rather than word by word. A rival school translates word for word, so that nothing is added and nothing is lost. Which method serves a reader better?",
+    mcq: ["Sense for sense, a translation must be understandable to be used", "Word for word, the translator's judgment is one more source of error", "Both together, a literal version beside a readable one", "Neither can be fully trusted without the original language"],
+    requireText: false
   },
-  asymmetry: {
-    title: "Stage 2: The asymmetry",
-    text: "Across many studies, most people pull the lever and refuse to push, though the arithmetic is identical. If the majority is responding to a real difference, what is that difference?",
-    mcq: ["Touching someone is different from pulling a switch", "On the bridge, his body is the tool that stops it", "Nothing real, people are just inconsistent", "The lever answer was wrong too"],
-    requireText: true
+  balance: {
+    title: "Stage 2: Restoration",
+    text: "Al-jabr means restoration. What is taken from one side of an equation is restored to the other, so the balance holds. The unknown, plus three, equals ten. Apply the restoration once. What is the unknown?",
+    mcq: ["Seven", "Thirteen", "Three", "It cannot be found without more information"],
+    requireText: false
   },
-  intention: {
-    title: "Stage 3: Intending and foreseeing",
-    text: "The doctrine of double effect says harm you intend as your means is worse than the same harm foreseen as a side effect. At the lever, if the one person somehow survived, your plan still works. On the bridge, if the man survives untouched by the trolley, your plan has failed. Does that difference carry moral weight?",
-    mcq: ["Yes, what you aim at is what you do", "Some, but the result matters more", "No, it is a trick that excuses the lever", "It matters in law and practice, whatever theory says"],
-    requireText: true
+  kindi: {
+    title: "Stage 3: Truth from anywhere",
+    text: "Al-Kindi writes that we should never be ashamed to acknowledge truth and to keep it, from whatever source it comes, even from former generations and foreign peoples. Name the strongest reason a person might resist that advice.",
+    mcq: ["Loyalty, taking a rival's ideas can feel like betraying your own people", "Contamination, ideas arrive carrying the values of their source", "Reliability, a distant source is harder to check", "There is no good reason, only pride"],
+    requireText: false
   },
-  consistency: {
-    title: "Stage 4: Your two answers",
-    text: "Set your lever answer beside your bridge answer. Are they consistent? If they are, state the principle that covers both. If they are not, say which answer you would change, or defend keeping both without a principle.",
+  final: {
+    title: "Stage 4: The chain of hands",
+    text: "Nearly everything you studied in Greece reached you down a chain. Authors, editors in Alexandria, Syriac and Arabic translators here, and Latin translators after them. State what a reader at the far end of such a chain can do to earn trust in what arrives, and name one belief of your own that reached you through many hands.",
     mcq: null,
     requireText: true,
-    textHint: "The principle, the change, or the defense."
+    textHint: "What the reader can do, then your own example."
   }
 };
 
 const quizKeys = [
-  "Pull the lever, but do not push the man",
-  "Harm intended as a means from harm foreseen as a side effect",
-  "The means by which the five are saved"
+  "Restoration, moving what is taken from one side to the other",
+  "Collect and compare every copy he could find",
+  "It should be accepted from any source, foreign or ancient"
 ];
 
 let reflectionLog = [];
@@ -286,9 +286,9 @@ const W = 900, H = 500;
 let started = false;
 let paused = false;
 let t = 0;
-let trolleyOn = false;
-let trolleyX = -80;
-const record = { lever: null, bridge: null };
+let sceneNo = 0;
+let lampT = 0;
+
 
 /* =========================================================
    Narration and the modal
@@ -364,7 +364,7 @@ function continueDlg() {
     if (window.speechSynthesis) speechSynthesis.cancel();
     if (cb) cb();
   } else {
-    if (dlg.steps[dlg.i].trolley) trolleyOn = true;
+    if (dlg.steps[dlg.i].scene2) sceneNo = 1;
     renderDlg();
   }
 }
@@ -451,8 +451,6 @@ submitBtn.addEventListener("click", () => {
     choice: p.mcq ? (sel ? sel.value : null) : null,
     response: modalText.value.trim()
   });
-  if (activePrompt.key === "first" && sel) record.lever = sel.value;
-  if (activePrompt.key === "push" && sel) record.bridge = sel.value;
   if (window.speechSynthesis) speechSynthesis.cancel();
   overlay.classList.remove("open");
   paused = false;
@@ -469,25 +467,39 @@ function setObjective(txt) { objectiveEl.textContent = txt; }
 function runScene() {
   openPrompt("first", () => {
     startDlg([
-      { say: "The pass road crosses a gorge on a footbridge, and the rail line runs through the gorge below. You are halfway across when you hear it: a runaway trolley, brakes gone, coming down the grade. Further along the line, five workers are in a cutting with their backs to it, and the walls of the cutting leave them nowhere to go.", trolley: false },
-      { trolley: true, say: "There is no lever here. There is no side track. There is only one thing on this bridge heavy enough to stop a trolley, and it is not you." },
-    { say: "A very large man stands at the railing beside you, looking down at the line, unaware. If he falls onto the track, the trolley stops, and he dies, and the five live. You would have to push him." },
-      { note: true, say: "This is the footbridge case, introduced by Judith Jarvis Thomson in 1976, building on Philippa Foot's original trolley problem of 1967. The numbers are identical to the lever case on purpose: one life against five. Everything that differs is in what the one who acts must do." }
+      { say: "The road comes in from the west across irrigated fields, and the city is audible before it is visible. Barges on the river, mule trains on the road, and at the toll station more paper changing hands than coin. The guards look through your baggage, find the books, and their manner changes. One of them writes out a direction to a house near the palace." },
+      { note: true, say: "Baghdad was founded in 762 as the Abbasid capital, planned as a round city on the Tigris. Within two generations it held several hundred thousand people, which made it one of the largest cities on earth. The name House of Wisdom attaches to a palace library there, and historians debate how grand that institution was. What is not debated is what happened around it. A movement, funded by caliphs, viziers, and wealthy families, translated the Greek scientific and philosophical inheritance into Arabic over about two centuries." },
+      { scene2: true, say: "The house is a set of workshops around a courtyard. Copyists, binders, and the smell of a paper mill from the yard behind. A man with ink to the wrist stands comparing three open manuscripts of the same text. He greets you in Greek, considers your accent, and switches to Arabic." },
+      { say: "Hunayn: Hunayn ibn Ishaq. Physician by training, translator by trade. You have books. Everyone who comes from the west with books comes to this house eventually, so let me show you how we treat them." },
+      { say: "Hunayn: First, we do not trust one copy. This is Galen, and these are three manuscripts of him, and they disagree in forty places in this one treatise. Copyists nod off, skip lines, and repair what they do not understand. So I collect every copy I can buy, from Damascus to Alexandria, and compare them, and settle the soundest text I can before I translate a sentence of it.",
+        choices: [
+          { tag: "decide", text: "When the copies disagree, how do you decide which reading is right?",
+            reply: ["Hunayn: By judgment, stated openly. Where the copies split, I weigh which reading the author's own argument needs, and I record what I chose. A silent choice is one more corruption. A recorded choice is scholarship, because the next reader can check it."] },
+          { tag: "whytranslate", text: "Why translate at all? Teach people Greek instead.",
+            reply: ["Hunayn: Learning a language well takes ten years. Translating a book takes one winter, and the physicians of this city are dosing patients today. And translation is not loss in every direction. To translate a sentence you must first fully understand it, which the owner of the original was never forced to do."] }
+        ] },
+      { say: "Hunayn: Second, sense before words. My son and my nephew translate with me, and this school renders what each passage means. There are men who translate word for word so that no one can accuse them of adding anything, and what they produce cannot be read as an argument. When you carry a thought across languages, carry the thought." },
+      { note: true, say: "Hunayn ibn Ishaq, 809 to 873, a Christian of the Church of the East from al-Hira, led the most productive translation workshop of the movement, moving Galen's medicine and much besides into Syriac and Arabic. A letter of his survives describing the collation method in his own words. The story that a caliph paid him the weight of his books in gold is reported by later biographers and repeated with caution." }
     ], () => {
-      openPrompt("push", () => {
+      openPrompt("method", () => {
         startDlg([
-          { say: "Whichever you chose, notice what making the choice was like this time, and whether anything besides the numbers weighed on it." }
+          { say: "In the next room a mathematician is checking astronomical tables. He is introduced as Muhammad ibn Musa, from Khwarazm in the far northeast, and the book open in front of him is his own, on calculation by restoration and balancing." },
+          { say: "Al-Khwarizmi: The method is honest bookkeeping for quantities. Whatever is taken from one side of the balance is restored to the other, step by step, until the unknown stands alone. Al-jabr, the restoration. Try one." }
         ], () => {
-          openPrompt("asymmetry", () => {
+          openPrompt("balance", () => {
             startDlg([
-              { note: true, say: "One well known analysis uses the doctrine of double effect, an idea that goes back to Aquinas. It says harm you intend as your means is worse than the same harm you only foresee." },
-    { say: "Test it here. At the lever, if the one worker scrambled clear, your plan still works. On the bridge, if the man is never struck, the five die. The trolley must hit him for the plan to work." }
+              { say: "Al-Khwarizmi: So the unknown was seven all along, and the method found it without a guess. Merchants use this for estates and inheritances, and engineers for canals. The numerals we compute with came to us from India, down the road you are traveling, and I have written a book on those as well." },
+              { note: true, say: "Al-Khwarizmi, who worked in Baghdad around 820, wrote the treatise whose title gives algebra its name, and whose own name, in Latin, became the word algorithm. His book on the Indian numerals carried the decimal place system westward. Both works reached Europe in Latin translation centuries later." },
+              { say: "Toward evening a visitor arrives with a corrected manuscript under his arm, a philosopher the household treats with visible respect. He is introduced as al-Kindi, and when he hears where your books come from, he says the sentence he is known for." },
+              { say: "Al-Kindi: We ought never be ashamed to acknowledge truth and to keep it, from wherever it comes to us, even from races distant from us and nations different from ours. Nothing ranks above truth itself, and truth abases no one who reaches for it, and ennobles everyone." },
+              { say: "Al-Kindi: There are men in this city who call these books foreign, and their study disloyal. I answer that for the seeker of truth nothing is foreign. The Greeks did not invent what is true. They found some of it, and left much unfound for us, and we will leave much for whoever reads us, in whatever language that turns out to be." }
             ], () => {
-              openPrompt("intention", () => {
+              openPrompt("kindi", () => {
                 startDlg([
-                  { say: "Below, it is over one way or another, and the road goes on. Situations like this one do not look like philosophy while they are happening. They demand a decision, and leave you to work out afterward what your answer committed you to." }
+                  { note: true, say: "Al-Kindi, around 801 to 873, called the philosopher of the Arabs, wrote the first major body of philosophy in the Arabic language, and the passage adapted here opens his book On First Philosophy. The movement he defended fed the falsafa tradition after him, through al-Farabi and Avicenna, al-Ghazali's counterattack, and the reply of Averroes from Cordoba." },
+                  { say: "Hunayn walks you to the gate with a list of book dealers in your hand and one request, that whatever you buy on the road east, you let his copyists see it before you carry it home." }
                 ], () => {
-                  openPrompt("consistency", () => endGame());
+                  openPrompt("final", () => endGame());
                 });
               });
             });
@@ -496,13 +508,14 @@ function runScene() {
       });
     });
   });
+
 }
 
 /* =========================================================
    End screen, quiz, and report
    ========================================================= */
 function endGame() {
-  try { localStorage.setItem("phil_map_footbridge", "1"); } catch (err) { /* storage is optional */ }
+  try { localStorage.setItem("phil_map_translation", "1"); } catch (err) { /* storage is optional */ }
   const summary = document.getElementById("reflectionSummary");
   summary.innerHTML = "";
   reflectionLog.forEach(r => {
@@ -548,8 +561,8 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const d1 = document.getElementById("discussion1").value.trim();
   const d2 = document.getElementById("discussion2").value.trim();
   const d3 = document.getElementById("discussion3").value.trim();
-  let text = "The Bridge Crossing, Report\n";
-  text += "===========================\n\nResponses at each stage:\n";
+  let text = "The Translation Movement, Report\n";
+  text += "==========================\n\nResponses at each stage:\n";
   reflectionLog.forEach(r => {
     text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
     if (r.choice) text += "Choice: " + r.choice + "\n";
@@ -557,12 +570,10 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
     text += "-".repeat(50);
   });
   text += "\n\nThe pair of answers:\n";
-  text += "At the lever: " + (record.lever || "(none)") + "\n";
-  text += "On the bridge: " + (record.bridge || "(none)") + "\n";
   text += "\nDiscussion questions:\n";
-  text += "1. A third variant isolating one difference.\n" + (d1 || "(no answer)") + "\n\n";
-  text += "2. Encoding answers before the emergency.\n" + (d2 || "(no answer)") + "\n\n";
-  text += "3. Different answers without a principle.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "1. A translation movement of your own time.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Texts and their attached interpretation.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. Whose names survive transmission.\n" + (d3 || "(no answer)") + "\n\n";
   text += "Quiz:\n";
   if (quizScore) {
     quizScore.answers.forEach((ans, i) => {
@@ -575,7 +586,7 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const blob = new Blob([text], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = "Bridge_Crossing_Report.txt"; a.click();
+  a.href = url; a.download = "Translation_Movement_Report.txt"; a.click();
   URL.revokeObjectURL(url);
 });
 document.getElementById("restartBtn").addEventListener("click", () => location.reload());
@@ -594,89 +605,172 @@ function drawFigure(x, y, s, color) {
   ctx.fillRect(1, -11, 4, 11);
   ctx.restore();
 }
-function render() {
-  ctx.clearRect(0, 0, W, H);
-  // Dusk sky.
+function drawPalm(x, y, s) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(s, s);
+  ctx.strokeStyle = "#6a5a40";
+  ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(4, -26, 0, -46); ctx.stroke();
+  ctx.strokeStyle = "#3f6248";
+  ctx.lineWidth = 3;
+  for (let a = 0; a < 6; a++) {
+    const ang = -Math.PI / 2 + (a - 2.5) * 0.5;
+    ctx.beginPath();
+    ctx.moveTo(0, -46);
+    ctx.quadraticCurveTo(Math.cos(ang) * 20, -46 + Math.sin(ang) * 10, Math.cos(ang) * 30, -40 + Math.sin(ang) * 16);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function renderCity() {
   const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, "#232338");
-  sky.addColorStop(0.6, "#3c3450");
-  sky.addColorStop(1, "#584458");
+  sky.addColorStop(0, "#5a6a94");
+  sky.addColorStop(0.6, "#8a7a88");
+  sky.addColorStop(1, "#c0a06a");
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, W, H);
-  // Mountains behind.
-  ctx.fillStyle = "rgba(40,40,58,0.9)";
+  // The Tigris, crossing behind the city.
+  ctx.fillStyle = "#3f5876";
   ctx.beginPath();
-  ctx.moveTo(0, 240); ctx.lineTo(160, 110); ctx.lineTo(300, 220); ctx.lineTo(470, 90);
-  ctx.lineTo(650, 210); ctx.lineTo(800, 130); ctx.lineTo(900, 200); ctx.lineTo(900, 500); ctx.lineTo(0, 500);
+  ctx.moveTo(0, 300); ctx.quadraticCurveTo(300, 268, 620, 296);
+  ctx.quadraticCurveTo(780, 310, 900, 292);
+  ctx.lineTo(900, 342); ctx.quadraticCurveTo(560, 356, 0, 340);
   ctx.closePath(); ctx.fill();
-  // The gorge walls.
-  ctx.fillStyle = "#2c2c3c";
-  ctx.fillRect(0, 300, 240, 200);
-  ctx.fillRect(660, 300, 240, 200);
-  ctx.fillStyle = "#242432";
-  ctx.beginPath();
-  ctx.moveTo(240, 300); ctx.lineTo(240, 500); ctx.lineTo(300, 500); ctx.closePath(); ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(660, 300); ctx.lineTo(660, 500); ctx.lineTo(600, 500); ctx.closePath(); ctx.fill();
-  // The rail line along the gorge floor.
-  ctx.strokeStyle = "#8b95a5";
-  ctx.lineWidth = 4;
-  [448, 466].forEach(ry => {
-    ctx.beginPath(); ctx.moveTo(0, ry); ctx.lineTo(900, ry); ctx.stroke();
-  });
-  ctx.strokeStyle = "#4a3c30";
-  for (let x = 10; x < 900; x += 30) {
-    ctx.beginPath(); ctx.moveTo(x, 442); ctx.lineTo(x, 472); ctx.stroke();
+  // Barges.
+  ctx.fillStyle = "#5c5344";
+  ctx.fillRect(120, 302, 54, 10); ctx.fillRect(690, 306, 44, 9);
+  ctx.fillRect(140, 292, 5, 12); ctx.fillRect(706, 296, 5, 12);
+  // The round city: concentric walls and the green dome.
+  ctx.strokeStyle = "#b0a088";
+  ctx.lineWidth = 10;
+  ctx.beginPath(); ctx.arc(450, 342, 130, Math.PI, 0); ctx.stroke();
+  ctx.lineWidth = 7;
+  ctx.beginPath(); ctx.arc(450, 342, 92, Math.PI, 0); ctx.stroke();
+  ctx.fillStyle = "#c9bda0";
+  ctx.fillRect(438, 300, 24, 42);
+  ctx.fillStyle = "#4a8a6a";
+  ctx.beginPath(); ctx.arc(450, 262, 26, Math.PI, 0); ctx.fill();
+  ctx.fillStyle = "#b0a088";
+  ctx.fillRect(444, 262, 12, 42);
+  // Gate towers on the outer wall.
+  ctx.fillStyle = "#b0a088";
+  ctx.fillRect(310, 318, 16, 26); ctx.fillRect(574, 318, 16, 26);
+  // Fields and canals in front.
+  ctx.fillStyle = "#7c7a52";
+  ctx.fillRect(0, 342, W, 158);
+  ctx.strokeStyle = "#3f5876";
+  ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.moveTo(0, 396); ctx.quadraticCurveTo(300, 386, 900, 402); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, 452); ctx.quadraticCurveTo(400, 440, 900, 458); ctx.stroke();
+  ctx.strokeStyle = "#5c6a3c";
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 30; i++) {
+    const gx = 20 + i * 30;
+    ctx.beginPath(); ctx.moveTo(gx, 372); ctx.lineTo(gx, 360); ctx.stroke();
   }
-  // The cutting with the five workers, right of the bridge.
-  ctx.fillStyle = "#242432";
-  ctx.fillRect(700, 396, 200, 44);
-  for (let i = 0; i < 5; i++) drawFigure(730 + i * 36, 452, 0.8, "#8fb7dd");
+  drawPalm(90, 372, 1); drawPalm(130, 380, 0.8); drawPalm(806, 380, 1); drawPalm(852, 372, 0.85);
+  // The road in, with you and a mule train.
+  ctx.strokeStyle = "rgba(220,208,180,0.55)";
+  ctx.lineWidth = 14;
+  ctx.beginPath();
+  ctx.moveTo(-10, 486); ctx.quadraticCurveTo(260, 452, 450, 344);
+  ctx.stroke();
+  drawFigure(276, 452, 1, "#5b84b1");
+  ctx.fillStyle = "#3a3f58";
+  ctx.fillRect(200, 462, 36, 14); ctx.fillRect(228, 452, 8, 14);
   ctx.fillStyle = "#eef2f6";
   ctx.font = "13px 'Segoe UI', sans-serif";
-  ctx.fillText("five workers", 748, 492);
-  // The footbridge across the gorge.
-  ctx.fillStyle = "#57503f";
-  ctx.fillRect(220, 262, 460, 14);
-  ctx.strokeStyle = "#57503f";
-  ctx.lineWidth = 5;
-  ctx.beginPath(); ctx.moveTo(220, 240); ctx.lineTo(680, 240); ctx.stroke();
-  for (let x = 240; x < 680; x += 44) {
-    ctx.beginPath(); ctx.moveTo(x, 240); ctx.lineTo(x, 262); ctx.stroke();
-  }
-  ctx.fillStyle = "#484236";
-  ctx.fillRect(206, 262, 18, 238);
-  ctx.fillRect(676, 262, 18, 238);
-  // You, and the large man at the railing.
-  drawFigure(392, 262, 1, "#5b84b1");
-  ctx.fillStyle = "#5a7d8f";
-  ctx.beginPath(); ctx.arc(470, 220, 10, 0, Math.PI * 2); ctx.fill();
-  ctx.fillRect(455, 228, 30, 30);
-  ctx.fillRect(457, 258, 10, 6);
-  ctx.fillRect(473, 258, 10, 6);
-  ctx.fillStyle = "#eef2f6";
-  ctx.fillText("you", 380, 292);
-  ctx.fillText("the large man", 428, 210);
-  // The trolley, rolling in on the line when the scene calls it.
-  if (trolleyOn) {
-    ctx.fillStyle = "#8f3b3b";
-    ctx.fillRect(trolleyX - 46, 408, 92, 40);
-    ctx.fillStyle = "#c9b98a";
-    ctx.fillRect(trolleyX - 36, 416, 24, 16);
-    ctx.fillRect(trolleyX + 6, 416, 24, 16);
-    ctx.fillStyle = "#1c1c26";
+  ctx.fillText("you, with the books", 250, 478);
+  ctx.fillText("the round city", 402, 246);
+}
+function renderScriptorium() {
+  ctx.fillStyle = "#2a2118";
+  ctx.fillRect(0, 0, W, H);
+  // The courtyard wall with three arches.
+  ctx.fillStyle = "#4a3c2c";
+  ctx.fillRect(0, 60, W, 300);
+  ctx.fillStyle = "#6a5a40";
+  [140, 430, 720].forEach(ax => {
+    ctx.fillStyle = "#2a2118";
     ctx.beginPath();
-    ctx.arc(trolleyX - 26, 452, 9, 0, Math.PI * 2);
-    ctx.arc(trolleyX + 26, 452, 9, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.moveTo(ax - 60, 360); ctx.lineTo(ax - 60, 180);
+    ctx.arc(ax, 180, 60, Math.PI, 0);
+    ctx.lineTo(ax + 60, 360);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8a7450";
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.moveTo(ax - 60, 360); ctx.lineTo(ax - 60, 180);
+    ctx.arc(ax, 180, 60, Math.PI, 0);
+    ctx.lineTo(ax + 60, 360);
+    ctx.stroke();
+  });
+  // Shelves of books between the arches.
+  ctx.fillStyle = "#3a2e20";
+  ctx.fillRect(240, 130, 130, 230); ctx.fillRect(530, 130, 130, 230);
+  for (let r = 0; r < 5; r++) {
+    for (const bx of [240, 530]) {
+      ctx.fillStyle = "#8a7450";
+      ctx.fillRect(bx + 6, 150 + r * 44, 118, 4);
+      for (let b = 0; b < 9; b++) {
+        ctx.fillStyle = ["#7c5a3a", "#5a6a4a", "#6a4a52", "#4a5a6a"][b % 4];
+        ctx.fillRect(bx + 10 + b * 12, 122 + r * 44 + 8, 9, 24);
+      }
+    }
   }
+  // The floor and the long collation desk with three open manuscripts.
+  ctx.fillStyle = "#5c503c";
+  ctx.fillRect(0, 360, W, 140);
+  ctx.fillStyle = "#7a6448";
+  ctx.fillRect(180, 340, 380, 16);
+  ctx.fillRect(196, 356, 12, 60); ctx.fillRect(532, 356, 12, 60);
+  ctx.fillStyle = "#e8e0cc";
+  [220, 330, 440].forEach(mx => {
+    ctx.fillRect(mx, 328, 64, 12);
+    ctx.strokeStyle = "#8a7450"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(mx + 32, 328); ctx.lineTo(mx + 32, 340); ctx.stroke();
+  });
+  // A smaller desk with the balance scales, and one with tables.
+  ctx.fillStyle = "#7a6448";
+  ctx.fillRect(640, 348, 150, 12);
+  ctx.strokeStyle = "#c9bda0"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(715, 348); ctx.lineTo(715, 316); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(685, 322); ctx.lineTo(745, 322); ctx.stroke();
+  ctx.strokeRect(676, 322, 18, 10); ctx.strokeRect(736, 322, 18, 10);
+  // Hanging lamps with a slow flicker.
+  const lf = REDUCED_MOTION ? 0 : Math.sin(lampT * 5) * 1.5;
+  [300, 600].forEach(lx => {
+    ctx.strokeStyle = "#8a7450"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(lx, 60); ctx.lineTo(lx, 108); ctx.stroke();
+    ctx.fillStyle = "#dfae5c";
+    ctx.beginPath(); ctx.arc(lx, 116 + lf, 7, 0, Math.PI * 2); ctx.fill();
+    const glow = ctx.createRadialGradient(lx, 116, 4, lx, 116, 60);
+    glow.addColorStop(0, "rgba(223,174,92,0.16)");
+    glow.addColorStop(1, "rgba(223,174,92,0)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(lx - 60, 56, 120, 120);
+  });
+  // Hunayn at the collation desk, al-Khwarizmi at the scales, you.
+  drawFigure(300, 420, 1, "#8fb7dd");
+  drawFigure(715, 424, 1, "#5a7d8f");
+  drawFigure(470, 460, 1, "#5b84b1");
+  ctx.fillStyle = "#eef2f6";
+  ctx.font = "13px 'Segoe UI', sans-serif";
+  ctx.fillText("Hunayn, comparing copies", 232, 444);
+  ctx.fillText("al-Khwarizmi", 678, 448);
+  ctx.fillText("you", 458, 484);
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  if (sceneNo === 0) renderCity(); else renderScriptorium();
   if (!started) {
     ctx.fillStyle = "rgba(16,16,22,0.55)";
     ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = "#f0f0f5";
     ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
     ctx.textAlign = "center";
-    ctx.fillText("The Bridge Crossing", W / 2, H / 2 - 12);
+    ctx.fillText("The Translation Movement", W / 2, H / 2 - 12);
     ctx.font = "15px 'Segoe UI', sans-serif";
     ctx.fillStyle = "#a9a9bc";
     ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
@@ -691,9 +785,8 @@ let last = performance.now();
 function update(dt) {
   if (typeof tickStatus === "function") tickStatus();
   t += dt;
-  if (trolleyOn && !paused) {
-    trolleyX = Math.min(trolleyX + (REDUCED_MOTION ? 20 : 60) * dt, 250);
-  }
+  lampT += dt;
+
 }
 function loop(now) {
   const dt = Math.min((now - last) / 1000, 0.05);

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Bridge Crossing</title>
+<title>Avicenna's Flying Man</title>
 <style>
 :root{
   --page:#131318;
@@ -117,9 +117,9 @@ textarea{
 
 <header class="wrap">
   <div class="about-wrap">
-    <h1>The Bridge Crossing</h1>
+    <h1>Avicenna's Flying Man</h1>
     <p class="about-cue">What this activity covers</p>
-    <div class="about" id="aboutText"><p>A mountain pass on the road between regions, at dusk. This is a situation on the road. It was not on your itinerary, and it will not wait for a convenient moment. Below the footbridge runs a rail line, and something is wrong on it. You faced a version of this once before, at a lever, in the prologue. This version is harder, and the difference between the two versions is what this activity examines. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+    <div class="about" id="aboutText"><p>Hamadan, in Persia, around 1020, late at night. The vizier of the city practices medicine and politics by day and writes philosophy after dark, and travelers with questions are received after dark too. The activity covers the most famous thought experiment of the falsafa tradition, a person created in mid-air who senses nothing, and the question of what such a person would still know. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
   </div>
 </header>
 
@@ -165,7 +165,7 @@ textarea{
 <div id="endScreen">
   <div class="wrap">
     <h1>Activity completed</h1>
-    <p id="nextStop">The road continues where it was going. The world map remembers this crossing.</p>
+    <p id="nextStop">The road returns to Baghdad, and the world map remembers the night in Hamadan.</p>
 
     <div class="section-box">
       <h3>Your responses at each stage</h3>
@@ -174,30 +174,30 @@ textarea{
 
     <div class="section-box">
       <h3>Discussion questions</h3>
-      <p>1. Design a third variant of the situation that isolates exactly one difference from the footbridge, physical contact, intention, or the use of a person as a means, and predict how people would answer it.</p>
+      <p>1. Design a change to the flying man that would answer the standard objection, or explain why no change can answer it. Say exactly what the changed case would show.</p>
       <textarea id="discussion1"></textarea>
-      <p>2. Self-driving vehicles, triage protocols, and military targeting rules all encode answers to cases like these in advance. Should such answers be written down before the emergency, and by whom?</p>
+      <p>2. Descartes reached a similar landing point six centuries later, one certainty surviving total doubt. Compare the two routes, a thought experiment about creation against a method of doubt, and say which route earns its conclusion at a lower cost.</p>
       <textarea id="discussion2"></textarea>
-      <p>3. Suppose someone answers the lever and the footbridge differently and cannot state a principle that separates them. Is that a defect in their reasoning, or evidence that morality does not reduce to statable principles?</p>
+      <p>3. The deer park and Hamadan both appeal to what awareness finds. Propose a way to make such appeals answerable to each other, a shared test, a shared vocabulary, or something else, or argue that none is possible.</p>
       <textarea id="discussion3"></textarea>
     </div>
 
     <div class="section-box" id="quizSection">
       <h3>Quiz</h3>
-      <p><strong>1.</strong> Across many surveys, most people say</p>
-      <label><input type="radio" name="q1" value="Pull the lever, but do not push the man"> pull the lever, but do not push the man</label>
-      <label><input type="radio" name="q1" value="Push the man, but do not pull the lever"> push the man, but do not pull the lever</label>
-      <label><input type="radio" name="q1" value="The same thing in both cases"> the same thing in both cases</label>
+      <p><strong>1.</strong> Avicenna's suspended person would affirm</p>
+      <label><input type="radio" name="q1" value="Their own existence, and nothing about a body"> their own existence, and nothing about a body</label>
+      <label><input type="radio" name="q1" value="The existence of the air"> the existence of the air</label>
+      <label><input type="radio" name="q1" value="Nothing at all"> nothing at all</label>
 
-      <p><strong>2.</strong> The doctrine of double effect distinguishes</p>
-      <label><input type="radio" name="q2" value="Harm intended as a means from harm foreseen as a side effect"> harm intended as a means from harm foreseen as a side effect</label>
-      <label><input type="radio" name="q2" value="Harm to strangers from harm to friends"> harm to strangers from harm to friends</label>
-      <label><input type="radio" name="q2" value="Action from inaction in every case"> action from inaction in every case</label>
+      <p><strong>2.</strong> The standard objection to the argument is that</p>
+      <label><input type="radio" name="q2" value="Failing to notice the body does not prove the self is distinct from it"> failing to notice the body does not prove the self is distinct from it</label>
+      <label><input type="radio" name="q2" value="No one can be created in mid-air"> no one can be created in mid-air</label>
+      <label><input type="radio" name="q2" value="The person would fall"> the person would fall</label>
 
-      <p><strong>3.</strong> In the footbridge case, the large man's death is</p>
-      <label><input type="radio" name="q3" value="The means by which the five are saved"> the means by which the five are saved</label>
-      <label><input type="radio" name="q3" value="A side effect of redirecting the threat"> a side effect of redirecting the threat</label>
-      <label><input type="radio" name="q3" value="Unrelated to whether the five are saved"> unrelated to whether the five are saved</label>
+      <p><strong>3.</strong> Avicenna's Canon of Medicine was</p>
+      <label><input type="radio" name="q3" value="A medical textbook used in Europe for centuries"> a medical textbook used in Europe for centuries</label>
+      <label><input type="radio" name="q3" value="A commentary on the Republic"> a commentary on the Republic</label>
+      <label><input type="radio" name="q3" value="Lost until the twentieth century"> lost until the twentieth century</label>
 
       <p><button id="gradeBtn">Grade the quiz</button></p>
       <p id="quizResult"></p>
@@ -213,49 +213,49 @@ textarea{
 
 <script>
 "use strict";
-const ACTIVITY_KEY = "phil_map_footbridge";
+const ACTIVITY_KEY = "phil_map_avicenna";
 
 /* =========================================================
    Prompts, quiz key, and log
    ========================================================= */
 const prompts = {
   first: {
-    title: "Stage 0: Your answer at the lever",
-    text: "At the prologue you stood at a lever: divert the trolley and one person dies instead of five. Before this situation unfolds, record what you chose there, or would choose now.",
-    mcq: ["I pulled it, one death instead of five", "I did not pull it", "Not sure, but I would pull it now", "Not sure, but I would not pull it now"],
-    requireText: true
+    title: "Stage 0: Knowledge without the senses",
+    text: "Everything you learned on this road arrived through eyes and ears. Before the vizier poses his case, answer this. Could you know that you exist if no sense had ever reported anything to you?",
+    mcq: ["Yes, existence is known from the inside, without any report", "No, all knowledge starts with the senses", "The question cannot be tested, so it has no answer", "I do not know"],
+    requireText: false
   },
-  push: {
-    title: "Stage 1: The bridge",
-    text: "The numbers are the lever's numbers: one life against five. The only difference is what you would have to do. Record your decision.",
-    mcq: ["I push him, five lives outweigh one", "I do not push him, this feels different", "I do neither, here or at the lever", "I cannot decide"],
-    requireText: true
+  flying: {
+    title: "Stage 1: The suspended person",
+    text: "A person is created all at once, mature and able to think, suspended in air, limbs apart, seeing nothing, hearing nothing, touching nothing, not even their own body. Avicenna claims this person would still affirm one thing without hesitation. What?",
+    mcq: ["That they exist", "That they have a body", "That the air is holding them", "Nothing, a person with no input affirms nothing"],
+    requireText: false
   },
-  asymmetry: {
-    title: "Stage 2: The asymmetry",
-    text: "Across many studies, most people pull the lever and refuse to push, though the arithmetic is identical. If the majority is responding to a real difference, what is that difference?",
-    mcq: ["Touching someone is different from pulling a switch", "On the bridge, his body is the tool that stops it", "Nothing real, people are just inconsistent", "The lever answer was wrong too"],
-    requireText: true
+  shows: {
+    title: "Stage 2: What the case shows",
+    text: "The suspended person affirms their own existence and affirms nothing about a body. Avicenna concludes that the self is grasped directly and is not the body. The standard objection answers that failing to notice the body does not prove the self is distinct from it, since a person can fail to notice what they in fact are. Who has the better of it?",
+    mcq: ["Avicenna, self-awareness needs no body and that is the point", "The objection, not noticing something proves nothing about identity", "Both hold something, the case shows self-awareness is direct and not that the self is immaterial", "Neither, the scenario is impossible and shows nothing"],
+    requireText: false
   },
-  intention: {
-    title: "Stage 3: Intending and foreseeing",
-    text: "The doctrine of double effect says harm you intend as your means is worse than the same harm foreseen as a side effect. At the lever, if the one person somehow survived, your plan still works. On the bridge, if the man survives untouched by the trolley, your plan has failed. Does that difference carry moral weight?",
-    mcq: ["Yes, what you aim at is what you do", "Some, but the result matters more", "No, it is a trick that excuses the lever", "It matters in law and practice, whatever theory says"],
-    requireText: true
+  deerpark: {
+    title: "Stage 3: Two reports from the inside",
+    text: "At the deer park, the instruction was to look inward, and the claim was that no self is found, only experiences. In Hamadan, the claim is that the self is what can never be absent from awareness. Both claims cite introspection. What best explains philosophers looking inward and reporting opposite findings?",
+    mcq: ["They are looking for different things under one word", "Introspection is unreliable and settles nothing", "One of them is simply mistaken and the case can be decided", "The looking itself changes what is found"],
+    requireText: false
   },
-  consistency: {
-    title: "Stage 4: Your two answers",
-    text: "Set your lever answer beside your bridge answer. Are they consistent? If they are, state the principle that covers both. If they are not, say which answer you would change, or defend keeping both without a principle.",
+  final: {
+    title: "Stage 4: Your verdict",
+    text: "State what you think the flying man actually establishes, if anything, and then say whether your answer sides with the deer park, with Hamadan, or with neither, and why.",
     mcq: null,
     requireText: true,
-    textHint: "The principle, the change, or the defense."
+    textHint: "What the case establishes, and where that leaves you."
   }
 };
 
 const quizKeys = [
-  "Pull the lever, but do not push the man",
-  "Harm intended as a means from harm foreseen as a side effect",
-  "The means by which the five are saved"
+  "Their own existence, and nothing about a body",
+  "Failing to notice the body does not prove the self is distinct from it",
+  "A medical textbook used in Europe for centuries"
 ];
 
 let reflectionLog = [];
@@ -286,9 +286,9 @@ const W = 900, H = 500;
 let started = false;
 let paused = false;
 let t = 0;
-let trolleyOn = false;
-let trolleyX = -80;
-const record = { lever: null, bridge: null };
+let floatT = 0;
+let flyOn = false;
+
 
 /* =========================================================
    Narration and the modal
@@ -364,7 +364,7 @@ function continueDlg() {
     if (window.speechSynthesis) speechSynthesis.cancel();
     if (cb) cb();
   } else {
-    if (dlg.steps[dlg.i].trolley) trolleyOn = true;
+    if (dlg.steps[dlg.i].fly) flyOn = true;
     renderDlg();
   }
 }
@@ -451,8 +451,6 @@ submitBtn.addEventListener("click", () => {
     choice: p.mcq ? (sel ? sel.value : null) : null,
     response: modalText.value.trim()
   });
-  if (activePrompt.key === "first" && sel) record.lever = sel.value;
-  if (activePrompt.key === "push" && sel) record.bridge = sel.value;
   if (window.speechSynthesis) speechSynthesis.cancel();
   overlay.classList.remove("open");
   paused = false;
@@ -469,25 +467,39 @@ function setObjective(txt) { objectiveEl.textContent = txt; }
 function runScene() {
   openPrompt("first", () => {
     startDlg([
-      { say: "The pass road crosses a gorge on a footbridge, and the rail line runs through the gorge below. You are halfway across when you hear it: a runaway trolley, brakes gone, coming down the grade. Further along the line, five workers are in a cutting with their backs to it, and the walls of the cutting leave them nowhere to go.", trolley: false },
-      { trolley: true, say: "There is no lever here. There is no side track. There is only one thing on this bridge heavy enough to stop a trolley, and it is not you." },
-    { say: "A very large man stands at the railing beside you, looking down at the line, unaware. If he falls onto the track, the trolley stops, and he dies, and the five live. You would have to push him." },
-      { note: true, say: "This is the footbridge case, introduced by Judith Jarvis Thomson in 1976, building on Philippa Foot's original trolley problem of 1967. The numbers are identical to the lever case on purpose: one life against five. Everything that differs is in what the one who acts must do." }
+      { say: "The road turns back west from the deer park in time, and arrives in Persia around the year 1020, at the city of Hamadan. By day its vizier runs the administration and treats patients. His philosophy is written at night, dictated to students who take turns sleeping, and a traveler with a question is a welcome interruption." },
+      { note: true, say: "Ibn Sina, known in Europe as Avicenna, lived from about 980 to 1037. Born near Bukhara, he reports teaching himself the sciences from the books of the translation movement and mastering them young. His Canon of Medicine served as a standard medical textbook in both the Islamic world and Europe for centuries, and his philosophical encyclopedia, the Book of the Healing, carried the Greek inheritance forward into new arguments. The falsafa tradition that began with al-Kindi reaches its largest system in him." },
+      { say: "Avicenna: You have come along the road from India, so you have been told that when you look inward you find experiences and no self. I have an instrument against that claim, and I built it so that anyone can run it. It costs one act of imagination." },
+      { fly: true, say: "Avicenna: Suppose a person created all at once, mature, with a working mind. Created in mid-air, in a void, limbs spread so that nothing touches anything. Eyes covered by nothing but seeing nothing, since there is nothing to see. No sound, no smell, no pressure, not even the touch of their own side. Every channel silent from the first instant, so that no memory of any sensation exists either." },
+      { say: "Avicenna: Now the question. Does this person know anything at all?",
+        choices: [
+          { tag: "exists", text: "They would know that they exist.",
+            reply: ["Avicenna: They would affirm it without hesitation, and notice what is absent from the affirmation. No limb, no organ, no place, no body enters into it. The self is affirmed before and without any of them. What a person grasps first and cannot fail to grasp is not a body, and that is what I built the case to show."] },
+          { tag: "nothing", text: "Nothing. A mind with no input is blank.",
+            reply: ["Avicenna: The senses are silent, and yet something is there for which they are silent. Run the case honestly. The person cannot doubt that they are, even while they can affirm nothing else. If you say the affirming would not happen, you have changed my case, because I gave the person a working mind, and awareness of self is what a working mind cannot lack."] }
+        ] },
+      { note: true, say: "The suspended person, often called the flying man, appears in Avicenna's Book of the Healing and again in his later works, offered as a pointer to the soul's direct awareness of itself. The Latin translation of his psychology was read in Europe for centuries. Descartes reached a similar landing point in 1641 by the method of doubt you walked in the stove-heated room. Whether Descartes knew the flying man is debated, and the resemblance is discussed either way." }
     ], () => {
-      openPrompt("push", () => {
+      openPrompt("flying", () => {
         startDlg([
-          { say: "Whichever you chose, notice what making the choice was like this time, and whether anything besides the numbers weighed on it." }
+          { say: "A student at the table raises the objection that has followed the case ever since. Student: Master, I do not notice my liver, and my liver is part of me all the same. The suspended person does not notice a body. It does not follow that they are not one." },
+          { say: "Avicenna: A fair blade, and here is my parry. Your liver is something you have and can fail to notice. The self is not had, it is what does the having. The case does not turn on failing to notice a thing. It turns on what remains when everything noticeable is removed, and something does remain, and it is the one doing the remaining.",
+            choices: [
+              { tag: "satisfied", text: "That answers the student.",
+                reply: ["Student: It answers half, traveler. The master has shown that self-awareness needs no report from the body. Whether the self that is aware is a separate thing from the body, or the body aware of itself in an unusual way, the case has not yet settled, and I intend to keep my post at this table until it does."] },
+              { tag: "unsatisfied", text: "It renames the problem rather than solving it.",
+                reply: ["Avicenna: Then let us keep the smaller prize and argue for the larger one tomorrow. The smaller prize is not small. Awareness of self is direct, prior to every report of the senses, and no account of a person may leave it out. Even my opponents spend it the moment they say I."] }
+            ] }
         ], () => {
-          openPrompt("asymmetry", () => {
+          openPrompt("shows", () => {
             startDlg([
-              { note: true, say: "One well known analysis uses the doctrine of double effect, an idea that goes back to Aquinas. It says harm you intend as your means is worse than the same harm you only foresee." },
-    { say: "Test it here. At the lever, if the one worker scrambled clear, your plan still works. On the bridge, if the man is never struck, the five die. The trolley must hit him for the plan to work." }
+              { say: "Avicenna: One more thing before the lamp burns down, since you came by way of the deer park. The Buddha's instruction was to look and find no self. Mine is to strip everything away and find nothing else. We cannot both be reporting the same search correctly, so something else is happening, and the something else is worth a stage of thought on its own." }
             ], () => {
-              openPrompt("intention", () => {
+              openPrompt("deerpark", () => {
                 startDlg([
-                  { say: "Below, it is over one way or another, and the road goes on. Situations like this one do not look like philosophy while they are happening. They demand a decision, and leave you to work out afterward what your answer committed you to." }
+                  { say: "Toward dawn the dictation resumes behind you. The next stop stands back down the road in Baghdad, where a professor at the height of his fame is about to turn on philosophy itself, with an argument about fire and cotton." }
                 ], () => {
-                  openPrompt("consistency", () => endGame());
+                  openPrompt("final", () => endGame());
                 });
               });
             });
@@ -496,13 +508,14 @@ function runScene() {
       });
     });
   });
+
 }
 
 /* =========================================================
    End screen, quiz, and report
    ========================================================= */
 function endGame() {
-  try { localStorage.setItem("phil_map_footbridge", "1"); } catch (err) { /* storage is optional */ }
+  try { localStorage.setItem("phil_map_avicenna", "1"); } catch (err) { /* storage is optional */ }
   const summary = document.getElementById("reflectionSummary");
   summary.innerHTML = "";
   reflectionLog.forEach(r => {
@@ -548,8 +561,8 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const d1 = document.getElementById("discussion1").value.trim();
   const d2 = document.getElementById("discussion2").value.trim();
   const d3 = document.getElementById("discussion3").value.trim();
-  let text = "The Bridge Crossing, Report\n";
-  text += "===========================\n\nResponses at each stage:\n";
+  let text = "Avicenna's Flying Man, Report\n";
+  text += "=======================\n\nResponses at each stage:\n";
   reflectionLog.forEach(r => {
     text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
     if (r.choice) text += "Choice: " + r.choice + "\n";
@@ -557,12 +570,10 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
     text += "-".repeat(50);
   });
   text += "\n\nThe pair of answers:\n";
-  text += "At the lever: " + (record.lever || "(none)") + "\n";
-  text += "On the bridge: " + (record.bridge || "(none)") + "\n";
   text += "\nDiscussion questions:\n";
-  text += "1. A third variant isolating one difference.\n" + (d1 || "(no answer)") + "\n\n";
-  text += "2. Encoding answers before the emergency.\n" + (d2 || "(no answer)") + "\n\n";
-  text += "3. Different answers without a principle.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "1. Repairing the flying man.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Two routes to one certainty.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. Making introspective appeals answerable.\n" + (d3 || "(no answer)") + "\n\n";
   text += "Quiz:\n";
   if (quizScore) {
     quizScore.answers.forEach((ans, i) => {
@@ -575,7 +586,7 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const blob = new Blob([text], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = "Bridge_Crossing_Report.txt"; a.click();
+  a.href = url; a.download = "Flying_Man_Report.txt"; a.click();
   URL.revokeObjectURL(url);
 });
 document.getElementById("restartBtn").addEventListener("click", () => location.reload());
@@ -594,81 +605,85 @@ function drawFigure(x, y, s, color) {
   ctx.fillRect(1, -11, 4, 11);
   ctx.restore();
 }
+function drawSitter(x, y, s, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(s, s);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -26, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -20, 12, 14);
+  ctx.fillRect(-9, -6, 18, 5);
+  ctx.restore();
+}
 function render() {
   ctx.clearRect(0, 0, W, H);
-  // Dusk sky.
-  const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, "#232338");
-  sky.addColorStop(0.6, "#3c3450");
-  sky.addColorStop(1, "#584458");
-  ctx.fillStyle = sky;
+  // A night room in Hamadan.
+  ctx.fillStyle = "#141220";
   ctx.fillRect(0, 0, W, H);
-  // Mountains behind.
-  ctx.fillStyle = "rgba(40,40,58,0.9)";
-  ctx.beginPath();
-  ctx.moveTo(0, 240); ctx.lineTo(160, 110); ctx.lineTo(300, 220); ctx.lineTo(470, 90);
-  ctx.lineTo(650, 210); ctx.lineTo(800, 130); ctx.lineTo(900, 200); ctx.lineTo(900, 500); ctx.lineTo(0, 500);
-  ctx.closePath(); ctx.fill();
-  // The gorge walls.
-  ctx.fillStyle = "#2c2c3c";
-  ctx.fillRect(0, 300, 240, 200);
-  ctx.fillRect(660, 300, 240, 200);
-  ctx.fillStyle = "#242432";
-  ctx.beginPath();
-  ctx.moveTo(240, 300); ctx.lineTo(240, 500); ctx.lineTo(300, 500); ctx.closePath(); ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(660, 300); ctx.lineTo(660, 500); ctx.lineTo(600, 500); ctx.closePath(); ctx.fill();
-  // The rail line along the gorge floor.
-  ctx.strokeStyle = "#8b95a5";
-  ctx.lineWidth = 4;
-  [448, 466].forEach(ry => {
-    ctx.beginPath(); ctx.moveTo(0, ry); ctx.lineTo(900, ry); ctx.stroke();
-  });
-  ctx.strokeStyle = "#4a3c30";
-  for (let x = 10; x < 900; x += 30) {
-    ctx.beginPath(); ctx.moveTo(x, 442); ctx.lineTo(x, 472); ctx.stroke();
+  ctx.fillStyle = "#241f34";
+  ctx.fillRect(0, 60, W, 300);
+  // The window on the night sky.
+  ctx.fillStyle = "#0b0e1c";
+  ctx.fillRect(640, 96, 170, 180);
+  ctx.strokeStyle = "#5c4a34"; ctx.lineWidth = 6;
+  ctx.strokeRect(640, 96, 170, 180);
+  ctx.beginPath(); ctx.moveTo(725, 96); ctx.lineTo(725, 276); ctx.stroke();
+  ctx.fillStyle = "rgba(238,242,246,0.9)";
+  for (let i = 0; i < 16; i++) ctx.fillRect(652 + (i * 37) % 150, 108 + (i * 53) % 156, 1.6, 1.6);
+  // Shelves of manuscripts.
+  ctx.fillStyle = "#3a2e20";
+  ctx.fillRect(60, 100, 200, 220);
+  for (let r = 0; r < 4; r++) {
+    ctx.fillStyle = "#8a7450";
+    ctx.fillRect(66, 128 + r * 52, 188, 4);
+    for (let b = 0; b < 8; b++) {
+      ctx.fillStyle = ["#7c5a3a", "#5a6a4a", "#6a4a52", "#4a5a6a"][b % 4];
+      ctx.fillRect(72 + b * 23, 104 + r * 52, 18, 24);
+    }
   }
-  // The cutting with the five workers, right of the bridge.
-  ctx.fillStyle = "#242432";
-  ctx.fillRect(700, 396, 200, 44);
-  for (let i = 0; i < 5; i++) drawFigure(730 + i * 36, 452, 0.8, "#8fb7dd");
+  // The writing table and the lamp.
+  ctx.fillStyle = "#6a5a44";
+  ctx.fillRect(300, 330, 300, 14);
+  ctx.fillRect(316, 344, 12, 70); ctx.fillRect(572, 344, 12, 70);
+  ctx.fillStyle = "#e8e0cc";
+  ctx.fillRect(340, 318, 70, 12); ctx.fillRect(470, 320, 70, 10);
+  const lf = REDUCED_MOTION ? 0 : Math.sin(floatT * 6) * 1.5;
+  ctx.fillStyle = "#dfae5c";
+  ctx.beginPath(); ctx.arc(440, 308 + lf, 6, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#8a7450";
+  ctx.fillRect(432, 314, 16, 10);
+  const glow = ctx.createRadialGradient(440, 310, 6, 440, 310, 120);
+  glow.addColorStop(0, "rgba(223,174,92,0.18)");
+  glow.addColorStop(1, "rgba(223,174,92,0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(320, 190, 240, 240);
+  // Avicenna, a student with a tablet, and you.
+  drawFigure(340, 420, 1.1, "#8fb7dd");
+  drawSitter(540, 436, 1, "#5a7d8f");
+  drawSitter(450, 460, 1, "#5b84b1");
   ctx.fillStyle = "#eef2f6";
   ctx.font = "13px 'Segoe UI', sans-serif";
-  ctx.fillText("five workers", 748, 492);
-  // The footbridge across the gorge.
-  ctx.fillStyle = "#57503f";
-  ctx.fillRect(220, 262, 460, 14);
-  ctx.strokeStyle = "#57503f";
-  ctx.lineWidth = 5;
-  ctx.beginPath(); ctx.moveTo(220, 240); ctx.lineTo(680, 240); ctx.stroke();
-  for (let x = 240; x < 680; x += 44) {
-    ctx.beginPath(); ctx.moveTo(x, 240); ctx.lineTo(x, 262); ctx.stroke();
-  }
-  ctx.fillStyle = "#484236";
-  ctx.fillRect(206, 262, 18, 238);
-  ctx.fillRect(676, 262, 18, 238);
-  // You, and the large man at the railing.
-  drawFigure(392, 262, 1, "#5b84b1");
-  ctx.fillStyle = "#5a7d8f";
-  ctx.beginPath(); ctx.arc(470, 220, 10, 0, Math.PI * 2); ctx.fill();
-  ctx.fillRect(455, 228, 30, 30);
-  ctx.fillRect(457, 258, 10, 6);
-  ctx.fillRect(473, 258, 10, 6);
-  ctx.fillStyle = "#eef2f6";
-  ctx.fillText("you", 380, 292);
-  ctx.fillText("the large man", 428, 210);
-  // The trolley, rolling in on the line when the scene calls it.
-  if (trolleyOn) {
-    ctx.fillStyle = "#8f3b3b";
-    ctx.fillRect(trolleyX - 46, 408, 92, 40);
-    ctx.fillStyle = "#c9b98a";
-    ctx.fillRect(trolleyX - 36, 416, 24, 16);
-    ctx.fillRect(trolleyX + 6, 416, 24, 16);
-    ctx.fillStyle = "#1c1c26";
-    ctx.beginPath();
-    ctx.arc(trolleyX - 26, 452, 9, 0, Math.PI * 2);
-    ctx.arc(trolleyX + 26, 452, 9, 0, Math.PI * 2);
-    ctx.fill();
+  ctx.fillText("Avicenna", 310, 372);
+  ctx.fillText("a student", 512, 460);
+  ctx.fillText("you", 440, 484);
+  // The imagined suspended person, sketched in the air once posed.
+  if (flyOn) {
+    const bob = REDUCED_MOTION ? 0 : Math.sin(floatT * 1.4) * 5;
+    const px = 640, py = 380 + bob;
+    ctx.strokeStyle = "rgba(169,195,221,0.4)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.ellipse(px, py - 10, 74, 54, 0, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = "rgba(169,195,221,0.9)";
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(px, py - 34, 8, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px, py - 26); ctx.lineTo(px, py - 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px, py - 22); ctx.lineTo(px - 22, py - 34); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px, py - 22); ctx.lineTo(px + 22, py - 34); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px, py - 4); ctx.lineTo(px - 18, py + 14); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px, py - 4); ctx.lineTo(px + 18, py + 14); ctx.stroke();
+    ctx.fillStyle = "rgba(238,242,246,0.75)";
+    ctx.font = "12px 'Segoe UI', sans-serif";
+    ctx.fillText("the suspended person, imagined", px - 84, py + 44);
   }
   if (!started) {
     ctx.fillStyle = "rgba(16,16,22,0.55)";
@@ -676,7 +691,7 @@ function render() {
     ctx.fillStyle = "#f0f0f5";
     ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
     ctx.textAlign = "center";
-    ctx.fillText("The Bridge Crossing", W / 2, H / 2 - 12);
+    ctx.fillText("Avicenna's Flying Man", W / 2, H / 2 - 12);
     ctx.font = "15px 'Segoe UI', sans-serif";
     ctx.fillStyle = "#a9a9bc";
     ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
@@ -691,9 +706,8 @@ let last = performance.now();
 function update(dt) {
   if (typeof tickStatus === "function") tickStatus();
   t += dt;
-  if (trolleyOn && !paused) {
-    trolleyX = Math.min(trolleyX + (REDUCED_MOTION ? 20 : 60) * dt, 250);
-  }
+  floatT += dt;
+
 }
 function loop(now) {
   const dt = Math.min((now - last) / 1000, 0.05);

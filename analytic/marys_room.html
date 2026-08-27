@@ -194,7 +194,7 @@ textarea{
 <div id="endScreen">
   <div class="wrap">
     <h1>Activity completed</h1>
-    <p id="nextStop">The Analytic Room holds two more stops, in preparation.</p>
+    <p id="nextStop">The journey continues from the world map.</p>
 
     <div class="section-box">
       <h3>Your responses at each stage</h3>
@@ -268,7 +268,7 @@ const prompts = {
   },
   replies: {
     title: "Stage 3: The three replies",
-    text: "Three answers are on the table. The ability reply says she gains know-how rather than a fact. The acquaintance reply says she meets something she already knew about. The old fact new guise reply says one fact can be grasped in two ways. Which does the most work?",
+    text: "Philosophers give three standard replies. The ability reply says she gains know-how rather than a fact. The acquaintance reply says she meets something she already knew about. The old fact new guise reply says one fact can be grasped in two ways. Which does the most work?",
     mcq: ["The ability reply, since knowing how is not knowing that", "The acquaintance reply, since meeting is not learning", "The old fact in a new guise, since it keeps every fact physical", "None of them, since each renames the difficulty"],
     requireText: true
   },
@@ -597,7 +597,7 @@ function dlgBeat2() {
           reply: ["Researcher: Then you owe an account of the feeling, since it is very strong and very general. Say what is happening if not learning, and you are already giving one of the standard replies."] }
       ] },
     { close: false,
-      say: "Researcher: That is the whole argument. Mary knows all the physical facts. Mary learns something on leaving. Therefore not all facts are physical. Three lines, and forty years of literature." },
+      say: "Researcher: That is the whole argument. Mary knows all the physical facts. Mary learns something on leaving. Therefore not all facts are physical. The argument takes three lines, and the literature answering it now runs to forty years." },
     { note: true, say: "Jackson's target was physicalism, the view that everything is physical. The argument's form is simple enough that most of the debate is about which premise to deny, and the answers have divided philosophers of mind ever since." }
   ], () => {
     openPrompt("learns", () => {

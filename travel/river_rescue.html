@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Bridge Crossing</title>
+<title>The Rescue and the Promise</title>
 <style>
 :root{
   --page:#131318;
@@ -117,9 +117,9 @@ textarea{
 
 <header class="wrap">
   <div class="about-wrap">
-    <h1>The Bridge Crossing</h1>
+    <h1>The Rescue and the Promise</h1>
     <p class="about-cue">What this activity covers</p>
-    <div class="about" id="aboutText"><p>A mountain pass on the road between regions, at dusk. This is a situation on the road. It was not on your itinerary, and it will not wait for a convenient moment. Below the footbridge runs a rail line, and something is wrong on it. You faced a version of this once before, at a lever, in the prologue. This version is harder, and the difference between the two versions is what this activity examines. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+    <div class="about" id="aboutText"><p>A river ford on the road east, late in the day, past Baghdad. This is a situation on the road. You gave your word this morning to be somewhere by sundown, and something at the ford is about to make the promise expensive. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
   </div>
 </header>
 
@@ -165,7 +165,7 @@ textarea{
 <div id="endScreen">
   <div class="wrap">
     <h1>Activity completed</h1>
-    <p id="nextStop">The road continues where it was going. The world map remembers this crossing.</p>
+    <p id="nextStop">The road continues toward India. The world map remembers the ford.</p>
 
     <div class="section-box">
       <h3>Your responses at each stage</h3>
@@ -174,30 +174,30 @@ textarea{
 
     <div class="section-box">
       <h3>Discussion questions</h3>
-      <p>1. Design a third variant of the situation that isolates exactly one difference from the footbridge, physical contact, intention, or the use of a person as a means, and predict how people would answer it.</p>
+      <p>1. Construct a version of this case where the promise should win. Adjust what was promised, to whom, and what the help would cost, until keeping the promise is the right answer, and say which adjustment did the work.</p>
       <textarea id="discussion1"></textarea>
-      <p>2. Self-driving vehicles, triage protocols, and military targeting rules all encode answers to cases like these in advance. Should such answers be written down before the emergency, and by whom?</p>
+      <p>2. A rule-based view holds that some duties admit no exceptions. A single-principle view holds that one master principle does all the weighing. Say how each would handle the ford, and where Ross differs from both.</p>
       <textarea id="discussion2"></textarea>
-      <p>3. Suppose someone answers the lever and the footbridge differently and cannot state a principle that separates them. Is that a defect in their reasoning, or evidence that morality does not reduce to statable principles?</p>
+      <p>3. The near-universal agreement on this case is a fact that needs explaining. Give the best explanation you can that does not treat the rescue as the correct answer, and then say whether your explanation convinces you.</p>
       <textarea id="discussion3"></textarea>
     </div>
 
     <div class="section-box" id="quizSection">
       <h3>Quiz</h3>
-      <p><strong>1.</strong> Across many surveys, most people say</p>
-      <label><input type="radio" name="q1" value="Pull the lever, but do not push the man"> pull the lever, but do not push the man</label>
-      <label><input type="radio" name="q1" value="Push the man, but do not pull the lever"> push the man, but do not pull the lever</label>
-      <label><input type="radio" name="q1" value="The same thing in both cases"> the same thing in both cases</label>
+      <p><strong>1.</strong> Ross's name for duties that bind unless outweighed by another duty is</p>
+      <label><input type="radio" name="q1" value="Prima facie duties"> prima facie duties</label>
+      <label><input type="radio" name="q1" value="Categorical imperatives"> categorical imperatives</label>
+      <label><input type="radio" name="q1" value="Hypothetical duties"> hypothetical duties</label>
 
-      <p><strong>2.</strong> The doctrine of double effect distinguishes</p>
-      <label><input type="radio" name="q2" value="Harm intended as a means from harm foreseen as a side effect"> harm intended as a means from harm foreseen as a side effect</label>
-      <label><input type="radio" name="q2" value="Harm to strangers from harm to friends"> harm to strangers from harm to friends</label>
-      <label><input type="radio" name="q2" value="Action from inaction in every case"> action from inaction in every case</label>
+      <p><strong>2.</strong> On Ross's account, a promise rightly broken to save a life</p>
+      <label><input type="radio" name="q2" value="Still leaves a duty of explanation and repair"> still leaves a duty of explanation and repair</label>
+      <label><input type="radio" name="q2" value="Turns out never to have been a duty"> turns out never to have been a duty</label>
+      <label><input type="radio" name="q2" value="Must be kept doubly next time"> must be kept doubly next time</label>
 
-      <p><strong>3.</strong> In the footbridge case, the large man's death is</p>
-      <label><input type="radio" name="q3" value="The means by which the five are saved"> the means by which the five are saved</label>
-      <label><input type="radio" name="q3" value="A side effect of redirecting the threat"> a side effect of redirecting the threat</label>
-      <label><input type="radio" name="q3" value="Unrelated to whether the five are saved"> unrelated to whether the five are saved</label>
+      <p><strong>3.</strong> In this case, most people judge that</p>
+      <label><input type="radio" name="q3" value="The rescue outweighs the promise"> the rescue outweighs the promise</label>
+      <label><input type="radio" name="q3" value="The promise outweighs the rescue"> the promise outweighs the rescue</label>
+      <label><input type="radio" name="q3" value="The two duties weigh exactly the same"> the two duties weigh exactly the same</label>
 
       <p><button id="gradeBtn">Grade the quiz</button></p>
       <p id="quizResult"></p>
@@ -213,49 +213,49 @@ textarea{
 
 <script>
 "use strict";
-const ACTIVITY_KEY = "phil_map_footbridge";
+const ACTIVITY_KEY = "phil_map_rescue";
 
 /* =========================================================
    Prompts, quiz key, and log
    ========================================================= */
 const prompts = {
   first: {
-    title: "Stage 0: Your answer at the lever",
-    text: "At the prologue you stood at a lever: divert the trolley and one person dies instead of five. Before this situation unfolds, record what you chose there, or would choose now.",
-    mcq: ["I pulled it, one death instead of five", "I did not pull it", "Not sure, but I would pull it now", "Not sure, but I would not pull it now"],
-    requireText: true
+    title: "Stage 0: The promise",
+    text: "This morning you gave your word. A friend from the caravan has a place waiting with a merchant house in the next town. The merchant will hold it only until sundown, and only if the person the friend named stands there to vouch for them. You are the person they named. How binding is a promise?",
+    mcq: ["Binding unless keeping it would cost something much worse", "Binding without exception, that is what giving your word means", "A useful custom rather than a real obligation", "It depends entirely on what was promised"],
+    requireText: false
   },
-  push: {
-    title: "Stage 1: The bridge",
-    text: "The numbers are the lever's numbers: one life against five. The only difference is what you would have to do. Record your decision.",
-    mcq: ["I push him, five lives outweigh one", "I do not push him, this feels different", "I do neither, here or at the lever", "I cannot decide"],
-    requireText: true
+  choice: {
+    title: "Stage 1: At the ford",
+    text: "A stranger is in the river, past their footing, going under. Wading in will save them, and it will spend the last hour of light. Arrive after sundown and the friend's place is gone. Record what you do.",
+    mcq: ["I go into the water", "I keep walking, my word is given", "I shout for other help while keeping to the road", "I cannot decide"],
+    requireText: false
   },
-  asymmetry: {
-    title: "Stage 2: The asymmetry",
-    text: "Across many studies, most people pull the lever and refuse to push, though the arithmetic is identical. If the majority is responding to a real difference, what is that difference?",
-    mcq: ["Touching someone is different from pulling a switch", "On the bridge, his body is the tool that stops it", "Nothing real, people are just inconsistent", "The lever answer was wrong too"],
-    requireText: true
+  easy: {
+    title: "Stage 2: Why this case is easy",
+    text: "At the footbridge, people divide and argue. Here almost everyone answers at once, and answers the same way. Two real duties conflict, keeping a promise and saving a life, and one plainly outweighs the other. What does the ease of the case show?",
+    mcq: ["Duties can be weighed against each other even without a formula", "Life outranks every other duty as a fixed rule", "The promise was never a real duty at all", "Nothing, an easy case teaches less than a hard one"],
+    requireText: false
   },
-  intention: {
-    title: "Stage 3: Intending and foreseeing",
-    text: "The doctrine of double effect says harm you intend as your means is worse than the same harm foreseen as a side effect. At the lever, if the one person somehow survived, your plan still works. On the bridge, if the man survives untouched by the trolley, your plan has failed. Does that difference carry moral weight?",
-    mcq: ["Yes, what you aim at is what you do", "Some, but the result matters more", "No, it is a trick that excuses the lever", "It matters in law and practice, whatever theory says"],
-    requireText: true
+  residue: {
+    title: "Stage 3: What is left of the promise",
+    text: "W. D. Ross argued that both duties are real. He called them prima facie duties, each binding unless outweighed by another. On his account the outweighed promise does not vanish. It leaves a remainder. You owe the friend the truth of what happened, and repair if repair can be made. Does that match the case as you feel it?",
+    mcq: ["Yes, I would owe the friend something afterward", "No, a justified act leaves no debt behind", "An explanation is owed, but not repair", "Nothing is owed, but offering repair would still be decent"],
+    requireText: false
   },
-  consistency: {
-    title: "Stage 4: Your two answers",
-    text: "Set your lever answer beside your bridge answer. Are they consistent? If they are, state the principle that covers both. If they are not, say which answer you would change, or defend keeping both without a principle.",
+  final: {
+    title: "Stage 4: What the agreement shows",
+    text: "Nearly everyone, from nearly every place and tradition, answers this case the same way. If moral judgments were nothing but individual taste, that agreement would be surprising. State what you think the agreement shows about moral claims, and then describe one real conflict of duties from your own life and how you weighed it.",
     mcq: null,
     requireText: true,
-    textHint: "The principle, the change, or the defense."
+    textHint: "What the agreement shows, then your own case."
   }
 };
 
 const quizKeys = [
-  "Pull the lever, but do not push the man",
-  "Harm intended as a means from harm foreseen as a side effect",
-  "The means by which the five are saved"
+  "Prima facie duties",
+  "Still leaves a duty of explanation and repair",
+  "The rescue outweighs the promise"
 ];
 
 let reflectionLog = [];
@@ -286,9 +286,10 @@ const W = 900, H = 500;
 let started = false;
 let paused = false;
 let t = 0;
-let trolleyOn = false;
-let trolleyX = -80;
-const record = { lever: null, bridge: null };
+let swimmerOn = false;
+let savedOn = false;
+let sunT = 0;
+
 
 /* =========================================================
    Narration and the modal
@@ -364,7 +365,8 @@ function continueDlg() {
     if (window.speechSynthesis) speechSynthesis.cancel();
     if (cb) cb();
   } else {
-    if (dlg.steps[dlg.i].trolley) trolleyOn = true;
+    if (dlg.steps[dlg.i].swimmer) swimmerOn = true;
+    if (dlg.steps[dlg.i].saved) { swimmerOn = false; savedOn = true; }
     renderDlg();
   }
 }
@@ -451,8 +453,6 @@ submitBtn.addEventListener("click", () => {
     choice: p.mcq ? (sel ? sel.value : null) : null,
     response: modalText.value.trim()
   });
-  if (activePrompt.key === "first" && sel) record.lever = sel.value;
-  if (activePrompt.key === "push" && sel) record.bridge = sel.value;
   if (window.speechSynthesis) speechSynthesis.cancel();
   overlay.classList.remove("open");
   paused = false;
@@ -469,25 +469,31 @@ function setObjective(txt) { objectiveEl.textContent = txt; }
 function runScene() {
   openPrompt("first", () => {
     startDlg([
-      { say: "The pass road crosses a gorge on a footbridge, and the rail line runs through the gorge below. You are halfway across when you hear it: a runaway trolley, brakes gone, coming down the grade. Further along the line, five workers are in a cutting with their backs to it, and the walls of the cutting leave them nowhere to go.", trolley: false },
-      { trolley: true, say: "There is no lever here. There is no side track. There is only one thing on this bridge heavy enough to stop a trolley, and it is not you." },
-    { say: "A very large man stands at the railing beside you, looking down at the line, unaware. If he falls onto the track, the trolley stops, and he dies, and the five live. You would have to push him." },
-      { note: true, say: "This is the footbridge case, introduced by Judith Jarvis Thomson in 1976, building on Philippa Foot's original trolley problem of 1967. The numbers are identical to the lever case on purpose: one life against five. Everything that differs is in what the one who acts must do." }
+      { say: "The road runs beside the river for a while and then crosses it at a ford, marked by a line of standing stones. The sun is low. By your reckoning the town is an hour ahead, which is exactly the hour there is." },
+      { swimmer: true, say: "From the water, downstream of the stones, comes a sound you take a moment to place. A traveler has been swept off the crossing. Their bundle is floating away from them, and they are not swimming. They are going under and coming up." },
+      { say: "The river is not too deep for you, and there is still time to reach them, and doing it will spend the sunset hour. There is no one else on the road in either direction." }
     ], () => {
-      openPrompt("push", () => {
+      openPrompt("choice", () => {
         startDlg([
-          { say: "Whichever you chose, notice what making the choice was like this time, and whether anything besides the numbers weighed on it." }
+          { saved: true, say: "However you answered, the recorded fact about this case is its lopsidedness. Across surveys and traditions, people who disagree about almost everything else in ethics give the same answer at this ford, and give it at once." },
+          { note: true, say: "The case is adapted from W. D. Ross, an Oxford philosopher writing in 1930. His own example was a person who has promised to meet a friend for some minor purpose, and who is plainly justified in breaking the engagement to prevent a serious accident. Ross used it to argue that we hold several distinct duties at the same time, none of them absolute, each binding unless outweighed." }
         ], () => {
-          openPrompt("asymmetry", () => {
+          openPrompt("easy", () => {
             startDlg([
-              { note: true, say: "One well known analysis uses the doctrine of double effect, an idea that goes back to Aquinas. It says harm you intend as your means is worse than the same harm you only foresee." },
-    { say: "Test it here. At the lever, if the one worker scrambled clear, your plan still works. On the bridge, if the man is never struck, the five die. The trolley must hit him for the plan to work." }
+              { say: "You reach the town after dark, with wet clothes and a stranger walking beside you. Your friend is at the gate, and the merchant's shutters are closed. Before you say anything, they look at the two of you and understand most of it.",
+                choices: [
+                  { tag: "repair", text: "Tell the whole of it and offer to make it right.",
+                    reply: ["Friend: Then you will stand with me tomorrow when I ask the merchant to reconsider, and if he will not, you will help me find another place. That is fair. You chose right at the river, and you still owe me the asking."] },
+                  { tag: "settled", text: "Say that the rescue settles it and nothing further is owed.",
+                    reply: ["Friend: The rescue was right. But notice what you are claiming, that a broken promise leaves nothing behind when the breaking is justified. If that were true, what is it I am forgiving you for?"] }
+                ] },
+              { note: true, say: "Ross named the duties he thought we plainly hold. Fidelity, keeping faith with what we have said. Reparation, repairing wrongs we have done. Gratitude. Justice. Beneficence, which is helping. Self-improvement. Non-maleficence, which is not harming. When they conflict, judgment weighs them, and Ross held that no formula replaces the weighing." }
             ], () => {
-              openPrompt("intention", () => {
+              openPrompt("residue", () => {
                 startDlg([
-                  { say: "Below, it is over one way or another, and the road goes on. Situations like this one do not look like philosophy while they are happening. They demand a decision, and leave you to work out afterward what your answer committed you to." }
+                  { say: "In the morning the merchant, hearing the story from three directions, reopens the place on the condition that you vouch today instead. Cases do not always end this well, and the philosophy did not depend on it ending well. The weighing at the ford, and what the outweighed promise left behind, would have been the same." }
                 ], () => {
-                  openPrompt("consistency", () => endGame());
+                  openPrompt("final", () => endGame());
                 });
               });
             });
@@ -496,13 +502,14 @@ function runScene() {
       });
     });
   });
+
 }
 
 /* =========================================================
    End screen, quiz, and report
    ========================================================= */
 function endGame() {
-  try { localStorage.setItem("phil_map_footbridge", "1"); } catch (err) { /* storage is optional */ }
+  try { localStorage.setItem("phil_map_rescue", "1"); } catch (err) { /* storage is optional */ }
   const summary = document.getElementById("reflectionSummary");
   summary.innerHTML = "";
   reflectionLog.forEach(r => {
@@ -548,8 +555,8 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const d1 = document.getElementById("discussion1").value.trim();
   const d2 = document.getElementById("discussion2").value.trim();
   const d3 = document.getElementById("discussion3").value.trim();
-  let text = "The Bridge Crossing, Report\n";
-  text += "===========================\n\nResponses at each stage:\n";
+  let text = "The Rescue and the Promise, Report\n";
+  text += "============================\n\nResponses at each stage:\n";
   reflectionLog.forEach(r => {
     text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
     if (r.choice) text += "Choice: " + r.choice + "\n";
@@ -557,12 +564,10 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
     text += "-".repeat(50);
   });
   text += "\n\nThe pair of answers:\n";
-  text += "At the lever: " + (record.lever || "(none)") + "\n";
-  text += "On the bridge: " + (record.bridge || "(none)") + "\n";
   text += "\nDiscussion questions:\n";
-  text += "1. A third variant isolating one difference.\n" + (d1 || "(no answer)") + "\n\n";
-  text += "2. Encoding answers before the emergency.\n" + (d2 || "(no answer)") + "\n\n";
-  text += "3. Different answers without a principle.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "1. A version where the promise wins.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Rules, one principle, and Ross.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. Explaining the agreement.\n" + (d3 || "(no answer)") + "\n\n";
   text += "Quiz:\n";
   if (quizScore) {
     quizScore.answers.forEach((ans, i) => {
@@ -575,7 +580,7 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const blob = new Blob([text], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = "Bridge_Crossing_Report.txt"; a.click();
+  a.href = url; a.download = "Rescue_and_Promise_Report.txt"; a.click();
   URL.revokeObjectURL(url);
 });
 document.getElementById("restartBtn").addEventListener("click", () => location.reload());
@@ -596,79 +601,87 @@ function drawFigure(x, y, s, color) {
 }
 function render() {
   ctx.clearRect(0, 0, W, H);
-  // Dusk sky.
+  // Late-day sky, warming as the sun drops.
+  const drop = Math.min(sunT * 1.2, 34);
   const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, "#232338");
-  sky.addColorStop(0.6, "#3c3450");
-  sky.addColorStop(1, "#584458");
+  sky.addColorStop(0, "#3b3f63");
+  sky.addColorStop(0.55, "#7a5a68");
+  sky.addColorStop(1, "#c08a5a");
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, W, H);
-  // Mountains behind.
-  ctx.fillStyle = "rgba(40,40,58,0.9)";
-  ctx.beginPath();
-  ctx.moveTo(0, 240); ctx.lineTo(160, 110); ctx.lineTo(300, 220); ctx.lineTo(470, 90);
-  ctx.lineTo(650, 210); ctx.lineTo(800, 130); ctx.lineTo(900, 200); ctx.lineTo(900, 500); ctx.lineTo(0, 500);
-  ctx.closePath(); ctx.fill();
-  // The gorge walls.
-  ctx.fillStyle = "#2c2c3c";
-  ctx.fillRect(0, 300, 240, 200);
-  ctx.fillRect(660, 300, 240, 200);
-  ctx.fillStyle = "#242432";
-  ctx.beginPath();
-  ctx.moveTo(240, 300); ctx.lineTo(240, 500); ctx.lineTo(300, 500); ctx.closePath(); ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(660, 300); ctx.lineTo(660, 500); ctx.lineTo(600, 500); ctx.closePath(); ctx.fill();
-  // The rail line along the gorge floor.
-  ctx.strokeStyle = "#8b95a5";
-  ctx.lineWidth = 4;
-  [448, 466].forEach(ry => {
-    ctx.beginPath(); ctx.moveTo(0, ry); ctx.lineTo(900, ry); ctx.stroke();
-  });
-  ctx.strokeStyle = "#4a3c30";
-  for (let x = 10; x < 900; x += 30) {
-    ctx.beginPath(); ctx.moveTo(x, 442); ctx.lineTo(x, 472); ctx.stroke();
-  }
-  // The cutting with the five workers, right of the bridge.
-  ctx.fillStyle = "#242432";
-  ctx.fillRect(700, 396, 200, 44);
-  for (let i = 0; i < 5; i++) drawFigure(730 + i * 36, 452, 0.8, "#8fb7dd");
+  // The sun, low over the water upstream.
+  ctx.fillStyle = "#e8c27a";
+  ctx.beginPath(); ctx.arc(120, 208 + drop, 26, 0, Math.PI * 2); ctx.fill();
+  // Far bank and a town on the horizon to the east.
+  ctx.fillStyle = "#4a4258";
+  ctx.fillRect(0, 236, W, 30);
+  ctx.fillStyle = "#3c3650";
+  ctx.fillRect(760, 200, 22, 36); ctx.fillRect(790, 190, 16, 46);
+  ctx.fillRect(812, 206, 26, 30); ctx.fillRect(846, 196, 14, 40);
   ctx.fillStyle = "#eef2f6";
   ctx.font = "13px 'Segoe UI', sans-serif";
-  ctx.fillText("five workers", 748, 492);
-  // The footbridge across the gorge.
-  ctx.fillStyle = "#57503f";
-  ctx.fillRect(220, 262, 460, 14);
-  ctx.strokeStyle = "#57503f";
-  ctx.lineWidth = 5;
-  ctx.beginPath(); ctx.moveTo(220, 240); ctx.lineTo(680, 240); ctx.stroke();
-  for (let x = 240; x < 680; x += 44) {
-    ctx.beginPath(); ctx.moveTo(x, 240); ctx.lineTo(x, 262); ctx.stroke();
+  ctx.fillText("the town, an hour east", 736, 182);
+  // The river, crossing the whole view.
+  const water = ctx.createLinearGradient(0, 266, 0, 420);
+  water.addColorStop(0, "#38506b");
+  water.addColorStop(1, "#2a3c53");
+  ctx.fillStyle = water;
+  ctx.fillRect(0, 266, W, 154);
+  // Moving ripples.
+  ctx.strokeStyle = "rgba(238,242,246,0.25)";
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 8; i++) {
+    const ry = 286 + i * 17;
+    const off = REDUCED_MOTION ? 0 : (sunT * 26 + i * 40) % 80;
+    for (let x = -80 + off; x < W; x += 80) {
+      ctx.beginPath(); ctx.moveTo(x, ry); ctx.quadraticCurveTo(x + 14, ry - 4, x + 28, ry); ctx.stroke();
+    }
   }
-  ctx.fillStyle = "#484236";
-  ctx.fillRect(206, 262, 18, 238);
-  ctx.fillRect(676, 262, 18, 238);
-  // You, and the large man at the railing.
-  drawFigure(392, 262, 1, "#5b84b1");
-  ctx.fillStyle = "#5a7d8f";
-  ctx.beginPath(); ctx.arc(470, 220, 10, 0, Math.PI * 2); ctx.fill();
-  ctx.fillRect(455, 228, 30, 30);
-  ctx.fillRect(457, 258, 10, 6);
-  ctx.fillRect(473, 258, 10, 6);
-  ctx.fillStyle = "#eef2f6";
-  ctx.fillText("you", 380, 292);
-  ctx.fillText("the large man", 428, 210);
-  // The trolley, rolling in on the line when the scene calls it.
-  if (trolleyOn) {
-    ctx.fillStyle = "#8f3b3b";
-    ctx.fillRect(trolleyX - 46, 408, 92, 40);
-    ctx.fillStyle = "#c9b98a";
-    ctx.fillRect(trolleyX - 36, 416, 24, 16);
-    ctx.fillRect(trolleyX + 6, 416, 24, 16);
-    ctx.fillStyle = "#1c1c26";
+  // The ford: a line of standing stones.
+  ctx.fillStyle = "#8b8577";
+  for (let i = 0; i < 9; i++) {
     ctx.beginPath();
-    ctx.arc(trolleyX - 26, 452, 9, 0, Math.PI * 2);
-    ctx.arc(trolleyX + 26, 452, 9, 0, Math.PI * 2);
+    ctx.ellipse(330 + i * 30, 322 + (i % 2) * 6, 12, 8, 0, 0, Math.PI * 2);
     ctx.fill();
+  }
+  // Near bank, the road, and reeds.
+  ctx.fillStyle = "#5c5344";
+  ctx.fillRect(0, 420, W, 80);
+  ctx.strokeStyle = "rgba(220,208,180,0.5)";
+  ctx.lineWidth = 14;
+  ctx.beginPath();
+  ctx.moveTo(-10, 470); ctx.quadraticCurveTo(320, 448, 470, 428);
+  ctx.quadraticCurveTo(640, 452, 910, 444);
+  ctx.stroke();
+  ctx.strokeStyle = "#3f6248";
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 14; i++) {
+    const rx = 30 + i * 18;
+    ctx.beginPath(); ctx.moveTo(rx, 424); ctx.lineTo(rx + 3, 398 - (i % 3) * 6); ctx.stroke();
+  }
+  // You, on the near bank at the ford.
+  drawFigure(470, 428, 1, "#5b84b1");
+  ctx.fillStyle = "#eef2f6";
+  ctx.fillText("you", 458, 452);
+  // The stranger in the water, bobbing, downstream of the stones.
+  if (swimmerOn) {
+    const bob = REDUCED_MOTION ? 0 : Math.sin(sunT * 4) * 6;
+    const sx = 640, sy = 352 + bob;
+    ctx.fillStyle = "#8fb7dd";
+    ctx.beginPath(); ctx.arc(sx, sy, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillRect(sx - 16, sy + 6, 10, 4);
+    ctx.fillRect(sx + 8, sy + 2, 10, 4);
+    ctx.fillStyle = "#6a5a40";
+    ctx.beginPath(); ctx.ellipse(sx + 60, sy + 10, 14, 7, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#eef2f6";
+    ctx.fillText("a traveler, going under", 560, 320);
+    ctx.fillText("their bundle", sx + 34, sy + 34);
+  }
+  // Afterward: both on the bank.
+  if (savedOn) {
+    drawFigure(540, 432, 1, "#8fb7dd");
+    ctx.fillStyle = "#eef2f6";
+    ctx.fillText("the stranger", 512, 456);
   }
   if (!started) {
     ctx.fillStyle = "rgba(16,16,22,0.55)";
@@ -676,7 +689,7 @@ function render() {
     ctx.fillStyle = "#f0f0f5";
     ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
     ctx.textAlign = "center";
-    ctx.fillText("The Bridge Crossing", W / 2, H / 2 - 12);
+    ctx.fillText("The Rescue and the Promise", W / 2, H / 2 - 12);
     ctx.font = "15px 'Segoe UI', sans-serif";
     ctx.fillStyle = "#a9a9bc";
     ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
@@ -691,9 +704,8 @@ let last = performance.now();
 function update(dt) {
   if (typeof tickStatus === "function") tickStatus();
   t += dt;
-  if (trolleyOn && !paused) {
-    trolleyX = Math.min(trolleyX + (REDUCED_MOTION ? 20 : 60) * dt, 250);
-  }
+  if (!paused) sunT = Math.min(sunT + dt, 40);
+
 }
 function loop(now) {
   const dt = Math.min((now - last) / 1000, 0.05);

@@ -194,7 +194,7 @@ textarea{
 <div id="endScreen">
   <div class="wrap">
     <h1>Activity completed</h1>
-    <p id="nextStop">The Continental Room holds two more stops, in preparation.</p>
+    <p id="nextStop">The journey continues from the world map.</p>
 
     <div class="section-box">
       <h3>Your responses at each stage</h3>
@@ -255,13 +255,13 @@ const prompts = {
     requireText: true
   },
   absurd: {
-    title: "Stage 1: Where the absurd lives",
+    title: "Stage 1: Defining the absurd",
     text: "Camus insists the absurd is not in the world and not in us, but in the meeting between the two. Take away either side and it disappears. Why does he make a point of that?",
     mcq: ["Because a silent universe alone is not absurd, and neither is a questioner alone", "Because it makes the problem ours rather than the world's fault", "Because it means the absurd could be ended by giving up the question", "Because it is a distinction without a difference"],
     requireText: true
   },
   leaps: {
-    title: "Stage 2: The two exits",
+    title: "Stage 2: Two responses rejected",
     text: "Camus rejects two ways out. One ends the questioner. The other, which he calls philosophical suicide, keeps the questioner and quietly drops the question, by deciding the answer must be there even though nothing shows it. Is the second really an evasion?",
     mcq: ["Yes, it takes back the honesty the argument began with", "No, believing beyond the evidence is a reasonable response to a real need", "It depends entirely on how honestly the leap is made", "Calling it suicide overstates the case"],
     requireText: true
@@ -584,7 +584,7 @@ function dlgBeat1() {
 function dlgBeat2() {
   flags.beat2Done = true;
   startDlg([
-    { say: "The road passes a low wall with the sea beyond it. Camus: Two people leave the room when the question arrives, and I want to look at both of them, because I intend to stay." },
+    { say: "The road passes a low wall with the sea beyond it. Camus: There are two ways people escape the question once it arrives, and I want to look at both of them, because I intend to refuse both." },
     { say: "Camus: The first ends the questioner. I take that seriously enough to open the book with it, and my whole essay is an argument that it does not follow. The gap is not a reason to stop." },
     { say: "Camus: The second is quieter and more common. A person keeps the question in view for a moment, finds the silence unbearable, and decides that meaning must be there behind it after all. Not because anything showed it. Because it is needed." },
     { say: "Camus: I call that philosophical suicide, and I mean the questioner survives while the question is quietly put down.",
@@ -634,7 +634,7 @@ function dlgBeat4() {
       choices: [
         { tag: "his", text: "Then the rock belongs to him rather than to the gods.",
           reply: ["Camus: That is the sentence I have been walking toward. His rock is his thing. The punishment they designed depends on him wanting it to end, and he has stopped."] },
-        { tag: "cold", text: "That sounds like consolation dressed as defiance.",
+        { tag: "cold", text: "That sounds like consolation presented as defiance.",
           reply: ["Camus: A fair suspicion, and the difference is that I am not promising him anything. The rock still rolls down. Nothing is fixed. What changes is that he has stopped waiting for it to be fixed."] }
       ] },
     { note: true, say: "The essay closes with the line that one must imagine Sisyphus happy. Camus does not argue that the punishment is good or that meaning is secretly present. His claim is narrower, that lucid acceptance without hope is available, and that it is enough to fill a life." }

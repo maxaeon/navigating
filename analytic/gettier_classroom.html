@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Knowledge, and Three Awkward Cases</title>
+<title>Knowledge and the Gettier Cases</title>
 <style>
 :root{
   --page:#12141d;
@@ -129,7 +129,7 @@ textarea{
 
 <header class="wrap">
   <div class="about-wrap">
-    <h1>Knowledge, and Three Awkward Cases</h1>
+    <h1>Knowledge and the Gettier Cases</h1>
     <p class="about-cue">What this activity covers</p>
     <div class="about" id="aboutText"><p>An empty seminar room, a definition that stood for two thousand years, and three examples that break it. Knowledge has long been analysed as justified true belief: you believe it, it is true, and you have good reason. In 1963 a three page paper showed that all three conditions can be met while the person plainly does not know, and philosophers have been patching the definition ever since. You will meet a stopped clock, a white rock that looks like a sheep, and a valley full of barn fronts left behind by a film crew, and then be asked to repair the definition yourself and break your own repair. Walk with the arrow keys, press E at each marked spot, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
   </div>
@@ -274,7 +274,7 @@ const prompts = {
   },
   fix: {
     title: "Stage 4: Repairing the definition",
-    text: "Three cases, one shape. True belief with a good reason, and the reason does not connect to what makes it true. Write your own repair to the definition of knowledge, then invent a case that would defeat your repair, or explain why you think none exists.",
+    text: "The three cases share one structure. True belief with a good reason, where the reason does not connect to what makes the belief true. Write your own repair to the definition of knowledge, then invent a case that would defeat your repair, or explain why you think none exists.",
     mcq: null,
     requireText: true,
     textHint: "Your fourth condition, and a case against it."
@@ -635,7 +635,7 @@ function dlgBeat3() {
 }
 function dlgClose() {
   startDlg([
-    { say: "Lecturer: So the definition is in trouble, and the trouble is one shape three times. True belief, held for a decent reason, where the reason and the truth have come apart." },
+    { say: "Lecturer: So the definition is in trouble, and the trouble has the same structure in all three cases. True belief, held for a decent reason, where the reason and the truth have come apart." },
     { say: "Lecturer: People have added a fourth condition ever since. That nothing false is doing the work in your reasoning. That your belief tracks the truth, so that had it been false you would not have held it. That it came from a reliable process. Each proposal has counterexamples in the literature." },
     { say: "Lecturer: Some now argue that knowing cannot be broken into parts at all, and should be taken as basic. Your turn. Repair it, and then try to break your own repair, which is the part that teaches you something." }
   ], () => {
@@ -724,7 +724,7 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const d1 = document.getElementById("discussion1").value.trim();
   const d2 = document.getElementById("discussion2").value.trim();
   const d3 = document.getElementById("discussion3").value.trim();
-  let text = "Knowledge, and Three Awkward Cases, Report\n";
+  let text = "Knowledge and the Gettier Cases, Report\n";
   text += "===========================================\n\nResponses at each stage:\n";
   reflectionLog.forEach(r => {
     text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
@@ -1156,7 +1156,7 @@ function render() {
     ctx.fillStyle = "#f0f2f7";
     ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
     ctx.textAlign = "center";
-    ctx.fillText("Knowledge, and Three Awkward Cases", W / 2, H / 2 - 12);
+    ctx.fillText("Knowledge and the Gettier Cases", W / 2, H / 2 - 12);
     ctx.font = "15px 'Segoe UI', sans-serif";
     ctx.fillStyle = "#a9b1c4";
     ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);

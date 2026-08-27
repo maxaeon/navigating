@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Bridge Crossing</title>
+<title>Ban Zhao</title>
 <style>
 :root{
   --page:#131318;
@@ -117,9 +117,9 @@ textarea{
 
 <header class="wrap">
   <div class="about-wrap">
-    <h1>The Bridge Crossing</h1>
+    <h1>Ban Zhao</h1>
     <p class="about-cue">What this activity covers</p>
-    <div class="about" id="aboutText"><p>A mountain pass on the road between regions, at dusk. This is a situation on the road. It was not on your itinerary, and it will not wait for a convenient moment. Below the footbridge runs a rail line, and something is wrong on it. You faced a version of this once before, at a lever, in the prologue. This version is harder, and the difference between the two versions is what this activity examines. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+    <div class="about" id="aboutText"><p>The imperial library at Luoyang, around 100 CE, under the Han dynasty. The scholar working here finished the official history of the dynasty after her father and brother died with it incomplete, taught the empress, and wrote a short book of instructions for women that has been argued about ever since. The activity covers finishing another’s work, her argument that daughters must be educated, and the problem of reading a thinker inside constraints. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
   </div>
 </header>
 
@@ -165,7 +165,7 @@ textarea{
 <div id="endScreen">
   <div class="wrap">
     <h1>Activity completed</h1>
-    <p id="nextStop">The road continues where it was going. The world map remembers this crossing.</p>
+    <p id="nextStop">The road runs to the coast and the crossing. The world map remembers the library at Luoyang.</p>
 
     <div class="section-box">
       <h3>Your responses at each stage</h3>
@@ -174,30 +174,30 @@ textarea{
 
     <div class="section-box">
       <h3>Discussion questions</h3>
-      <p>1. Design a third variant of the situation that isolates exactly one difference from the footbridge, physical contact, intention, or the use of a person as a means, and predict how people would answer it.</p>
+      <p>1. Ban Zhao's tables and treatise circulate inside a book bearing her brother's name, and this journey has met the pattern before, in Alexandria and Baghdad. State a fair rule for crediting finishers, editors, and translators, and apply it to one modern case.</p>
       <textarea id="discussion1"></textarea>
-      <p>2. Self-driving vehicles, triage protocols, and military targeting rules all encode answers to cases like these in advance. Should such answers be written down before the emergency, and by whom?</p>
+      <p>2. Later centuries made the Lessons an orthodoxy and enforced its instructions on women who had no say in the matter. Say how much responsibility an author bears for what later readers build from their book, and what, if anything, an author can do about it in advance.</p>
       <textarea id="discussion2"></textarea>
-      <p>3. Suppose someone answers the lever and the footbridge differently and cannot state a principle that separates them. Is that a defect in their reasoning, or evidence that morality does not reduce to statable principles?</p>
+      <p>3. Elisabeth of Bohemia, Hypatia, and Ban Zhao all worked at the edge of institutions that excluded them. Compare how each turned the position into philosophy, and what was different about what each could say aloud.</p>
       <textarea id="discussion3"></textarea>
     </div>
 
     <div class="section-box" id="quizSection">
       <h3>Quiz</h3>
-      <p><strong>1.</strong> Across many surveys, most people say</p>
-      <label><input type="radio" name="q1" value="Pull the lever, but do not push the man"> pull the lever, but do not push the man</label>
-      <label><input type="radio" name="q1" value="Push the man, but do not pull the lever"> push the man, but do not pull the lever</label>
-      <label><input type="radio" name="q1" value="The same thing in both cases"> the same thing in both cases</label>
+      <p><strong>1.</strong> After her father and brother died, Ban Zhao</p>
+      <label><input type="radio" name="q1" value="Completed the official history of the Former Han dynasty"> completed the official history of the Former Han dynasty</label>
+      <label><input type="radio" name="q1" value="Burned the unfinished manuscript"> burned the unfinished manuscript</label>
+      <label><input type="radio" name="q1" value="Left the court permanently"> left the court permanently</label>
 
-      <p><strong>2.</strong> The doctrine of double effect distinguishes</p>
-      <label><input type="radio" name="q2" value="Harm intended as a means from harm foreseen as a side effect"> harm intended as a means from harm foreseen as a side effect</label>
-      <label><input type="radio" name="q2" value="Harm to strangers from harm to friends"> harm to strangers from harm to friends</label>
-      <label><input type="radio" name="q2" value="Action from inaction in every case"> action from inaction in every case</label>
+      <p><strong>2.</strong> The education argument in the Lessons for Women claims</p>
+      <label><input type="radio" name="q2" value="That the tradition's own premises require daughters to be educated"> that the tradition's own premises require daughters to be educated</label>
+      <label><input type="radio" name="q2" value="That the classics should be rewritten"> that the classics should be rewritten</label>
+      <label><input type="radio" name="q2" value="That education belongs to the court alone"> that education belongs to the court alone</label>
 
-      <p><strong>3.</strong> In the footbridge case, the large man's death is</p>
-      <label><input type="radio" name="q3" value="The means by which the five are saved"> the means by which the five are saved</label>
-      <label><input type="radio" name="q3" value="A side effect of redirecting the threat"> a side effect of redirecting the threat</label>
-      <label><input type="radio" name="q3" value="Unrelated to whether the five are saved"> unrelated to whether the five are saved</label>
+      <p><strong>3.</strong> Among Ban Zhao's students was</p>
+      <label><input type="radio" name="q3" value="Empress Deng, who ruled as regent"> Empress Deng, who ruled as regent</label>
+      <label><input type="radio" name="q3" value="Zhuangzi"> Zhuangzi</label>
+      <label><input type="radio" name="q3" value="The keeper of the western pass"> the keeper of the western pass</label>
 
       <p><button id="gradeBtn">Grade the quiz</button></p>
       <p id="quizResult"></p>
@@ -213,49 +213,49 @@ textarea{
 
 <script>
 "use strict";
-const ACTIVITY_KEY = "phil_map_footbridge";
+const ACTIVITY_KEY = "phil_map_banzhao";
 
 /* =========================================================
    Prompts, quiz key, and log
    ========================================================= */
 const prompts = {
   first: {
-    title: "Stage 0: Your answer at the lever",
-    text: "At the prologue you stood at a lever: divert the trolley and one person dies instead of five. Before this situation unfolds, record what you chose there, or would choose now.",
-    mcq: ["I pulled it, one death instead of five", "I did not pull it", "Not sure, but I would pull it now", "Not sure, but I would not pull it now"],
-    requireText: true
+    title: "Stage 0: Working inside a system",
+    text: "Before you meet the scholar, answer in general. Can a person uphold a system's forms and change the system from inside, or does upholding the forms always strengthen what they uphold?",
+    mcq: ["Both can happen, and cases must be judged one by one", "Upholding the forms always strengthens the system", "Inside change is the only kind that lasts", "The question cannot be answered in general"],
+    requireText: false
   },
-  push: {
-    title: "Stage 1: The bridge",
-    text: "The numbers are the lever's numbers: one life against five. The only difference is what you would have to do. Record your decision.",
-    mcq: ["I push him, five lives outweigh one", "I do not push him, this feels different", "I do neither, here or at the lever", "I cannot decide"],
-    requireText: true
+  history: {
+    title: "Stage 1: Finishing the history",
+    text: "The History of the Former Han was begun by her father, carried on by her brother until his death in prison, and completed by Ban Zhao, who compiled its chronological tables and its treatise on astronomy. The book circulates under her brother's name. What does the finisher of another's work deserve?",
+    mcq: ["Named credit for the parts that are theirs", "Nothing, finishing is service to the dead", "Joint authorship of the whole", "It depends on what the finisher would have wanted"],
+    requireText: false
   },
-  asymmetry: {
-    title: "Stage 2: The asymmetry",
-    text: "Across many studies, most people pull the lever and refuse to push, though the arithmetic is identical. If the majority is responding to a real difference, what is that difference?",
-    mcq: ["Touching someone is different from pulling a switch", "On the bridge, his body is the tool that stops it", "Nothing real, people are just inconsistent", "The lever answer was wrong too"],
-    requireText: true
+  education: {
+    title: "Stage 2: The argument for educating daughters",
+    text: "In the Lessons, Ban Zhao argues from her tradition's own premises. The rites require wives to serve their households rightly, right service requires knowing the classics, and yet only sons are taught, which the tradition's own texts nowhere command. Grant her premises. What follows?",
+    mcq: ["Daughters must be educated, by the tradition's own standards", "Nothing follows, since custom outranks texts", "Sons should stop being educated", "The rites should be abolished"],
+    requireText: false
   },
-  intention: {
-    title: "Stage 3: Intending and foreseeing",
-    text: "The doctrine of double effect says harm you intend as your means is worse than the same harm foreseen as a side effect. At the lever, if the one person somehow survived, your plan still works. On the bridge, if the man survives untouched by the trolley, your plan has failed. Does that difference carry moral weight?",
-    mcq: ["Yes, what you aim at is what you do", "Some, but the result matters more", "No, it is a trick that excuses the lever", "It matters in law and practice, whatever theory says"],
-    requireText: true
+  reading: {
+    title: "Stage 3: Reading the Lessons",
+    text: "The same short book instructs women in humility and obedience, and argues that they must be educated, and it was written by the most learned woman of her age at the height of her influence. How should a reader at this distance take the instructions?",
+    mcq: ["The evidence at this distance underdetermines her intent, and a careful reader says so", "As sincere conviction, she meant every word", "As strategy, the price of making the education argument speakable", "As irony, the whole book winks"],
+    requireText: false
   },
-  consistency: {
-    title: "Stage 4: Your two answers",
-    text: "Set your lever answer beside your bridge answer. Are they consistent? If they are, state the principle that covers both. If they are not, say which answer you would change, or defend keeping both without a principle.",
+  final: {
+    title: "Stage 4: Charity at a distance",
+    text: "The Lyceum stop flagged Aristotle's exclusions, and this library holds a thinker who worked inside exclusions aimed at her. State what interpretive charity requires when reading thinkers inside unjust systems, and apply your standard to both Ban Zhao and Aristotle, saying whether it treats them the same.",
     mcq: null,
     requireText: true,
-    textHint: "The principle, the change, or the defense."
+    textHint: "Your standard, applied to both, and whether it treats them alike."
   }
 };
 
 const quizKeys = [
-  "Pull the lever, but do not push the man",
-  "Harm intended as a means from harm foreseen as a side effect",
-  "The means by which the five are saved"
+  "Completed the official history of the Former Han dynasty",
+  "That the tradition's own premises require daughters to be educated",
+  "Empress Deng, who ruled as regent"
 ];
 
 let reflectionLog = [];
@@ -286,9 +286,8 @@ const W = 900, H = 500;
 let started = false;
 let paused = false;
 let t = 0;
-let trolleyOn = false;
-let trolleyX = -80;
-const record = { lever: null, bridge: null };
+let inkT = 0;
+
 
 /* =========================================================
    Narration and the modal
@@ -364,7 +363,6 @@ function continueDlg() {
     if (window.speechSynthesis) speechSynthesis.cancel();
     if (cb) cb();
   } else {
-    if (dlg.steps[dlg.i].trolley) trolleyOn = true;
     renderDlg();
   }
 }
@@ -451,8 +449,6 @@ submitBtn.addEventListener("click", () => {
     choice: p.mcq ? (sel ? sel.value : null) : null,
     response: modalText.value.trim()
   });
-  if (activePrompt.key === "first" && sel) record.lever = sel.value;
-  if (activePrompt.key === "push" && sel) record.bridge = sel.value;
   if (window.speechSynthesis) speechSynthesis.cancel();
   overlay.classList.remove("open");
   paused = false;
@@ -469,25 +465,32 @@ function setObjective(txt) { objectiveEl.textContent = txt; }
 function runScene() {
   openPrompt("first", () => {
     startDlg([
-      { say: "The pass road crosses a gorge on a footbridge, and the rail line runs through the gorge below. You are halfway across when you hear it: a runaway trolley, brakes gone, coming down the grade. Further along the line, five workers are in a cutting with their backs to it, and the walls of the cutting leave them nowhere to go.", trolley: false },
-      { trolley: true, say: "There is no lever here. There is no side track. There is only one thing on this bridge heavy enough to stop a trolley, and it is not you." },
-    { say: "A very large man stands at the railing beside you, looking down at the line, unaware. If he falls onto the track, the trolley stops, and he dies, and the five live. You would have to push him." },
-      { note: true, say: "This is the footbridge case, introduced by Judith Jarvis Thomson in 1976, building on Philippa Foot's original trolley problem of 1967. The numbers are identical to the lever case on purpose: one life against five. Everything that differs is in what the one who acts must do." }
+      { say: "The road ends this leg at Luoyang, capital of the Han, and at the imperial library, racks of scrolls and bundled slips in a long hall that smells of lamp oil. A scholar in court dress is checking a chronological table against three sources at once, and an assistant warns you not to speak until the row is finished. The row is finished, and she looks up." },
+      { note: true, say: "Ban Zhao, around 45 to 116 CE, came from a family of historians. Her father Ban Biao began a history of the Former Han dynasty, her brother Ban Gu carried it forward until he died in prison in 92 CE, and Ban Zhao was commissioned to complete it, compiling its eight chronological tables and its treatise on astronomy. She taught the women of the court, among them Empress Deng, who later ruled the empire as regent and kept Ban Zhao as an adviser." },
+      { say: "Ban Zhao: You have crossed the whole of the world I have only read about, so you may ask your questions, and I will go on collating while you do, since the tables do not check themselves.",
+        choices: [
+          { tag: "credit", text: "The history circulates under your brother's name. Does that sit well with you?",
+            reply: ["Ban Zhao: It sits as facts sit. My father began it, my brother built most of it, and I finished what death interrupted twice. The tables and the treatise are mine, and the scholars who use them know it, and the cover says Ban Gu. You met librarians in Alexandria and translators in Baghdad, I think. Then you already know that the ones who finish and preserve are read forever and named rarely, and that the work does not care."] },
+          { tag: "why", text: "Why does a dynasty need its history written at all?",
+            reply: ["Ban Zhao: Because memory without records becomes flattery within one generation. A dynasty that pays historians is paying to be contradicted by its own archive, which is the most useful service it buys. Whether it reads the contradiction is the dynasty's affair. My affair is that the tables be right."] }
+        ] },
+      { say: "Ban Zhao: My assistant will have told you about the other book, since everyone asks about the other book. Seven short chapters, instructions for the women of my family, written when I was old. It teaches humility, diligence, and the serving of a household rightly, and one more thing that the people who quote the humility passages read past." },
+      { say: "Ban Zhao: Our rites require a wife to manage a household rightly and to assist her husband as the texts describe. Right service of that kind requires knowing the classics. And yet we teach our sons from the age of eight and leave our daughters unlettered, a custom no classic commands. If the duty is real, the education is owed. I did not raise my voice to say it. I did not need to, because the premises are theirs." },
+      { note: true, say: "The Lessons for Women, the Nujie, survives complete, and the argument that daughters must be educated stands in its second chapter alongside the instructions in humility and obedience. In later centuries the book was made an orthodoxy and its instructions enforced as rules, an afterlife historians distinguish sharply from the text's own moment. How to read the book, as conviction, as strategy inside constraint, or as both at once, remains an open scholarly argument, and this activity leaves it open." }
     ], () => {
-      openPrompt("push", () => {
+      openPrompt("history", () => {
         startDlg([
-          { say: "Whichever you chose, notice what making the choice was like this time, and whether anything besides the numbers weighed on it." }
+          { say: "Ban Zhao: Since you sat at the Lyceum, I will put a case to you rather than take one. Your Aristotle wrote that a woman's reason lacks authority, and his bench refuted him whenever a woman sat at it. I wrote instructions in obedience, and my life refuted the smallness they are read as teaching, since the empress of this realm governs with my counsel. Readers far from us will have to decide what each of us meant, with less evidence than they would like." }
         ], () => {
-          openPrompt("asymmetry", () => {
+          openPrompt("education", () => {
             startDlg([
-              { note: true, say: "One well known analysis uses the doctrine of double effect, an idea that goes back to Aquinas. It says harm you intend as your means is worse than the same harm you only foresee." },
-    { say: "Test it here. At the lever, if the one worker scrambled clear, your plan still works. On the bridge, if the man is never struck, the five die. The trolley must hit him for the plan to work." }
+              { say: "Ban Zhao: I will tell you what I ask of those readers, because it is what I practice at this table. Read the whole of a person's circumstance before weighing a sentence of their text. Ask what could be said aloud in their room, and what the saying cost. And then judge, because charity is not the suspension of judgment, it is judgment done with all the evidence in." }
             ], () => {
-              openPrompt("intention", () => {
+              openPrompt("reading", () => {
                 startDlg([
-                  { say: "Below, it is over one way or another, and the road goes on. Situations like this one do not look like philosophy while they are happening. They demand a decision, and leave you to work out afterward what your answer committed you to." }
+                  { say: "The lamps are trimmed and the collating resumes, three sources at a time. The road leaves the capital for the coast, where the crossing waits, and the region behind you now holds a court, a courtyard, a pass, and a riverbank, arguing with each other across four centuries." }
                 ], () => {
-                  openPrompt("consistency", () => endGame());
+                  openPrompt("final", () => endGame());
                 });
               });
             });
@@ -496,13 +499,14 @@ function runScene() {
       });
     });
   });
+
 }
 
 /* =========================================================
    End screen, quiz, and report
    ========================================================= */
 function endGame() {
-  try { localStorage.setItem("phil_map_footbridge", "1"); } catch (err) { /* storage is optional */ }
+  try { localStorage.setItem("phil_map_banzhao", "1"); } catch (err) { /* storage is optional */ }
   const summary = document.getElementById("reflectionSummary");
   summary.innerHTML = "";
   reflectionLog.forEach(r => {
@@ -548,8 +552,8 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const d1 = document.getElementById("discussion1").value.trim();
   const d2 = document.getElementById("discussion2").value.trim();
   const d3 = document.getElementById("discussion3").value.trim();
-  let text = "The Bridge Crossing, Report\n";
-  text += "===========================\n\nResponses at each stage:\n";
+  let text = "Ban Zhao, Report\n";
+  text += "==========\n\nResponses at each stage:\n";
   reflectionLog.forEach(r => {
     text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
     if (r.choice) text += "Choice: " + r.choice + "\n";
@@ -557,12 +561,10 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
     text += "-".repeat(50);
   });
   text += "\n\nThe pair of answers:\n";
-  text += "At the lever: " + (record.lever || "(none)") + "\n";
-  text += "On the bridge: " + (record.bridge || "(none)") + "\n";
   text += "\nDiscussion questions:\n";
-  text += "1. A third variant isolating one difference.\n" + (d1 || "(no answer)") + "\n\n";
-  text += "2. Encoding answers before the emergency.\n" + (d2 || "(no answer)") + "\n\n";
-  text += "3. Different answers without a principle.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "1. Crediting finishers.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Authors and later readers.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. Three thinkers at the edge of institutions.\n" + (d3 || "(no answer)") + "\n\n";
   text += "Quiz:\n";
   if (quizScore) {
     quizScore.answers.forEach((ans, i) => {
@@ -575,7 +577,7 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const blob = new Blob([text], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = "Bridge_Crossing_Report.txt"; a.click();
+  a.href = url; a.download = "Ban_Zhao_Report.txt"; a.click();
   URL.revokeObjectURL(url);
 });
 document.getElementById("restartBtn").addEventListener("click", () => location.reload());
@@ -594,89 +596,86 @@ function drawFigure(x, y, s, color) {
   ctx.fillRect(1, -11, 4, 11);
   ctx.restore();
 }
+function drawSitter(x, y, s, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(s, s);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -26, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -20, 12, 14);
+  ctx.fillRect(-9, -6, 18, 5);
+  ctx.restore();
+}
 function render() {
   ctx.clearRect(0, 0, W, H);
-  // Dusk sky.
-  const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, "#232338");
-  sky.addColorStop(0.6, "#3c3450");
-  sky.addColorStop(1, "#584458");
-  ctx.fillStyle = sky;
+  // The library hall, lamplit.
+  ctx.fillStyle = "#2a2418";
   ctx.fillRect(0, 0, W, H);
-  // Mountains behind.
-  ctx.fillStyle = "rgba(40,40,58,0.9)";
-  ctx.beginPath();
-  ctx.moveTo(0, 240); ctx.lineTo(160, 110); ctx.lineTo(300, 220); ctx.lineTo(470, 90);
-  ctx.lineTo(650, 210); ctx.lineTo(800, 130); ctx.lineTo(900, 200); ctx.lineTo(900, 500); ctx.lineTo(0, 500);
-  ctx.closePath(); ctx.fill();
-  // The gorge walls.
-  ctx.fillStyle = "#2c2c3c";
-  ctx.fillRect(0, 300, 240, 200);
-  ctx.fillRect(660, 300, 240, 200);
-  ctx.fillStyle = "#242432";
-  ctx.beginPath();
-  ctx.moveTo(240, 300); ctx.lineTo(240, 500); ctx.lineTo(300, 500); ctx.closePath(); ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(660, 300); ctx.lineTo(660, 500); ctx.lineTo(600, 500); ctx.closePath(); ctx.fill();
-  // The rail line along the gorge floor.
-  ctx.strokeStyle = "#8b95a5";
-  ctx.lineWidth = 4;
-  [448, 466].forEach(ry => {
-    ctx.beginPath(); ctx.moveTo(0, ry); ctx.lineTo(900, ry); ctx.stroke();
+  ctx.fillStyle = "#4a3c2c";
+  ctx.fillRect(0, 60, W, 300);
+  // Pillars.
+  [110, 450, 790].forEach(px => {
+    ctx.fillStyle = "#8a3a2e";
+    ctx.fillRect(px - 12, 60, 24, 300);
+    ctx.fillStyle = "#5c4a34";
+    ctx.fillRect(px - 20, 60, 40, 12);
   });
-  ctx.strokeStyle = "#4a3c30";
-  for (let x = 10; x < 900; x += 30) {
-    ctx.beginPath(); ctx.moveTo(x, 442); ctx.lineTo(x, 472); ctx.stroke();
+  // Scroll racks between pillars.
+  [190, 540].forEach(rx => {
+    ctx.fillStyle = "#3a2e20";
+    ctx.fillRect(rx, 120, 200, 220);
+    for (let r = 0; r < 5; r++) {
+      ctx.fillStyle = "#8a7450";
+      ctx.fillRect(rx + 6, 150 + r * 40, 188, 4);
+      for (let sc = 0; sc < 7; sc++) {
+        ctx.fillStyle = "#c9b060";
+        ctx.beginPath();
+        ctx.arc(rx + 22 + sc * 26, 140 + r * 40, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#e8e0cc";
+        ctx.beginPath();
+        ctx.arc(rx + 22 + sc * 26, 140 + r * 40, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  });
+  // The low writing table with three open sources and the tables.
+  ctx.fillStyle = "#6a5a44";
+  ctx.fillRect(300, 396, 300, 12);
+  ctx.fillRect(316, 408, 12, 40); ctx.fillRect(572, 408, 12, 40);
+  ctx.fillStyle = "#e8e0cc";
+  ctx.fillRect(320, 384, 60, 12); ctx.fillRect(396, 382, 66, 14); ctx.fillRect(478, 384, 60, 12);
+  ctx.strokeStyle = "#4a3c2c"; ctx.lineWidth = 1;
+  for (let c = 0; c < 5; c++) {
+    ctx.beginPath(); ctx.moveTo(404 + c * 12, 384); ctx.lineTo(404 + c * 12, 394); ctx.stroke();
   }
-  // The cutting with the five workers, right of the bridge.
-  ctx.fillStyle = "#242432";
-  ctx.fillRect(700, 396, 200, 44);
-  for (let i = 0; i < 5; i++) drawFigure(730 + i * 36, 452, 0.8, "#8fb7dd");
+  // The lamp with a slow flicker.
+  const lf = REDUCED_MOTION ? 0 : Math.sin(inkT * 5) * 1.5;
+  ctx.fillStyle = "#dfae5c";
+  ctx.beginPath(); ctx.arc(620, 380 + lf, 6, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#8a7450";
+  ctx.fillRect(612, 386, 16, 10);
+  const glow = ctx.createRadialGradient(620, 382, 6, 620, 382, 130);
+  glow.addColorStop(0, "rgba(223,174,92,0.16)");
+  glow.addColorStop(1, "rgba(223,174,92,0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(500, 260, 260, 240);
+  // Ban Zhao at the table, the assistant, and you.
+  drawSitter(430, 440, 1.1, "#8fb7dd");
+  drawFigure(700, 440, 1, "#5a7d8f");
+  drawFigure(200, 458, 1, "#5b84b1");
   ctx.fillStyle = "#eef2f6";
   ctx.font = "13px 'Segoe UI', sans-serif";
-  ctx.fillText("five workers", 748, 492);
-  // The footbridge across the gorge.
-  ctx.fillStyle = "#57503f";
-  ctx.fillRect(220, 262, 460, 14);
-  ctx.strokeStyle = "#57503f";
-  ctx.lineWidth = 5;
-  ctx.beginPath(); ctx.moveTo(220, 240); ctx.lineTo(680, 240); ctx.stroke();
-  for (let x = 240; x < 680; x += 44) {
-    ctx.beginPath(); ctx.moveTo(x, 240); ctx.lineTo(x, 262); ctx.stroke();
-  }
-  ctx.fillStyle = "#484236";
-  ctx.fillRect(206, 262, 18, 238);
-  ctx.fillRect(676, 262, 18, 238);
-  // You, and the large man at the railing.
-  drawFigure(392, 262, 1, "#5b84b1");
-  ctx.fillStyle = "#5a7d8f";
-  ctx.beginPath(); ctx.arc(470, 220, 10, 0, Math.PI * 2); ctx.fill();
-  ctx.fillRect(455, 228, 30, 30);
-  ctx.fillRect(457, 258, 10, 6);
-  ctx.fillRect(473, 258, 10, 6);
-  ctx.fillStyle = "#eef2f6";
-  ctx.fillText("you", 380, 292);
-  ctx.fillText("the large man", 428, 210);
-  // The trolley, rolling in on the line when the scene calls it.
-  if (trolleyOn) {
-    ctx.fillStyle = "#8f3b3b";
-    ctx.fillRect(trolleyX - 46, 408, 92, 40);
-    ctx.fillStyle = "#c9b98a";
-    ctx.fillRect(trolleyX - 36, 416, 24, 16);
-    ctx.fillRect(trolleyX + 6, 416, 24, 16);
-    ctx.fillStyle = "#1c1c26";
-    ctx.beginPath();
-    ctx.arc(trolleyX - 26, 452, 9, 0, Math.PI * 2);
-    ctx.arc(trolleyX + 26, 452, 9, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  ctx.fillText("Ban Zhao", 400, 468);
+  ctx.fillText("the assistant", 660, 464);
+  ctx.fillText("you", 190, 482);
   if (!started) {
     ctx.fillStyle = "rgba(16,16,22,0.55)";
     ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = "#f0f0f5";
     ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
     ctx.textAlign = "center";
-    ctx.fillText("The Bridge Crossing", W / 2, H / 2 - 12);
+    ctx.fillText("Ban Zhao", W / 2, H / 2 - 12);
     ctx.font = "15px 'Segoe UI', sans-serif";
     ctx.fillStyle = "#a9a9bc";
     ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
@@ -691,9 +690,8 @@ let last = performance.now();
 function update(dt) {
   if (typeof tickStatus === "function") tickStatus();
   t += dt;
-  if (trolleyOn && !paused) {
-    trolleyX = Math.min(trolleyX + (REDUCED_MOTION ? 20 : 60) * dt, 250);
-  }
+  inkT += dt;
+
 }
 function loop(now) {
   const dt = Math.min((now - last) / 1000, 0.05);

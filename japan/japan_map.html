@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Analytic Room</title>
+<title>Japan</title>
 <style>
 :root{
   --page:#141721;
@@ -35,11 +35,6 @@ canvas#mapCanvas{
 }
 #progressLine{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:15px; min-height:22px}
 .cards{max-width:900px; margin:18px auto 0}
-.roomlinks{max-width:900px; margin:14px auto 0; display:flex; gap:12px; flex-wrap:wrap; align-items:center}
-.roomlinks span{color:var(--muted); font-size:14px}
-.roomlinks a{color:var(--sea); font-size:14px; text-decoration:none;
-  border:1px solid var(--line); border-radius:8px; padding:7px 13px}
-.roomlinks a:hover{background:var(--panel-2)}
 .card{
   background:var(--panel); border:1px solid var(--line); border-radius:10px;
   padding:14px 16px; margin-bottom:12px; display:flex; gap:14px; align-items:center;
@@ -79,21 +74,15 @@ canvas#mapCanvas{
 
 <header class="wrap">
   <div class="about-wrap">
-    <h1>The Analytic Room</h1>
+    <h1>Japan</h1>
     <p class="about-cue">About this page</p>
-    <div class="about" id="aboutText"><p>Philosophy done by taking claims apart, testing them against clear cases, and keeping arguments short enough to check. The stops here are set in the twentieth century and each states its own time and place. This room and The Continental Room are two habits of doing philosophy rather than two sets of doctrines, and a student can walk either or both.</p></div>
+    <div class="about" id="aboutText"><p>The islands at the end of the road east. The region takes up Zen and the arts that grew around its temples, the koan, the dry garden, and the golden repair of broken pottery, and it brings the road's questions about beauty and the self to their last stops. The stops jump across centuries on purpose. Each activity states its real time and place.</p></div>
   </div>
 </header>
 
 <div class="wrap">
   <canvas id="mapCanvas" width="900" height="520"></canvas>
   <p id="progressLine"></p>
-  <div class="roomlinks">
-    <span>Other rooms in Europe:</span>
-    <a href="../modern-europe/modern_europe_map.html">Early Modern European Philosophy</a>
-    <a href="../continental/continental_map.html">The Continental Room</a>
-  </div>
-
   <div class="cards" id="cardList"></div>
   <p id="storageNote"></p>
 </div>
@@ -103,36 +92,28 @@ canvas#mapCanvas{
 
 const ACTIVITIES = [
   {
-    key: "phil_map_gettier",
-    title: "Knowledge and the Gettier Cases",
-    place: "A seminar room",
-    desc: "A stopped clock, a rock that looks like a sheep, and a valley of barn fronts, set against the definition of knowledge as justified true belief.",
-    file: "gettier_classroom.html",
-    node: { x: 245, y: 215 }
+    key: "phil_map_koan",
+    title: "The Practice of the Koan",
+    place: "A Rinzai training hall in the hills",
+    desc: "Observe the hall and the interview bell, study the assigned question as a method, and set it beside the questioning you watched in the Athenian agora.",
+    file: "practice_of_the_koan.html",
+    node: { x: 150, y: 380 }
   },
   {
-    key: "phil_map_mary",
-    title: "Mary in the Black and White Room",
-    place: "A viewing gallery",
-    desc: "Every physical fact about colour vision, and no colour ever seen. What happens when she walks out, and the three standard ways of denying that anything follows.",
-    file: "marys_room.html",
-    node: { x: 234, y: 234 }
+    key: "phil_map_garden",
+    title: "The Dry Garden",
+    place: "Ryoan-ji, Kyoto, around 1500",
+    desc: "Sit on the veranda before fifteen stones and raked gravel, set five stones in a practice frame yourself, and weigh the garden's argument against the classical ideal of beauty.",
+    file: "dry_garden.html",
+    node: { x: 400, y: 310 }
   },
   {
-    key: "phil_map_logic",
-    title: "Taking the Sentence Apart",
-    place: "Cambridge",
-    desc: "What a sentence is made of, and what changes when you can see its structure.",
-    file: null,
-    node: { x: 234, y: 221 }
-  },
-  {
-    key: "phil_map_meaning",
-    title: "What a Word Does",
-    place: "Oxford",
-    desc: "Meaning as use, and what happens to old puzzles when you ask how a word is actually handled.",
-    file: null,
-    node: { x: 375, y: 266 }
+    key: "phil_map_kintsugi",
+    title: "The Repaired Bowl",
+    place: "A lacquer workshop in Kyoto, around 1600",
+    desc: "Watch a broken tea bowl joined with lacquer and seamed with gold, hear why the craftsman refuses invisible repairs, and answer whether the mended bowl is the bowl that arrived.",
+    file: "repaired_bowl.html",
+    node: { x: 640, y: 250 }
   }
 ];
 const ENFORCE_ORDER = true;
@@ -147,7 +128,7 @@ function isDone(key) {
    difficult stop never blocks the rest of the route. */
 function skipKey(k) { return k + "_skipped"; }
 
-const MINUTES = {"phil_map_mary": "about 20 minutes", "phil_map_kant": "about 25 minutes", "phil_map_berkeley": "about 20 minutes", "phil_map_elisabeth": "about 20 minutes", "phil_map_hume": "about 25 minutes", "phil_map_berkeley": "about 25 minutes", "phil_map_prologue": "about 10 minutes", "phil_map_presocratics": "about 20 minutes", "phil_map_ship": "about 15 minutes", "phil_map_clouds": "about 15 minutes", "phil_map_apology": "about 25 minutes", "phil_map_academy": "about 20 minutes", "phil_map_cave": "about 20 minutes", "phil_map_phaedo": "about 20 minutes", "phil_map_aristotle": "about 25 minutes", "phil_map_anselm": "about 20 minutes", "phil_map_aquinas": "about 20 minutes", "phil_map_evil": "about 20 minutes", "phil_map_pascal": "about 20 minutes", "phil_map_paley": "about 20 minutes", "phil_map_footbridge": "about 10 minutes"};
+const MINUTES = {"phil_map_garden": "about 20 minutes", "phil_map_kintsugi": "about 15 minutes", "phil_map_koan": "about 15 minutes", "phil_map_footbridge": "about 10 minutes", "phil_map_prologue": "about 10 minutes", "phil_map_presocratics": "about 20 minutes", "phil_map_ship": "about 15 minutes", "phil_map_clouds": "about 15 minutes", "phil_map_apology": "about 25 minutes", "phil_map_academy": "about 20 minutes", "phil_map_cave": "about 20 minutes", "phil_map_phaedo": "about 20 minutes", "phil_map_aristotle": "about 25 minutes", "phil_map_anselm": "about 20 minutes", "phil_map_aquinas": "about 20 minutes", "phil_map_evil": "about 20 minutes", "phil_map_pascal": "about 20 minutes", "phil_map_paley": "about 20 minutes", "phil_map_footbridge": "about 10 minutes"};
 function isSkipped(k) {
   try { return localStorage.getItem(skipKey(k)) === "1"; }
   catch (err) { return false; }
@@ -172,53 +153,74 @@ const canvas = document.getElementById("mapCanvas");
 const ctx = canvas.getContext("2d");
 const MW = 900, MH = 520;
 
-const MAP_IMG = typeof Image !== "undefined" ? new Image() : null;
-if (MAP_IMG) {
-  MAP_IMG.onload = () => drawMap();
-  MAP_IMG.src = "../shared/img/map_west.png";
-}
-
-/* A compass, so north is never in doubt. */
-function drawCompass(cx, cy, r) {
-  ctx.save();
-  ctx.fillStyle = "rgba(12,16,22,0.55)";
-  ctx.beginPath(); ctx.arc(cx, cy, r + 8, 0, Math.PI * 2); ctx.fill();
-  ctx.strokeStyle = "rgba(238,242,246,0.85)";
-  ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.arc(cx, cy, r + 8, 0, Math.PI * 2); ctx.stroke();
-  // The north half, filled.
-  ctx.fillStyle = "#eef2f6";
-  ctx.beginPath();
-  ctx.moveTo(cx, cy - r);
-  ctx.lineTo(cx + r * 0.34, cy + r * 0.28);
-  ctx.lineTo(cx, cy + r * 0.06);
-  ctx.closePath(); ctx.fill();
-  // The south half, outlined.
-  ctx.fillStyle = "rgba(238,242,246,0.35)";
-  ctx.beginPath();
-  ctx.moveTo(cx, cy - r);
-  ctx.lineTo(cx - r * 0.34, cy + r * 0.28);
-  ctx.lineTo(cx, cy + r * 0.06);
-  ctx.closePath(); ctx.fill();
-  ctx.fillStyle = "#eef2f6";
-  ctx.font = "bold 12px 'Segoe UI', sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText("N", cx, cy - r - 12);
-  ctx.textAlign = "left";
-  ctx.restore();
-}
-
 function drawMap() {
   ctx.clearRect(0, 0, MW, MH);
-  if (MAP_IMG && MAP_IMG.complete) {
-    ctx.drawImage(MAP_IMG, 0, 0, MW, MH);
-  } else {
-    ctx.fillStyle = "#2c5a80";
-    ctx.fillRect(0, 0, MW, MH);
-  }
-  ctx.fillStyle = "rgba(238,242,246,0.6)";
+  // Sea and islands.
+  const sky = ctx.createLinearGradient(0, 0, 0, MH);
+  sky.addColorStop(0, "#6a80a4");
+  sky.addColorStop(0.6, "#98a0a0");
+  sky.addColorStop(1, "#a8b0b4");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, MW, 220);
+  ctx.fillStyle = "#48607e";
+  ctx.fillRect(0, 220, MW, MH - 220);
+  // The main island, a long green shape across the water.
+  ctx.fillStyle = "#6c7a4c";
+  ctx.beginPath();
+  ctx.moveTo(60, 420);
+  ctx.quadraticCurveTo(200, 330, 380, 330);
+  ctx.quadraticCurveTo(560, 330, 700, 240);
+  ctx.quadraticCurveTo(790, 190, 860, 200);
+  ctx.quadraticCurveTo(880, 260, 800, 310);
+  ctx.quadraticCurveTo(640, 420, 460, 430);
+  ctx.quadraticCurveTo(240, 470, 60, 420);
+  ctx.closePath(); ctx.fill();
+  // Smaller islands.
+  ctx.beginPath(); ctx.ellipse(120, 300, 44, 16, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(750, 420, 56, 18, 0, 0, Math.PI * 2); ctx.fill();
+  // The mountain, white-capped, inland.
+  ctx.fillStyle = "#5a6478";
+  ctx.beginPath();
+  ctx.moveTo(470, 336); ctx.lineTo(530, 240); ctx.lineTo(590, 336);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#eef2f6";
+  ctx.beginPath();
+  ctx.moveTo(516, 262); ctx.lineTo(530, 240); ctx.lineTo(544, 262);
+  ctx.lineTo(536, 258); ctx.lineTo(530, 264); ctx.lineTo(524, 258);
+  ctx.closePath(); ctx.fill();
+  // A temple near the garden stop, and a town near the workshop stop.
+  ctx.fillStyle = "#5c4a34";
+  ctx.beginPath();
+  ctx.moveTo(372, 286); ctx.quadraticCurveTo(400, 268, 428, 286);
+  ctx.lineTo(420, 292); ctx.lineTo(380, 292); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#8a7450";
+  ctx.fillRect(386, 292, 28, 14);
+  ctx.fillStyle = "#9a8e78";
+  ctx.fillRect(614, 268, 14, 10); ctx.fillRect(634, 262, 12, 16); ctx.fillRect(652, 270, 16, 8);
+  // Pines along the coasts.
+  [[210, 372], [320, 344], [560, 300], [706, 230]].forEach(p => {
+    ctx.strokeStyle = "#4a5a44"; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(p[0], p[1] - 20); ctx.stroke();
+    ctx.fillStyle = "#4a6a46";
+    ctx.beginPath(); ctx.ellipse(p[0], p[1] - 24, 15, 8, 0, 0, Math.PI * 2); ctx.fill();
+  });
+  // The sea route in from the mainland, and the road along the island.
+  ctx.strokeStyle = "rgba(240,234,208,0.9)";
+  ctx.lineWidth = 5;
+  ctx.setLineDash([10, 8]);
+  ctx.beginPath();
+  ctx.moveTo(14, 470);
+  ctx.quadraticCurveTo(70, 430, 150, 380);
+  ctx.quadraticCurveTo(270, 340, 400, 310);
+  ctx.quadraticCurveTo(520, 286, 640, 250);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  // Labels.
+  ctx.fillStyle = "rgba(238,242,246,0.8)";
   ctx.font = "italic 13px Georgia, serif";
-
+  ctx.fillText("the sea, from the mainland", 40, 258);
+  ctx.fillStyle = "rgba(20,23,33,0.7)";
+  ctx.fillText("Kyoto", 388, 326);
   // The route between the stops.
   ctx.strokeStyle = "rgba(240,234,208,0.9)";
   ctx.lineWidth = 2.5;
@@ -251,8 +253,6 @@ function drawMap() {
     ctx.fillStyle = done || unlocked ? "#eef1f7" : "#8b93a8";
     ctx.fillText(label, lx, ly + 2);
   });
-
-  drawCompass(838, 74, 22);
 
   // The way back to the world map.
   ctx.fillStyle = "rgba(20,23,33,0.8)";
@@ -308,11 +308,9 @@ function refresh() {
     }
     list.appendChild(card);
   });
-  const anyLive = ACTIVITIES.some(a => a.file !== null);
   const next = ACTIVITIES.find((a, i) => a.file !== null && !isDone(a.key) && isUnlocked(i));
   document.getElementById("progressLine").textContent =
-    !anyLive ? "The stops of this region are in preparation."
-    : next ? "Next: " + next.title + "." : "Every open stop in this region is complete.";
+    next ? "Next: " + next.title + "." : "Every open stop in this region is complete.";
   document.getElementById("storageNote").textContent = storageOk ? "" :
     "This browser is blocking saved progress, so completion cannot be tracked automatically here.";
 }

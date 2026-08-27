@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Bridge Crossing</title>
+<title>The Dry Garden</title>
 <style>
 :root{
   --page:#131318;
@@ -117,9 +117,9 @@ textarea{
 
 <header class="wrap">
   <div class="about-wrap">
-    <h1>The Bridge Crossing</h1>
+    <h1>The Dry Garden</h1>
     <p class="about-cue">What this activity covers</p>
-    <div class="about" id="aboutText"><p>A mountain pass on the road between regions, at dusk. This is a situation on the road. It was not on your itinerary, and it will not wait for a convenient moment. Below the footbridge runs a rail line, and something is wrong on it. You faced a version of this once before, at a lever, in the prologue. This version is harder, and the difference between the two versions is what this activity examines. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+    <div class="about" id="aboutText"><p>A temple veranda at the edge of Kyoto, around 1500. Before you is a garden with no plants in it, fifteen stones in a rectangle of raked gravel. The activity studies the garden as a work of art, the way the journey studied the Theater of Dionysus, and it teaches no practice. It includes a short placement exercise done by pressing on the scene. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
   </div>
 </header>
 
@@ -165,7 +165,7 @@ textarea{
 <div id="endScreen">
   <div class="wrap">
     <h1>Activity completed</h1>
-    <p id="nextStop">The road continues where it was going. The world map remembers this crossing.</p>
+    <p id="nextStop">The road continues into the craft quarter of the city. The world map remembers the veranda.</p>
 
     <div class="section-box">
       <h3>Your responses at each stage</h3>
@@ -174,30 +174,30 @@ textarea{
 
     <div class="section-box">
       <h3>Discussion questions</h3>
-      <p>1. Design a third variant of the situation that isolates exactly one difference from the footbridge, physical contact, intention, or the use of a person as a means, and predict how people would answer it.</p>
+      <p>1. Name one object that is beautiful by the classical standard of proportion and symmetry and plain by the standards of this garden, and one object where the reverse holds. Say what each judgment is tracking.</p>
       <textarea id="discussion1"></textarea>
-      <p>2. Self-driving vehicles, triage protocols, and military targeting rules all encode answers to cases like these in advance. Should such answers be written down before the emergency, and by whom?</p>
+      <p>2. The temple keeps no official meaning for the garden, and visitors have supplied many. Is the meaning of an artwork fixed by its maker, by its tradition, or by its viewers? Use the garden and one western artwork you know in your answer.</p>
       <textarea id="discussion2"></textarea>
-      <p>3. Suppose someone answers the lever and the footbridge differently and cannot state a principle that separates them. Is that a defect in their reasoning, or evidence that morality does not reduce to statable principles?</p>
+      <p>3. The monk treats empty space as a material. Name an art that is not visual, writing, music, or conversation, where what is left out does real work, and describe how it does it.</p>
       <textarea id="discussion3"></textarea>
     </div>
 
     <div class="section-box" id="quizSection">
       <h3>Quiz</h3>
-      <p><strong>1.</strong> Across many surveys, most people say</p>
-      <label><input type="radio" name="q1" value="Pull the lever, but do not push the man"> pull the lever, but do not push the man</label>
-      <label><input type="radio" name="q1" value="Push the man, but do not pull the lever"> push the man, but do not pull the lever</label>
-      <label><input type="radio" name="q1" value="The same thing in both cases"> the same thing in both cases</label>
+      <p><strong>1.</strong> Karesansui means</p>
+      <label><input type="radio" name="q1" value="Dry landscape"> dry landscape</label>
+      <label><input type="radio" name="q1" value="Fifteen stones"> fifteen stones</label>
+      <label><input type="radio" name="q1" value="The temple garden"> the temple garden</label>
 
-      <p><strong>2.</strong> The doctrine of double effect distinguishes</p>
-      <label><input type="radio" name="q2" value="Harm intended as a means from harm foreseen as a side effect"> harm intended as a means from harm foreseen as a side effect</label>
-      <label><input type="radio" name="q2" value="Harm to strangers from harm to friends"> harm to strangers from harm to friends</label>
-      <label><input type="radio" name="q2" value="Action from inaction in every case"> action from inaction in every case</label>
+      <p><strong>2.</strong> The garden at Ryoan-ji is meant to be viewed</p>
+      <label><input type="radio" name="q2" value="Seated on the veranda, without entering it"> seated on the veranda, without entering it</label>
+      <label><input type="radio" name="q2" value="By walking among the stones"> by walking among the stones</label>
+      <label><input type="radio" name="q2" value="From above, from the hall roof"> from above, from the hall roof</label>
 
-      <p><strong>3.</strong> In the footbridge case, the large man's death is</p>
-      <label><input type="radio" name="q3" value="The means by which the five are saved"> the means by which the five are saved</label>
-      <label><input type="radio" name="q3" value="A side effect of redirecting the threat"> a side effect of redirecting the threat</label>
-      <label><input type="radio" name="q3" value="Unrelated to whether the five are saved"> unrelated to whether the five are saved</label>
+      <p><strong>3.</strong> Wabi and sabi name, respectively,</p>
+      <label><input type="radio" name="q3" value="An austere simplicity, and the beauty a thing acquires by age and wear"> an austere simplicity, and the beauty a thing acquires by age and wear</label>
+      <label><input type="radio" name="q3" value="The gravel and the stones"> the gravel and the stones</label>
+      <label><input type="radio" name="q3" value="Symmetry and proportion"> symmetry and proportion</label>
 
       <p><button id="gradeBtn">Grade the quiz</button></p>
       <p id="quizResult"></p>
@@ -213,49 +213,49 @@ textarea{
 
 <script>
 "use strict";
-const ACTIVITY_KEY = "phil_map_footbridge";
+const ACTIVITY_KEY = "phil_map_garden";
 
 /* =========================================================
    Prompts, quiz key, and log
    ========================================================= */
 const prompts = {
   first: {
-    title: "Stage 0: Your answer at the lever",
-    text: "At the prologue you stood at a lever: divert the trolley and one person dies instead of five. Before this situation unfolds, record what you chose there, or would choose now.",
-    mcq: ["I pulled it, one death instead of five", "I did not pull it", "Not sure, but I would pull it now", "Not sure, but I would not pull it now"],
-    requireText: true
+    title: "Stage 0: What makes something beautiful",
+    text: "The prologue named aesthetics as a branch of philosophy, and this is the journey's first stop devoted to it. Before the garden makes its argument, answer for yourself. What makes something beautiful?",
+    mcq: ["Proportion and symmetry in the thing itself", "What the thing expresses or means", "Nothing in the thing, beauty is in the viewer", "It cannot be said in general, only shown case by case"],
+    requireText: false
   },
-  push: {
-    title: "Stage 1: The bridge",
-    text: "The numbers are the lever's numbers: one life against five. The only difference is what you would have to do. Record your decision.",
-    mcq: ["I push him, five lives outweigh one", "I do not push him, this feels different", "I do neither, here or at the lever", "I cannot decide"],
-    requireText: true
+  empty: {
+    title: "Stage 1: The empty part",
+    text: "Most of the garden is the part with nothing in it. The monk claims the gravel is not background, and that the stones are placed to shape the emptiness rather than to fill it. What follows if he is right?",
+    mcq: ["Empty space is a material of the composition, as silence is in music", "The garden is unfinished, and space is what remains to fill", "The claim is a manner of speaking and changes nothing", "The stones are the art and the gravel is the frame"],
+    requireText: false
   },
-  asymmetry: {
-    title: "Stage 2: The asymmetry",
-    text: "Across many studies, most people pull the lever and refuse to push, though the arithmetic is identical. If the majority is responding to a real difference, what is that difference?",
-    mcq: ["Touching someone is different from pulling a switch", "On the bridge, his body is the tool that stops it", "Nothing real, people are just inconsistent", "The lever answer was wrong too"],
-    requireText: true
+  arrange: {
+    title: "Stage 2: Your arrangement",
+    text: "You placed stones in the practice frame. Say what guided your hand.",
+    mcq: ["Balance without symmetry, no stone mirroring another", "A picture, islands or mountains or animals", "The spaces between the stones more than the stones", "Nothing I could name while doing it"],
+    requireText: false
   },
-  intention: {
-    title: "Stage 3: Intending and foreseeing",
-    text: "The doctrine of double effect says harm you intend as your means is worse than the same harm foreseen as a side effect. At the lever, if the one person somehow survived, your plan still works. On the bridge, if the man survives untouched by the trolley, your plan has failed. Does that difference carry moral weight?",
-    mcq: ["Yes, what you aim at is what you do", "Some, but the result matters more", "No, it is a trick that excuses the lever", "It matters in law and practice, whatever theory says"],
-    requireText: true
+  fifteen: {
+    title: "Stage 3: The fifteenth stone",
+    text: "Visitors repeat that from no single seat on the veranda are all fifteen stones visible at once. Take the claim as a fact about this garden. What is the design doing with it?",
+    mcq: ["Showing that no single standpoint gives the whole, of the garden or of anything", "Playing a counting trick on visitors", "Hiding a flaw in the arrangement", "Nothing, it is an accident the design never intended"],
+    requireText: false
   },
-  consistency: {
-    title: "Stage 4: Your two answers",
-    text: "Set your lever answer beside your bridge answer. Are they consistent? If they are, state the principle that covers both. If they are not, say which answer you would change, or defend keeping both without a principle.",
+  final: {
+    title: "Stage 4: Two ideals of beauty",
+    text: "The classical Greek ideal you met in the west holds beauty to be proportion, symmetry, and permanence. The terms developed in Japan prize austerity, asymmetry, the marks of age, and the awareness that things pass. State whether imperfection and impermanence can themselves be beautiful, or whether they only borrow beauty from what they interrupt, and give one example of your own from either side.",
     mcq: null,
     requireText: true,
-    textHint: "The principle, the change, or the defense."
+    textHint: "Your position, and one example of your own."
   }
 };
 
 const quizKeys = [
-  "Pull the lever, but do not push the man",
-  "Harm intended as a means from harm foreseen as a side effect",
-  "The means by which the five are saved"
+  "Dry landscape",
+  "Seated on the veranda, without entering it",
+  "An austere simplicity, and the beauty a thing acquires by age and wear"
 ];
 
 let reflectionLog = [];
@@ -286,9 +286,12 @@ const W = 900, H = 500;
 let started = false;
 let paused = false;
 let t = 0;
-let trolleyOn = false;
-let trolleyX = -80;
-const record = { lever: null, bridge: null };
+let placeOn = false;
+let placedStones = [];
+let ryoanOn = false;
+let windT = 0;
+const TRAY = { x: 190, y: 336, w: 520, h: 128 };
+
 
 /* =========================================================
    Narration and the modal
@@ -364,7 +367,9 @@ function continueDlg() {
     if (window.speechSynthesis) speechSynthesis.cancel();
     if (cb) cb();
   } else {
-    if (dlg.steps[dlg.i].trolley) trolleyOn = true;
+    if (dlg.steps[dlg.i].place) placeOn = true;
+    if (dlg.steps[dlg.i].placeEnd) placeOn = false;
+    if (dlg.steps[dlg.i].ryoan) ryoanOn = true;
     renderDlg();
   }
 }
@@ -451,8 +456,6 @@ submitBtn.addEventListener("click", () => {
     choice: p.mcq ? (sel ? sel.value : null) : null,
     response: modalText.value.trim()
   });
-  if (activePrompt.key === "first" && sel) record.lever = sel.value;
-  if (activePrompt.key === "push" && sel) record.bridge = sel.value;
   if (window.speechSynthesis) speechSynthesis.cancel();
   overlay.classList.remove("open");
   paused = false;
@@ -469,25 +472,28 @@ function setObjective(txt) { objectiveEl.textContent = txt; }
 function runScene() {
   openPrompt("first", () => {
     startDlg([
-      { say: "The pass road crosses a gorge on a footbridge, and the rail line runs through the gorge below. You are halfway across when you hear it: a runaway trolley, brakes gone, coming down the grade. Further along the line, five workers are in a cutting with their backs to it, and the walls of the cutting leave them nowhere to go.", trolley: false },
-      { trolley: true, say: "There is no lever here. There is no side track. There is only one thing on this bridge heavy enough to stop a trolley, and it is not you." },
-    { say: "A very large man stands at the railing beside you, looking down at the line, unaware. If he falls onto the track, the trolley stops, and he dies, and the five live. You would have to push him." },
-      { note: true, say: "This is the footbridge case, introduced by Judith Jarvis Thomson in 1976, building on Philippa Foot's original trolley problem of 1967. The numbers are identical to the lever case on purpose: one life against five. Everything that differs is in what the one who acts must do." }
+      { say: "The sea crossing from the mainland ends at the ports of an island chain, and the road inland ends at a temple on the edge of Kyoto. A monk shows travelers to a wooden veranda and leaves them there, because the veranda is the destination. Before you is a garden with no plants in it. A rectangle of pale gravel, raked in long lines, and fifteen stones in five groups, with moss at their bases." },
+      { note: true, say: "Karesansui, the dry landscape garden, is a form developed at Zen temples in Japan. The most famous example is at Ryoan-ji in Kyoto, laid out around the end of the fifteenth century by a designer whose name is not recorded. It is about twenty five meters by ten, it is viewed seated from the veranda of the abbot's hall, and it is never entered. Monks maintain it daily, and the raking of the gravel is part of the temple's work." },
+      { say: "Monk: Visitors ask what it represents, and visitors have answered for themselves. Islands in the sea. Mountain peaks above cloud. A tiger carrying her cubs across a river. The temple keeps no official answer, and the garden has outlasted every answer so far given for it." },
+      { say: "Monk: Notice where the art is. Most of the garden is the part with nothing in it. The gravel is not background. It is most of the composition, and the stones are set to shape it, the way a silence can be set in music. Take away the empty part and there is no garden, only a pile of rocks." }
     ], () => {
-      openPrompt("push", () => {
+      openPrompt("empty", () => {
         startDlg([
-          { say: "Whichever you chose, notice what making the choice was like this time, and whether anything besides the numbers weighed on it." }
+          { place: true, say: "The monk brings out a shallow practice frame of gravel, used for teaching placement, and sets it before you on the veranda. Monk: Set up to five stones, one at a time, by pressing on the frame. Stop when it looks finished to you, and then continue." },
+          { placeEnd: true, say: "The monk looks at your frame for a while, without praise and without correction. Monk: Now say what guided your hand, because something did, whether or not you could hear it at the time." }
         ], () => {
-          openPrompt("asymmetry", () => {
+          openPrompt("arrange", () => {
             startDlg([
-              { note: true, say: "One well known analysis uses the doctrine of double effect, an idea that goes back to Aquinas. It says harm you intend as your means is worse than the same harm you only foresee." },
-    { say: "Test it here. At the lever, if the one worker scrambled clear, your plan still works. On the bridge, if the man is never struck, the five die. The trolley must hit him for the plan to work." }
+              { ryoan: true, say: "The monk turns you back to the garden itself. Monk: Fifteen stones, in groups of five, two, three, two, and three. Count them from where you sit." },
+              { say: "You count fourteen. You move along the boards and count again, and it is a different fourteen. Visitors repeat that from no single seat are all fifteen visible at once. The temple neither confirms this nor denies it, and it can be tested only by looking, which may be the point of building it that way." }
             ], () => {
-              openPrompt("intention", () => {
+              openPrompt("fifteen", () => {
                 startDlg([
-                  { say: "Below, it is over one way or another, and the road goes on. Situations like this one do not look like philosophy while they are happening. They demand a decision, and leave you to work out afterward what your answer committed you to." }
+                  { note: true, say: "Japanese aesthetics developed its own terms for what this garden values. Wabi, an austere, unadorned simplicity. Sabi, the beauty a thing acquires by age and wear. Mono no aware, the feelingful awareness that things pass. The paired phrase wabi sabi, used as a single term, is largely modern, and the component ideas are centuries old, worked out in poetry, in the tea room, and in gardens like this one." },
+                  { note: true, say: "Set this beside the classical ideal you met in the west, beauty as proportion, symmetry, and permanence, argued over in Athens and cut into marble. The garden argues the other side without a written word. Asymmetry over balance, weathering over polish, and impermanence accepted into the work rather than resisted by it. The two ideals disagree, and each has masterpieces as evidence." },
+                  { say: "The light moves across the gravel while you sit, which is the only event the garden stages. In the craft quarter of the city, the same aesthetic is applied to something broken." }
                 ], () => {
-                  openPrompt("consistency", () => endGame());
+                  openPrompt("final", () => endGame());
                 });
               });
             });
@@ -496,13 +502,14 @@ function runScene() {
       });
     });
   });
+
 }
 
 /* =========================================================
    End screen, quiz, and report
    ========================================================= */
 function endGame() {
-  try { localStorage.setItem("phil_map_footbridge", "1"); } catch (err) { /* storage is optional */ }
+  try { localStorage.setItem("phil_map_garden", "1"); } catch (err) { /* storage is optional */ }
   const summary = document.getElementById("reflectionSummary");
   summary.innerHTML = "";
   reflectionLog.forEach(r => {
@@ -548,8 +555,8 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const d1 = document.getElementById("discussion1").value.trim();
   const d2 = document.getElementById("discussion2").value.trim();
   const d3 = document.getElementById("discussion3").value.trim();
-  let text = "The Bridge Crossing, Report\n";
-  text += "===========================\n\nResponses at each stage:\n";
+  let text = "The Dry Garden, Report\n";
+  text += "================\n\nResponses at each stage:\n";
   reflectionLog.forEach(r => {
     text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
     if (r.choice) text += "Choice: " + r.choice + "\n";
@@ -557,12 +564,11 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
     text += "-".repeat(50);
   });
   text += "\n\nThe pair of answers:\n";
-  text += "At the lever: " + (record.lever || "(none)") + "\n";
-  text += "On the bridge: " + (record.bridge || "(none)") + "\n";
+  text += "\nStones placed in the practice frame: " + placedStones.length + "\n";
   text += "\nDiscussion questions:\n";
-  text += "1. A third variant isolating one difference.\n" + (d1 || "(no answer)") + "\n\n";
-  text += "2. Encoding answers before the emergency.\n" + (d2 || "(no answer)") + "\n\n";
-  text += "3. Different answers without a principle.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "1. Two objects under two standards.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Where an artwork's meaning is fixed.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. An art where omission does the work.\n" + (d3 || "(no answer)") + "\n\n";
   text += "Quiz:\n";
   if (quizScore) {
     quizScore.answers.forEach((ans, i) => {
@@ -575,7 +581,7 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const blob = new Blob([text], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = "Bridge_Crossing_Report.txt"; a.click();
+  a.href = url; a.download = "Dry_Garden_Report.txt"; a.click();
   URL.revokeObjectURL(url);
 });
 document.getElementById("restartBtn").addEventListener("click", () => location.reload());
@@ -583,106 +589,122 @@ document.getElementById("restartBtn").addEventListener("click", () => location.r
 /* =========================================================
    Drawing: the gorge, the bridge, the line below
    ========================================================= */
-function drawFigure(x, y, s, color) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.scale(s, s);
-  ctx.fillStyle = color;
-  ctx.beginPath(); ctx.arc(0, -34, 7, 0, Math.PI * 2); ctx.fill();
-  ctx.fillRect(-5, -28, 10, 17);
-  ctx.fillRect(-5, -11, 4, 11);
-  ctx.fillRect(1, -11, 4, 11);
-  ctx.restore();
+function drawStone(x, y, s, withRipples, gravelTone) {
+  if (withRipples) {
+    ctx.strokeStyle = "rgba(120,116,104,0.8)";
+    ctx.lineWidth = 1.5;
+    for (let r = 1; r <= 3; r++) {
+      ctx.beginPath();
+      ctx.ellipse(x, y + 3, (14 + r * 9) * s, (7 + r * 5) * s, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+  ctx.fillStyle = "#5a6068";
+  ctx.beginPath();
+  ctx.ellipse(x, y, 13 * s, 9 * s, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#6c7280";
+  ctx.beginPath();
+  ctx.ellipse(x - 3 * s, y - 3 * s, 7 * s, 4.5 * s, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#4a6a46";
+  ctx.beginPath();
+  ctx.ellipse(x + 6 * s, y + 6 * s, 6 * s, 2.5 * s, 0, 0, Math.PI * 2);
+  ctx.fill();
+}
+function gravelField(x, y, w2, h2) {
+  ctx.fillStyle = "#d6d0be";
+  ctx.fillRect(x, y, w2, h2);
+  ctx.strokeStyle = "rgba(120,116,104,0.5)";
+  ctx.lineWidth = 1.5;
+  for (let ly = y + 8; ly < y + h2; ly += 9) {
+    ctx.beginPath(); ctx.moveTo(x + 4, ly); ctx.lineTo(x + w2 - 4, ly); ctx.stroke();
+  }
 }
 function render() {
   ctx.clearRect(0, 0, W, H);
-  // Dusk sky.
+  // A still sky over the temple wall.
   const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, "#232338");
-  sky.addColorStop(0.6, "#3c3450");
-  sky.addColorStop(1, "#584458");
+  sky.addColorStop(0, "#7a88a0");
+  sky.addColorStop(0.6, "#9aa096");
+  sky.addColorStop(1, "#b0aa8c");
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, W, H);
-  // Mountains behind.
-  ctx.fillStyle = "rgba(40,40,58,0.9)";
-  ctx.beginPath();
-  ctx.moveTo(0, 240); ctx.lineTo(160, 110); ctx.lineTo(300, 220); ctx.lineTo(470, 90);
-  ctx.lineTo(650, 210); ctx.lineTo(800, 130); ctx.lineTo(900, 200); ctx.lineTo(900, 500); ctx.lineTo(0, 500);
-  ctx.closePath(); ctx.fill();
-  // The gorge walls.
-  ctx.fillStyle = "#2c2c3c";
-  ctx.fillRect(0, 300, 240, 200);
-  ctx.fillRect(660, 300, 240, 200);
-  ctx.fillStyle = "#242432";
-  ctx.beginPath();
-  ctx.moveTo(240, 300); ctx.lineTo(240, 500); ctx.lineTo(300, 500); ctx.closePath(); ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(660, 300); ctx.lineTo(660, 500); ctx.lineTo(600, 500); ctx.closePath(); ctx.fill();
-  // The rail line along the gorge floor.
-  ctx.strokeStyle = "#8b95a5";
-  ctx.lineWidth = 4;
-  [448, 466].forEach(ry => {
-    ctx.beginPath(); ctx.moveTo(0, ry); ctx.lineTo(900, ry); ctx.stroke();
-  });
-  ctx.strokeStyle = "#4a3c30";
-  for (let x = 10; x < 900; x += 30) {
-    ctx.beginPath(); ctx.moveTo(x, 442); ctx.lineTo(x, 472); ctx.stroke();
+  // Trees beyond the wall, moving slightly.
+  const sway = REDUCED_MOTION ? 0 : Math.sin(windT * 0.8) * 3;
+  ctx.fillStyle = "#4a6a46";
+  ctx.beginPath(); ctx.ellipse(120 + sway, 120, 90, 46, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(320 - sway, 104, 110, 50, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(600 + sway, 116, 120, 52, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(800 - sway, 128, 80, 42, 0, 0, Math.PI * 2); ctx.fill();
+  // The earthen wall with its tiled cap, enclosing the garden.
+  ctx.fillStyle = "#a08a6c";
+  ctx.fillRect(60, 148, 780, 44);
+  ctx.fillStyle = "#5c4a34";
+  ctx.fillRect(52, 140, 796, 12);
+  // The main garden: gravel with the fifteen stones once revealed.
+  gravelField(60, 192, 780, 128);
+  if (ryoanOn) {
+    drawStone(170, 240, 1.25, true); drawStone(206, 252, 0.8, false); drawStone(146, 260, 0.7, false);
+    drawStone(212, 228, 0.6, false); drawStone(184, 220, 0.55, false);
+    drawStone(346, 258, 0.95, true); drawStone(374, 248, 0.6, false);
+    drawStone(490, 226, 1.05, true); drawStone(520, 240, 0.7, false); drawStone(466, 244, 0.6, false);
+    drawStone(636, 258, 0.9, true); drawStone(664, 246, 0.6, false);
+    drawStone(760, 228, 0.95, true); drawStone(788, 242, 0.65, false); drawStone(736, 244, 0.55, false);
+  } else {
+    drawStone(210, 244, 1.2, true);
+    drawStone(430, 232, 0.9, true);
+    drawStone(670, 250, 1.0, true);
   }
-  // The cutting with the five workers, right of the bridge.
-  ctx.fillStyle = "#242432";
-  ctx.fillRect(700, 396, 200, 44);
-  for (let i = 0; i < 5; i++) drawFigure(730 + i * 36, 452, 0.8, "#8fb7dd");
+  // The veranda boards in the foreground.
+  ctx.fillStyle = "#8a7450";
+  ctx.fillRect(0, 320, W, 180);
+  ctx.strokeStyle = "rgba(60,48,32,0.5)";
+  ctx.lineWidth = 2;
+  for (let by = 336; by < 500; by += 24) {
+    ctx.beginPath(); ctx.moveTo(0, by); ctx.lineTo(W, by); ctx.stroke();
+  }
+  // The practice frame, when placement is on or has been used.
+  if (placeOn || placedStones.length) {
+    ctx.fillStyle = "#5c4a34";
+    ctx.fillRect(TRAY.x - 8, TRAY.y - 8, TRAY.w + 16, TRAY.h + 16);
+    gravelField(TRAY.x, TRAY.y, TRAY.w, TRAY.h);
+    placedStones.forEach(p => drawStone(p.x, p.y, 0.85, true));
+    ctx.fillStyle = "#eef2f6";
+    ctx.font = "13px 'Segoe UI', sans-serif";
+    if (placeOn) {
+      ctx.fillText("the practice frame, " + placedStones.length + " of 5 stones set", TRAY.x, TRAY.y + TRAY.h + 24);
+    }
+  }
+  // You, seated at the edge of the boards.
+  ctx.fillStyle = "#5b84b1";
+  ctx.beginPath(); ctx.arc(80, 388, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(73, 396, 14, 16);
+  ctx.fillRect(66, 412, 28, 6);
   ctx.fillStyle = "#eef2f6";
   ctx.font = "13px 'Segoe UI', sans-serif";
-  ctx.fillText("five workers", 748, 492);
-  // The footbridge across the gorge.
-  ctx.fillStyle = "#57503f";
-  ctx.fillRect(220, 262, 460, 14);
-  ctx.strokeStyle = "#57503f";
-  ctx.lineWidth = 5;
-  ctx.beginPath(); ctx.moveTo(220, 240); ctx.lineTo(680, 240); ctx.stroke();
-  for (let x = 240; x < 680; x += 44) {
-    ctx.beginPath(); ctx.moveTo(x, 240); ctx.lineTo(x, 262); ctx.stroke();
-  }
-  ctx.fillStyle = "#484236";
-  ctx.fillRect(206, 262, 18, 238);
-  ctx.fillRect(676, 262, 18, 238);
-  // You, and the large man at the railing.
-  drawFigure(392, 262, 1, "#5b84b1");
-  ctx.fillStyle = "#5a7d8f";
-  ctx.beginPath(); ctx.arc(470, 220, 10, 0, Math.PI * 2); ctx.fill();
-  ctx.fillRect(455, 228, 30, 30);
-  ctx.fillRect(457, 258, 10, 6);
-  ctx.fillRect(473, 258, 10, 6);
-  ctx.fillStyle = "#eef2f6";
-  ctx.fillText("you", 380, 292);
-  ctx.fillText("the large man", 428, 210);
-  // The trolley, rolling in on the line when the scene calls it.
-  if (trolleyOn) {
-    ctx.fillStyle = "#8f3b3b";
-    ctx.fillRect(trolleyX - 46, 408, 92, 40);
-    ctx.fillStyle = "#c9b98a";
-    ctx.fillRect(trolleyX - 36, 416, 24, 16);
-    ctx.fillRect(trolleyX + 6, 416, 24, 16);
-    ctx.fillStyle = "#1c1c26";
-    ctx.beginPath();
-    ctx.arc(trolleyX - 26, 452, 9, 0, Math.PI * 2);
-    ctx.arc(trolleyX + 26, 452, 9, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  ctx.fillText("you", 70, 438);
   if (!started) {
     ctx.fillStyle = "rgba(16,16,22,0.55)";
     ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = "#f0f0f5";
     ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
     ctx.textAlign = "center";
-    ctx.fillText("The Bridge Crossing", W / 2, H / 2 - 12);
+    ctx.fillText("The Dry Garden", W / 2, H / 2 - 12);
     ctx.font = "15px 'Segoe UI', sans-serif";
     ctx.fillStyle = "#a9a9bc";
     ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
     ctx.textAlign = "left";
   }
 }
+canvas.addEventListener("click", ev => {
+  if (!placeOn || placedStones.length >= 5) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = (ev.clientX - rect.left) * (W / rect.width);
+  const y = (ev.clientY - rect.top) * (H / rect.height);
+  if (x < TRAY.x + 16 || x > TRAY.x + TRAY.w - 16 || y < TRAY.y + 12 || y > TRAY.y + TRAY.h - 12) return;
+  placedStones.push({ x: x, y: y });
+});
 
 /* =========================================================
    Main loop and start
@@ -691,9 +713,8 @@ let last = performance.now();
 function update(dt) {
   if (typeof tickStatus === "function") tickStatus();
   t += dt;
-  if (trolleyOn && !paused) {
-    trolleyX = Math.min(trolleyX + (REDUCED_MOTION ? 20 : 60) * dt, 250);
-  }
+  windT += dt;
+
 }
 function loop(now) {
   const dt = Math.min((now - last) / 1000, 0.05);

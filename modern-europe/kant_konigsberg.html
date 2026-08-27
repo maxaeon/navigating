@@ -249,7 +249,7 @@ const ACTIVITY_KEY = "phil_map_kant";
    ========================================================= */
 const prompts = {
   first: {
-    title: "Stage 0: The state of the road",
+    title: "Stage 0: Where you arrive",
     text: "You have walked both roads. Descartes trusted reason and rebuilt the world from one certainty. Hume trusted experience and found that reason cannot deliver what we expected of it. Before Kant speaks: which road do you arrive on?",
     mcq: ["Descartes, since experience alone leaves too little standing", "Hume, since the honest inventory is the honest inventory", "Neither, since both end somewhere I cannot accept", "I am not sure yet"],
     requireText: true
@@ -279,11 +279,11 @@ const prompts = {
     requireText: true
   },
   verdict: {
-    title: "Stage 5: The region, decided",
-    text: "You have now walked all of it. Descartes, Hume, Berkeley, and Kant each begin somewhere reasonable and end somewhere hard to accept. Write your own position on where knowledge comes from, name which of the four you are closest to, and say what your position still owes an answer for.",
+    title: "Stage 5: Your own position",
+    text: "You have now walked all of it. Descartes, Hume, Berkeley, and Kant each begin somewhere reasonable and end somewhere hard to accept. Write your own position on where knowledge comes from, name which of the four you are closest to, and state one question your position still has to answer.",
     mcq: null,
     requireText: true,
-    textHint: "Your position, your nearest ally, and your outstanding debt."
+    textHint: "Your position, your nearest ally, and the question it still faces."
   }
 };
 
@@ -573,7 +573,7 @@ function dlgBeat1() {
   startDlg([
     { say: "At a milestone Kant stops and taps it with his stick. Kant: Let me say what the Scotsman did to me, because I will not pretend it was small." },
     { say: "Kant: Hume asked what experience gives us when one billiard ball strikes another. Succession, contact, repetition. Never necessity. And he was right." },
-    { say: "Kant: I could not answer him from experience, because there is no answer from experience. He had closed that road properly." },
+    { say: "Kant: I could not answer him from experience, because there is no answer from experience. He had established that properly." },
     { say: "Kant: I say openly that he interrupted my dogmatic slumber. I had been building systems on foundations he showed me were not there.",
       choices: [
         { tag: "give", text: "Then you should give up on causes, as he nearly did.",
@@ -656,7 +656,7 @@ function dlgBeat4() {
 }
 function dlgClose() {
   startDlg([
-    { say: "Kant: So the two roads you walked were both right and both incomplete. Without the senses no object would be given to us, and without the understanding none would be thought." },
+    { say: "Kant: So the two traditions you met were both right and both incomplete. Without the senses no object would be given to us, and without the understanding none would be thought." },
     { say: "Kant: Thoughts without content are empty. Intuitions without concepts are blind. Neither faculty is to be preferred to the other, and the whole quarrel came from asking which one alone could do the work." },
     { say: "Kant: I do not expect you to accept my system. I expect you to see why the old question could not be answered in the old terms. That much I am confident of, and it is enough for one walk." }
   ], () => {

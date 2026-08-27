@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Bridge Crossing</title>
+<title>Zhuangzi's Butterfly</title>
 <style>
 :root{
   --page:#131318;
@@ -117,9 +117,9 @@ textarea{
 
 <header class="wrap">
   <div class="about-wrap">
-    <h1>The Bridge Crossing</h1>
+    <h1>Zhuangzi's Butterfly</h1>
     <p class="about-cue">What this activity covers</p>
-    <div class="about" id="aboutText"><p>A mountain pass on the road between regions, at dusk. This is a situation on the road. It was not on your itinerary, and it will not wait for a convenient moment. Below the footbridge runs a rail line, and something is wrong on it. You faced a version of this once before, at a lever, in the prologue. This version is harder, and the difference between the two versions is what this activity examines. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+    <div class="about" id="aboutText"><p>A riverbank downstream of the valley, in the fourth century BCE. The man fishing here has declined a ministry, argues mostly by stories, and once dreamed he was a butterfly. The activity covers the dream, its meeting with the stove-heated room you visited in Europe, the useless tree, and the debate about the happiness of fish. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
   </div>
 </header>
 
@@ -165,7 +165,7 @@ textarea{
 <div id="endScreen">
   <div class="wrap">
     <h1>Activity completed</h1>
-    <p id="nextStop">The road continues where it was going. The world map remembers this crossing.</p>
+    <p id="nextStop">The road returns toward the coast. The world map remembers the riverbank.</p>
 
     <div class="section-box">
       <h3>Your responses at each stage</h3>
@@ -174,30 +174,30 @@ textarea{
 
     <div class="section-box">
       <h3>Discussion questions</h3>
-      <p>1. Design a third variant of the situation that isolates exactly one difference from the footbridge, physical contact, intention, or the use of a person as a means, and predict how people would answer it.</p>
+      <p>1. In the fish debate, Huizi objects that Zhuangzi cannot know the fish are happy, and Zhuangzi turns the objection on the objector. Reconstruct both moves as arguments about knowing other minds, and say who wins the exchange.</p>
       <textarea id="discussion1"></textarea>
-      <p>2. Self-driving vehicles, triage protocols, and military targeting rules all encode answers to cases like these in advance. Should such answers be written down before the emergency, and by whom?</p>
+      <p>2. The useless tree is left alone by the axe. Name one person, practice, or discipline that survives by being useless to power, and one destroyed by being useful to it, and draw the lesson carefully.</p>
       <textarea id="discussion2"></textarea>
-      <p>3. Suppose someone answers the lever and the footbridge differently and cannot state a principle that separates them. Is that a defect in their reasoning, or evidence that morality does not reduce to statable principles?</p>
+      <p>3. Zhuangzi argues almost entirely in stories, where the courtyard argued in maxims and the Greeks in premises. Say what a story can establish that a premise cannot, and what it cannot establish that a premise can.</p>
       <textarea id="discussion3"></textarea>
     </div>
 
     <div class="section-box" id="quizSection">
       <h3>Quiz</h3>
-      <p><strong>1.</strong> Across many surveys, most people say</p>
-      <label><input type="radio" name="q1" value="Pull the lever, but do not push the man"> pull the lever, but do not push the man</label>
-      <label><input type="radio" name="q1" value="Push the man, but do not pull the lever"> push the man, but do not pull the lever</label>
-      <label><input type="radio" name="q1" value="The same thing in both cases"> the same thing in both cases</label>
+      <p><strong>1.</strong> Waking from the dream, Zhuangzi did not know</p>
+      <label><input type="radio" name="q1" value="Whether he was Zhou who dreamt a butterfly, or a butterfly dreaming Zhou"> whether he was Zhou who dreamt a butterfly, or a butterfly dreaming Zhou</label>
+      <label><input type="radio" name="q1" value="Where the butterfly had flown"> where the butterfly had flown</label>
+      <label><input type="radio" name="q1" value="What day it was"> what day it was</label>
 
-      <p><strong>2.</strong> The doctrine of double effect distinguishes</p>
-      <label><input type="radio" name="q2" value="Harm intended as a means from harm foreseen as a side effect"> harm intended as a means from harm foreseen as a side effect</label>
-      <label><input type="radio" name="q2" value="Harm to strangers from harm to friends"> harm to strangers from harm to friends</label>
-      <label><input type="radio" name="q2" value="Action from inaction in every case"> action from inaction in every case</label>
+      <p><strong>2.</strong> Where Descartes met the same absence of a mark with a method of doubt, Zhuangzi</p>
+      <label><input type="radio" name="q2" value="He treated it with ease, calling it the transformation of things"> treated it with ease, calling it the transformation of things</label>
+      <label><input type="radio" name="q2" value="He refused to sleep again"> refused to sleep again</label>
+      <label><input type="radio" name="q2" value="He built a rival method of doubt"> built a rival method of doubt</label>
 
-      <p><strong>3.</strong> In the footbridge case, the large man's death is</p>
-      <label><input type="radio" name="q3" value="The means by which the five are saved"> the means by which the five are saved</label>
-      <label><input type="radio" name="q3" value="A side effect of redirecting the threat"> a side effect of redirecting the threat</label>
-      <label><input type="radio" name="q3" value="Unrelated to whether the five are saved"> unrelated to whether the five are saved</label>
+      <p><strong>3.</strong> The great tree survived</p>
+      <label><input type="radio" name="q3" value="Because it was too gnarled to be cut for lumber"> because it was too gnarled to be cut for lumber</label>
+      <label><input type="radio" name="q3" value="Because it was sacred"> because it was sacred</label>
+      <label><input type="radio" name="q3" value="Because it grew beside a temple"> because it grew beside a temple</label>
 
       <p><button id="gradeBtn">Grade the quiz</button></p>
       <p id="quizResult"></p>
@@ -213,49 +213,49 @@ textarea{
 
 <script>
 "use strict";
-const ACTIVITY_KEY = "phil_map_footbridge";
+const ACTIVITY_KEY = "phil_map_zhuangzi";
 
 /* =========================================================
    Prompts, quiz key, and log
    ========================================================= */
 const prompts = {
   first: {
-    title: "Stage 0: Your answer at the lever",
-    text: "At the prologue you stood at a lever: divert the trolley and one person dies instead of five. Before this situation unfolds, record what you chose there, or would choose now.",
-    mcq: ["I pulled it, one death instead of five", "I did not pull it", "Not sure, but I would pull it now", "Not sure, but I would not pull it now"],
-    requireText: true
+    title: "Stage 0: Awake",
+    text: "You answered a version of this for Descartes in the stove-heated room. Answer it again by this river. How do you know, right now, that you are awake?",
+    mcq: ["The scene is orderly and connected, as dreams are not", "I cannot know it, and no mark separates the two", "Being awake needs no proof, it shows itself", "The question is confused, knowing does not apply here"],
+    requireText: false
   },
-  push: {
-    title: "Stage 1: The bridge",
-    text: "The numbers are the lever's numbers: one life against five. The only difference is what you would have to do. Record your decision.",
-    mcq: ["I push him, five lives outweigh one", "I do not push him, this feels different", "I do neither, here or at the lever", "I cannot decide"],
-    requireText: true
+  butterfly: {
+    title: "Stage 1: The dream",
+    text: "Zhuang Zhou dreamt he was a butterfly, fluttering about, pleased with itself, knowing nothing of Zhou. He woke as Zhou, and did not know whether he was Zhou who had dreamt the butterfly, or a butterfly now dreaming Zhou. What is the story claiming?",
+    mcq: ["No internal mark tells the dreamer from the waker, and the border between things is looser than it looks", "Zhou was really a butterfly", "Dreams reveal hidden truths about the dreamer", "Nothing, it is a picture without a point"],
+    requireText: false
   },
-  asymmetry: {
-    title: "Stage 2: The asymmetry",
-    text: "Across many studies, most people pull the lever and refuse to push, though the arithmetic is identical. If the majority is responding to a real difference, what is that difference?",
-    mcq: ["Touching someone is different from pulling a switch", "On the bridge, his body is the tool that stops it", "Nothing real, people are just inconsistent", "The lever answer was wrong too"],
-    requireText: true
+  descartes: {
+    title: "Stage 2: Two responses to one absence",
+    text: "Descartes found no mark separating waking from dreaming and treated the absence as an emergency, doubting everything until one certainty held. Zhuangzi found the same absence and called it the transformation of things, and went on fishing. Same observation, opposite responses. Which response answers the evidence better?",
+    mcq: ["Zhuangzi's, the absence of a mark is only an emergency if certainty was owed to you", "Descartes', knowledge needs foundations and the emergency is real", "Each fits its purpose, rebuilding a science against living a life", "Neither, the absence of a mark should simply be denied"],
+    requireText: false
   },
-  intention: {
-    title: "Stage 3: Intending and foreseeing",
-    text: "The doctrine of double effect says harm you intend as your means is worse than the same harm foreseen as a side effect. At the lever, if the one person somehow survived, your plan still works. On the bridge, if the man survives untouched by the trolley, your plan has failed. Does that difference carry moral weight?",
-    mcq: ["Yes, what you aim at is what you do", "Some, but the result matters more", "No, it is a trick that excuses the lever", "It matters in law and practice, whatever theory says"],
-    requireText: true
+  useless: {
+    title: "Stage 3: The use of being useless",
+    text: "A tree too gnarled for lumber is left to grow vast while straight trees fall to the axe, and a sacred tortoise, offered veneration after death, would rather drag its tail in the mud. What are the two stories together saying about value?",
+    mcq: ["Worth measured by usefulness to others is a measure the measured should distrust", "Trees and tortoises are poor judges of value", "Uselessness is always better than usefulness", "Value is whatever survives longest"],
+    requireText: false
   },
-  consistency: {
-    title: "Stage 4: Your two answers",
-    text: "Set your lever answer beside your bridge answer. Are they consistent? If they are, state the principle that covers both. If they are not, say which answer you would change, or defend keeping both without a principle.",
+  final: {
+    title: "Stage 4: Living with uncertainty",
+    text: "The road has now shown you three responses to unresolvable uncertainty. Descartes' search for a foundation, Sextus' suspension of judgment, and Zhuangzi's ease with transformation. State which of the three can actually be lived, argue for it against one of the others, and give one situation from your own life where you have practiced it.",
     mcq: null,
     requireText: true,
-    textHint: "The principle, the change, or the defense."
+    textHint: "Your response, the argument, and your own case."
   }
 };
 
 const quizKeys = [
-  "Pull the lever, but do not push the man",
-  "Harm intended as a means from harm foreseen as a side effect",
-  "The means by which the five are saved"
+  "Whether he was Zhou who dreamt a butterfly, or a butterfly dreaming Zhou",
+  "He treated it with ease, calling it the transformation of things",
+  "Because it was too gnarled to be cut for lumber"
 ];
 
 let reflectionLog = [];
@@ -286,9 +286,8 @@ const W = 900, H = 500;
 let started = false;
 let paused = false;
 let t = 0;
-let trolleyOn = false;
-let trolleyX = -80;
-const record = { lever: null, bridge: null };
+let flutterT = 0;
+
 
 /* =========================================================
    Narration and the modal
@@ -364,7 +363,6 @@ function continueDlg() {
     if (window.speechSynthesis) speechSynthesis.cancel();
     if (cb) cb();
   } else {
-    if (dlg.steps[dlg.i].trolley) trolleyOn = true;
     renderDlg();
   }
 }
@@ -451,8 +449,6 @@ submitBtn.addEventListener("click", () => {
     choice: p.mcq ? (sel ? sel.value : null) : null,
     response: modalText.value.trim()
   });
-  if (activePrompt.key === "first" && sel) record.lever = sel.value;
-  if (activePrompt.key === "push" && sel) record.bridge = sel.value;
   if (window.speechSynthesis) speechSynthesis.cancel();
   overlay.classList.remove("open");
   paused = false;
@@ -469,25 +465,40 @@ function setObjective(txt) { objectiveEl.textContent = txt; }
 function runScene() {
   openPrompt("first", () => {
     startDlg([
-      { say: "The pass road crosses a gorge on a footbridge, and the rail line runs through the gorge below. You are halfway across when you hear it: a runaway trolley, brakes gone, coming down the grade. Further along the line, five workers are in a cutting with their backs to it, and the walls of the cutting leave them nowhere to go.", trolley: false },
-      { trolley: true, say: "There is no lever here. There is no side track. There is only one thing on this bridge heavy enough to stop a trolley, and it is not you." },
-    { say: "A very large man stands at the railing beside you, looking down at the line, unaware. If he falls onto the track, the trolley stops, and he dies, and the five live. You would have to push him." },
-      { note: true, say: "This is the footbridge case, introduced by Judith Jarvis Thomson in 1976, building on Philippa Foot's original trolley problem of 1967. The numbers are identical to the lever case on purpose: one life against five. Everything that differs is in what the one who acts must do." }
+      { say: "Downstream the river slows and widens, and a man is fishing from the bank with no great attention to the fishing. A gnarled tree leans over the water beside him, too twisted for any carpenter, and broad enough to shade an ox cart. He looks up at your road dust and laughs at something, possibly you." },
+      { note: true, say: "Zhuang Zhou, called Zhuangzi, Master Zhuang, lived in the fourth century BCE. The book bearing his name opens with seven Inner Chapters that scholars largely credit to him, with later material gathered around them. Where the Daodejing speaks in verse and to rulers, the Zhuangzi argues in stories, jokes, and impossible conversations, and it is counted among the masterpieces of Chinese literature as well as philosophy." },
+      { say: "Zhuangzi: Before you ask me anything, I will tell you the only thing that ever happened to me. I, Zhuang Zhou, dreamt I was a butterfly. Fluttering here and there, pleased with myself, and knowing nothing of any Zhou. Then I woke, and there I lay, unmistakably Zhou." },
+      { say: "Zhuangzi: And I did not know. Was I Zhou, who had dreamt he was a butterfly? Or a butterfly, dreaming now that it is Zhou? Between Zhou and the butterfly there must be some difference. This is called the transformation of things.",
+        choices: [
+          { tag: "mark", text: "Surely waking has some mark that dreaming lacks.",
+            reply: ["Zhuangzi: Name it, and remember that whatever you name, you have been certain of it in dreams before. A man in a stove-heated room far west of here will one day search years for that mark and report that he cannot find one. He will be right about the searching, and then he will panic, which is the part I could have spared him."] },
+          { tag: "trouble", text: "Does the not-knowing not trouble you?",
+            reply: ["Zhuangzi: Why should it? If I am Zhou, I fish, and if I am a butterfly dreaming with unusual thoroughness, the fishing is excellent either way. Trouble comes from insisting the border hold still, and the border was never the kind of thing that holds still."] }
+        ] },
+      { note: true, say: "The butterfly dream closes the second of the Inner Chapters. Descartes, in the Meditations you walked in Europe, reaches the same finding, no internal mark separates waking from dreaming, and builds his method of doubt on the alarm it causes him. The two responses to one observation, alarm and ease, make one of the sharpest contrasts on this journey, and neither thinker knew of the other." }
     ], () => {
-      openPrompt("push", () => {
+      openPrompt("butterfly", () => {
         startDlg([
-          { say: "Whichever you chose, notice what making the choice was like this time, and whether anything besides the numbers weighed on it." }
+          { say: "Zhuangzi: While you think, a story about employment. The king of Chu sent two officials to this bank to offer me the administration of his realm. I kept my pole in the water and asked them about the sacred tortoise in their temple, dead three thousand years, kept in silk in a jeweled box. Would the tortoise rather be venerated so, or alive and dragging its tail in the mud?" },
+          { say: "Zhuangzi: They said alive in the mud, as anyone would. Go home, I told them. I will drag my tail in the mud. And the tree above us has the same wisdom without needing to be asked. Every straight tree between here and the mountains is a plank by now. This one was useless to every measurer, and so here it stands, the only shade on the river." }
         ], () => {
-          openPrompt("asymmetry", () => {
+          openPrompt("descartes", () => {
             startDlg([
-              { note: true, say: "One well known analysis uses the doctrine of double effect, an idea that goes back to Aquinas. It says harm you intend as your means is worse than the same harm you only foresee." },
-    { say: "Test it here. At the lever, if the one worker scrambled clear, your plan still works. On the bridge, if the man is never struck, the five die. The trolley must hit him for the plan to work." }
+              { say: "A companion arrives with wine, introduced as Huizi, an old opponent. Crossing the bridge over the dam, Zhuangzi looks down. Zhuangzi: See how the minnows dart out and about. That is the happiness of fish. Huizi: You are not a fish. How do you know the happiness of fish? Zhuangzi: You are not I. How do you know I do not know the happiness of fish?" },
+              { say: "Huizi: I am not you, so I do not know your mind, granted. And you are not a fish, so the same bar holds, completely. Zhuangzi: Return to the beginning. You asked how I know the happiness of fish, so you already granted that I know it, and asked after the manner. I know it from up here, on the bridge.",
+                choices: [
+                  { tag: "huizi", text: "Huizi has the better of that exchange.",
+                    reply: ["Zhuangzi: He usually does, by his own rules. Notice what his rules cost him. If no one knows any mind but their own, he cannot know that I do not know the fish, and his objection unsays itself in the mouth. I would rather keep the bridge, the fish, and the morning, and hold the theory loosely."] },
+                  { tag: "zhuangzi", text: "The last answer is a dodge, and a good one.",
+                    reply: ["Zhuangzi: All my best arguments are dodges, because the alternative is standing still while Huizi builds a wall. Call it this instead. Knowing is not one thing. There is the knowing that proves, which he demands, and the knowing that sees from a bridge, which I practice, and the second was here first."] }
+                ] },
+              { note: true, say: "The tortoise, the trees, and the fish debate come from the Zhuangzi's seventeenth, first, and fourth chapters among others, in adapted wording. The fish exchange is a classic of the problem of other minds, argued in the west by different means, and the useless tree returns in the book whenever usefulness is being measured by someone holding an axe." }
             ], () => {
-              openPrompt("intention", () => {
+              openPrompt("useless", () => {
                 startDlg([
-                  { say: "Below, it is over one way or another, and the road goes on. Situations like this one do not look like philosophy while they are happening. They demand a decision, and leave you to work out afterward what your answer committed you to." }
+                  { say: "The wine goes around and the argument with Huizi resumes at a comfortable volume behind you. The road turns back toward the coast and the crossing, carrying a third answer to uncertainty to set beside the two you brought." }
                 ], () => {
-                  openPrompt("consistency", () => endGame());
+                  openPrompt("final", () => endGame());
                 });
               });
             });
@@ -496,13 +507,14 @@ function runScene() {
       });
     });
   });
+
 }
 
 /* =========================================================
    End screen, quiz, and report
    ========================================================= */
 function endGame() {
-  try { localStorage.setItem("phil_map_footbridge", "1"); } catch (err) { /* storage is optional */ }
+  try { localStorage.setItem("phil_map_zhuangzi", "1"); } catch (err) { /* storage is optional */ }
   const summary = document.getElementById("reflectionSummary");
   summary.innerHTML = "";
   reflectionLog.forEach(r => {
@@ -548,8 +560,8 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const d1 = document.getElementById("discussion1").value.trim();
   const d2 = document.getElementById("discussion2").value.trim();
   const d3 = document.getElementById("discussion3").value.trim();
-  let text = "The Bridge Crossing, Report\n";
-  text += "===========================\n\nResponses at each stage:\n";
+  let text = "Zhuangzi's Butterfly, Report\n";
+  text += "======================\n\nResponses at each stage:\n";
   reflectionLog.forEach(r => {
     text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
     if (r.choice) text += "Choice: " + r.choice + "\n";
@@ -557,12 +569,10 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
     text += "-".repeat(50);
   });
   text += "\n\nThe pair of answers:\n";
-  text += "At the lever: " + (record.lever || "(none)") + "\n";
-  text += "On the bridge: " + (record.bridge || "(none)") + "\n";
   text += "\nDiscussion questions:\n";
-  text += "1. A third variant isolating one difference.\n" + (d1 || "(no answer)") + "\n\n";
-  text += "2. Encoding answers before the emergency.\n" + (d2 || "(no answer)") + "\n\n";
-  text += "3. Different answers without a principle.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "1. The fish debate reconstructed.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Useless survivals and useful casualties.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. Stories against premises.\n" + (d3 || "(no answer)") + "\n\n";
   text += "Quiz:\n";
   if (quizScore) {
     quizScore.answers.forEach((ans, i) => {
@@ -575,7 +585,7 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const blob = new Blob([text], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = "Bridge_Crossing_Report.txt"; a.click();
+  a.href = url; a.download = "Zhuangzi_Report.txt"; a.click();
   URL.revokeObjectURL(url);
 });
 document.getElementById("restartBtn").addEventListener("click", () => location.reload());
@@ -594,89 +604,94 @@ function drawFigure(x, y, s, color) {
   ctx.fillRect(1, -11, 4, 11);
   ctx.restore();
 }
+function drawSitter(x, y, s, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(s, s);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -26, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -20, 12, 14);
+  ctx.fillRect(-9, -6, 18, 5);
+  ctx.restore();
+}
 function render() {
   ctx.clearRect(0, 0, W, H);
-  // Dusk sky.
+  // A soft day on the river.
   const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, "#232338");
-  sky.addColorStop(0.6, "#3c3450");
-  sky.addColorStop(1, "#584458");
+  sky.addColorStop(0, "#7a88a0");
+  sky.addColorStop(0.6, "#98a090");
+  sky.addColorStop(1, "#a8a888");
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, W, H);
-  // Mountains behind.
-  ctx.fillStyle = "rgba(40,40,58,0.9)";
-  ctx.beginPath();
-  ctx.moveTo(0, 240); ctx.lineTo(160, 110); ctx.lineTo(300, 220); ctx.lineTo(470, 90);
-  ctx.lineTo(650, 210); ctx.lineTo(800, 130); ctx.lineTo(900, 200); ctx.lineTo(900, 500); ctx.lineTo(0, 500);
-  ctx.closePath(); ctx.fill();
-  // The gorge walls.
-  ctx.fillStyle = "#2c2c3c";
-  ctx.fillRect(0, 300, 240, 200);
-  ctx.fillRect(660, 300, 240, 200);
-  ctx.fillStyle = "#242432";
-  ctx.beginPath();
-  ctx.moveTo(240, 300); ctx.lineTo(240, 500); ctx.lineTo(300, 500); ctx.closePath(); ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(660, 300); ctx.lineTo(660, 500); ctx.lineTo(600, 500); ctx.closePath(); ctx.fill();
-  // The rail line along the gorge floor.
-  ctx.strokeStyle = "#8b95a5";
-  ctx.lineWidth = 4;
-  [448, 466].forEach(ry => {
-    ctx.beginPath(); ctx.moveTo(0, ry); ctx.lineTo(900, ry); ctx.stroke();
-  });
-  ctx.strokeStyle = "#4a3c30";
-  for (let x = 10; x < 900; x += 30) {
-    ctx.beginPath(); ctx.moveTo(x, 442); ctx.lineTo(x, 472); ctx.stroke();
+  // The river.
+  ctx.fillStyle = "#48607e";
+  ctx.fillRect(0, 300, W, 130);
+  ctx.strokeStyle = "rgba(238,242,246,0.25)";
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 6; i++) {
+    const ry = 316 + i * 18;
+    const off = REDUCED_MOTION ? 0 : (flutterT * 20 + i * 30) % 70;
+    for (let x = -70 + off; x < W; x += 70) {
+      ctx.beginPath(); ctx.moveTo(x, ry); ctx.quadraticCurveTo(x + 12, ry - 3, x + 24, ry); ctx.stroke();
+    }
   }
-  // The cutting with the five workers, right of the bridge.
-  ctx.fillStyle = "#242432";
-  ctx.fillRect(700, 396, 200, 44);
-  for (let i = 0; i < 5; i++) drawFigure(730 + i * 36, 452, 0.8, "#8fb7dd");
+  // Minnows near the dam bridge, right.
+  ctx.fillStyle = "#8a9ab0";
+  ctx.fillRect(640, 292, 200, 10);
+  ctx.fillRect(660, 302, 10, 40); ctx.fillRect(790, 302, 10, 40);
+  ctx.fillStyle = "rgba(238,242,246,0.7)";
+  for (let i = 0; i < 6; i++) {
+    const mx = 690 + (i * 23) % 120 + (REDUCED_MOTION ? 0 : Math.sin(flutterT * 2 + i) * 8);
+    ctx.beginPath(); ctx.ellipse(mx, 346 + (i % 3) * 12, 6, 2.2, 0, 0, Math.PI * 2); ctx.fill();
+  }
+  // The bank.
+  ctx.fillStyle = "#6c7a4c";
+  ctx.fillRect(0, 400, W, 100);
+  ctx.fillStyle = "#5c6a3c";
+  ctx.beginPath(); ctx.moveTo(0, 400); ctx.quadraticCurveTo(220, 380, 460, 402); ctx.lineTo(0, 412); ctx.closePath(); ctx.fill();
+  // The gnarled tree, wide and crooked.
+  ctx.strokeStyle = "#5c4a34";
+  ctx.lineWidth = 14;
+  ctx.beginPath();
+  ctx.moveTo(150, 420);
+  ctx.quadraticCurveTo(120, 340, 170, 300);
+  ctx.quadraticCurveTo(210, 268, 180, 220);
+  ctx.stroke();
+  ctx.lineWidth = 6;
+  ctx.beginPath(); ctx.moveTo(168, 300); ctx.quadraticCurveTo(240, 270, 300, 286); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(176, 240); ctx.quadraticCurveTo(110, 210, 70, 230); ctx.stroke();
+  ctx.fillStyle = "#4a6a46";
+  ctx.beginPath(); ctx.ellipse(180, 200, 130, 54, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(320, 260, 70, 34, 0, 0, Math.PI * 2); ctx.fill();
+  // The butterfly, drifting over the water.
+  const bx = 480 + (REDUCED_MOTION ? 0 : Math.sin(flutterT * 0.9) * 120);
+  const by = 200 + (REDUCED_MOTION ? 0 : Math.sin(flutterT * 2.3) * 26);
+  const wing = REDUCED_MOTION ? 6 : 4 + Math.abs(Math.sin(flutterT * 9)) * 7;
+  ctx.fillStyle = "#dfae5c";
+  ctx.beginPath(); ctx.ellipse(bx - wing * 0.7, by, wing, 6, -0.5, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(bx + wing * 0.7, by, wing, 6, 0.5, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#4a3c2c";
+  ctx.fillRect(bx - 1.5, by - 5, 3, 10);
+  // Zhuangzi fishing, Huizi arriving, and you.
+  drawSitter(210, 430, 1.1, "#8fb7dd");
+  ctx.strokeStyle = "#5c4a34"; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(222, 412); ctx.lineTo(300, 372); ctx.stroke();
+  ctx.strokeStyle = "rgba(238,242,246,0.5)"; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(300, 372); ctx.lineTo(302, 396); ctx.stroke();
+  drawFigure(560, 452, 1, "#5a7d8f");
+  drawFigure(420, 462, 1, "#5b84b1");
   ctx.fillStyle = "#eef2f6";
   ctx.font = "13px 'Segoe UI', sans-serif";
-  ctx.fillText("five workers", 748, 492);
-  // The footbridge across the gorge.
-  ctx.fillStyle = "#57503f";
-  ctx.fillRect(220, 262, 460, 14);
-  ctx.strokeStyle = "#57503f";
-  ctx.lineWidth = 5;
-  ctx.beginPath(); ctx.moveTo(220, 240); ctx.lineTo(680, 240); ctx.stroke();
-  for (let x = 240; x < 680; x += 44) {
-    ctx.beginPath(); ctx.moveTo(x, 240); ctx.lineTo(x, 262); ctx.stroke();
-  }
-  ctx.fillStyle = "#484236";
-  ctx.fillRect(206, 262, 18, 238);
-  ctx.fillRect(676, 262, 18, 238);
-  // You, and the large man at the railing.
-  drawFigure(392, 262, 1, "#5b84b1");
-  ctx.fillStyle = "#5a7d8f";
-  ctx.beginPath(); ctx.arc(470, 220, 10, 0, Math.PI * 2); ctx.fill();
-  ctx.fillRect(455, 228, 30, 30);
-  ctx.fillRect(457, 258, 10, 6);
-  ctx.fillRect(473, 258, 10, 6);
-  ctx.fillStyle = "#eef2f6";
-  ctx.fillText("you", 380, 292);
-  ctx.fillText("the large man", 428, 210);
-  // The trolley, rolling in on the line when the scene calls it.
-  if (trolleyOn) {
-    ctx.fillStyle = "#8f3b3b";
-    ctx.fillRect(trolleyX - 46, 408, 92, 40);
-    ctx.fillStyle = "#c9b98a";
-    ctx.fillRect(trolleyX - 36, 416, 24, 16);
-    ctx.fillRect(trolleyX + 6, 416, 24, 16);
-    ctx.fillStyle = "#1c1c26";
-    ctx.beginPath();
-    ctx.arc(trolleyX - 26, 452, 9, 0, Math.PI * 2);
-    ctx.arc(trolleyX + 26, 452, 9, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  ctx.fillText("Zhuangzi", 178, 454);
+  ctx.fillText("Huizi", 545, 476);
+  ctx.fillText("you", 410, 486);
   if (!started) {
     ctx.fillStyle = "rgba(16,16,22,0.55)";
     ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = "#f0f0f5";
     ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
     ctx.textAlign = "center";
-    ctx.fillText("The Bridge Crossing", W / 2, H / 2 - 12);
+    ctx.fillText("Zhuangzi's Butterfly", W / 2, H / 2 - 12);
     ctx.font = "15px 'Segoe UI', sans-serif";
     ctx.fillStyle = "#a9a9bc";
     ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
@@ -691,9 +706,8 @@ let last = performance.now();
 function update(dt) {
   if (typeof tickStatus === "function") tickStatus();
   t += dt;
-  if (trolleyOn && !paused) {
-    trolleyX = Math.min(trolleyX + (REDUCED_MOTION ? 20 : 60) * dt, 250);
-  }
+  flutterT += dt;
+
 }
 function loop(now) {
   const dt = Math.min((now - last) / 1000, 0.05);

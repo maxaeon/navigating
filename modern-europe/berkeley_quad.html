@@ -255,13 +255,13 @@ const prompts = {
     requireText: true
   },
   secondary: {
-    title: "Stage 1: Where the warmth is",
+    title: "Stage 1: Is the warmth in the water?",
     text: "One hand comes out of cold water, one out of hot, and both go into the same basin. The water feels warm to one and cool to the other. Locke would say warmth is a secondary quality, in the perceiver rather than in the thing. Does the case show that?",
     mcq: ["Yes, one basin cannot be both, so the warmth is in me", "No, it shows my hands are unreliable, not that warmth is in me", "It shows the reported degree is in me, and some real property is out there", "It shows the distinction is not as clean as it looks"],
     requireText: true
   },
   primary: {
-    title: "Stage 2: The same move again",
+    title: "Stage 2: The same argument again",
     text: "Berkeley then applies the argument to shape and size, the qualities Locke thought were really in the object. A coin looks round from above and elliptical from the side, and the same tower is small from far off. Does the argument work the second time?",
     mcq: ["Yes, if it worked for warmth it works for shape", "No, shape can be measured and warmth cannot", "It works, and that tells against the first use rather than for the second", "The measurement is another perception, so the reply does not escape"],
     requireText: true
@@ -280,10 +280,10 @@ const prompts = {
   },
   verdict: {
     title: "Stage 5: Following an argument where it goes",
-    text: "Berkeley starts from a premise Locke and Hume also accept, that all we ever have to work with is what the senses deliver, and follows it to a conclusion almost nobody accepts. Write your judgment: where, if anywhere, would you get off this road, and what does it cost you to stay on it to the end?",
+    text: "Berkeley starts from a premise Locke and Hume also accept, that all we ever have to work with is what the senses deliver, and follows it to a conclusion almost nobody accepts. Write your judgment: which step, if any, would you reject, and what does it cost you to accept the argument to the end?",
     mcq: null,
     requireText: true,
-    textHint: "Where you would get off, and the cost of staying on."
+    textHint: "The step you reject, or the cost of accepting it all."
   }
 };
 
@@ -608,7 +608,7 @@ function dlgBeat2() {
           reply: ["Berkeley: The best objection there is, and I will answer it. Measure the coin. What do you have? A ruler laid against it, which you look at. Another perception. You have not stepped outside perception to check, you have only added one more."] }
       ] },
     { close: false,
-      say: "Berkeley: So the primary qualities go the way of the secondary ones. And once they are gone, tell me what is left of matter. Not its colour, not its warmth, not its shape, not its size. Something that has none of these, and does nothing, and cannot be perceived even in principle." },
+      say: "Berkeley: So the argument moves the primary qualities into the perceiver along with the secondary ones. And once they are gone, tell me what is left of matter. Not its colour, not its warmth, not its shape, not its size. Something that has none of these, and does nothing, and cannot be perceived even in principle." },
     { note: true, say: "This is Berkeley's central move against Locke, from the Principles of 1710 and the Three Dialogues of 1713. He accepts the arguments that put secondary qualities in the perceiver, then shows that the same arguments apply to primary qualities, leaving a material substance with no describable content." }
   ], () => {
     openPrompt("primary", () => {
@@ -623,7 +623,7 @@ function dlgBeat3() {
     { say: "They stop under the tree. Berkeley: Here is the conclusion, and I will say it plainly rather than hide it in a book. For a thing like this tree, to be is to be perceived." },
     { say: "Berkeley: Its existence consists in being perceived. There is no extra fact, behind the green and the roughness and the shade, of an unperceived material tree also being there." },
     { say: "Berkeley: I am not saying the tree is in your head. I am saying that the tree is what you perceive, and that the something-underneath you were taught to add is a word with nothing to point at." },
-    { say: "Berkeley: Now hit me with it. What is the obvious objection?",
+    { say: "Berkeley: Now give me the objection. What is the obvious one?",
       choices: [
         { tag: "quad", text: "When we all walk away, the tree is still here.",
           reply: ["Berkeley: The objection everyone makes, and the one I have an answer for. Hold it one moment longer."] },
@@ -641,7 +641,7 @@ function dlgBeat4() {
   flags.beat4Done = true;
   startDlg([
     { say: "At the chapel door Berkeley turns around and looks back at the empty courtyard. Berkeley: The quad at night, then. Nobody in it. Does the tree go out like a candle?" },
-    { say: "Berkeley: No. Two answers, and I want both on the table. The first is that the tree's existence means that if you were in the quad, you would perceive it. The orderly possibility is real whether or not anyone takes it up." },
+    { say: "Berkeley: No. I have two answers, and I will give you both. The first is that the tree's existence means that if you were in the quad, you would perceive it. The orderly possibility is real whether or not anyone takes it up." },
     { say: "Berkeley: The second I hold more firmly. There is always a perceiver. God perceives the quad continually, and the perceptions we call the natural world are His, steady and lawful, which is why yours agree with mine." },
     { say: "Berkeley: That last point is not decoration. It is what stops my view collapsing into everyone having a private dream. The regularity of nature is the regularity of one mind, and we are reading it." },
     { note: true, say: "The two replies are both Berkeley's. The first appears in the Principles as a claim about what would be perceived. The second, that God's perception sustains the world, is the one he relies on, and it is the point at which most readers stop following him." }
@@ -656,7 +656,7 @@ function dlgClose() {
   startDlg([
     { say: "Berkeley: You will be told I denied the existence of the world. Read me and you will find I spent my life defending the ordinary man against philosophers who put an unknowable something between him and the tree he can plainly see." },
     { say: "Berkeley: And notice how I got here. I did not invent a premise. I took the one that Locke gave me and that Hume will take up after me, that all we have to work with is what the senses deliver, and I refused to stop applying it when it became inconvenient." },
-    { say: "Berkeley: If you want off this road, you had better find the step where you get off, and say why you are allowed to." }
+    { say: "Berkeley: If you want to reject my conclusion, you must find the step you reject, and say why you are entitled to reject it." }
   ], () => {
     openPrompt("verdict", () => {
       flags.finalDone = true;

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Bridge Crossing</title>
+<title>The Answer from Cordoba</title>
 <style>
 :root{
   --page:#131318;
@@ -117,9 +117,9 @@ textarea{
 
 <header class="wrap">
   <div class="about-wrap">
-    <h1>The Bridge Crossing</h1>
+    <h1>The Answer from Cordoba</h1>
     <p class="about-cue">What this activity covers</p>
-    <div class="about" id="aboutText"><p>A mountain pass on the road between regions, at dusk. This is a situation on the road. It was not on your itinerary, and it will not wait for a convenient moment. Below the footbridge runs a rail line, and something is wrong on it. You faced a version of this once before, at a lever, in the prologue. This version is harder, and the difference between the two versions is what this activity examines. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+    <div class="about" id="aboutText"><p>Cordoba, in al-Andalus, around 1180. The chief judge of the city spends his early mornings on a project commissioned by his ruler, commentaries on every work of Aristotle, and he has also written the reply to al-Ghazali. The activity closes the region’s argument about causes and follows the commentaries north, where they changed how Europe reads. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
   </div>
 </header>
 
@@ -165,7 +165,7 @@ textarea{
 <div id="endScreen">
   <div class="wrap">
     <h1>Activity completed</h1>
-    <p id="nextStop">The road continues where it was going. The world map remembers this crossing.</p>
+    <p id="nextStop">The road turns east again from the world map, which remembers Cordoba.</p>
 
     <div class="section-box">
       <h3>Your responses at each stage</h3>
@@ -174,30 +174,30 @@ textarea{
 
     <div class="section-box">
       <h3>Discussion questions</h3>
-      <p>1. Design a third variant of the situation that isolates exactly one difference from the footbridge, physical contact, intention, or the use of a person as a means, and predict how people would answer it.</p>
+      <p>1. Averroes claims a world of sheer custom has no why in it. Al-Ghazali claims the customs are regular enough to compute with. Say whether prediction without explanation counts as knowledge, using one example from any science you know.</p>
       <textarea id="discussion1"></textarea>
-      <p>2. Self-driving vehicles, triage protocols, and military targeting rules all encode answers to cases like these in advance. Should such answers be written down before the emergency, and by whom?</p>
+      <p>2. The Decisive Treatise assigns demonstration to the capable and persuasion to the many. State the strongest defense of teaching different audiences differently, and the strongest objection to it, and where you land.</p>
       <textarea id="discussion2"></textarea>
-      <p>3. Suppose someone answers the lever and the footbridge differently and cannot state a principle that separates them. Is that a defect in their reasoning, or evidence that morality does not reduce to statable principles?</p>
+      <p>3. Aquinas, whom you met at the monastery, called Averroes the Commentator and argued with him constantly. Trace one idea from this region that you have now seen cross four languages, and say what the crossing did to it.</p>
       <textarea id="discussion3"></textarea>
     </div>
 
     <div class="section-box" id="quizSection">
       <h3>Quiz</h3>
-      <p><strong>1.</strong> Across many surveys, most people say</p>
-      <label><input type="radio" name="q1" value="Pull the lever, but do not push the man"> pull the lever, but do not push the man</label>
-      <label><input type="radio" name="q1" value="Push the man, but do not pull the lever"> push the man, but do not pull the lever</label>
-      <label><input type="radio" name="q1" value="The same thing in both cases"> the same thing in both cases</label>
+      <p><strong>1.</strong> Against al-Ghazali, Averroes maintained</p>
+      <label><input type="radio" name="q1" value="That things have natures, and to know is to know through causes"> that things have natures, and to know is to know through causes</label>
+      <label><input type="radio" name="q1" value="That miracles happen daily"> that miracles happen daily</label>
+      <label><input type="radio" name="q1" value="That observation delivers necessity directly"> that observation delivers necessity directly</label>
 
-      <p><strong>2.</strong> The doctrine of double effect distinguishes</p>
-      <label><input type="radio" name="q2" value="Harm intended as a means from harm foreseen as a side effect"> harm intended as a means from harm foreseen as a side effect</label>
-      <label><input type="radio" name="q2" value="Harm to strangers from harm to friends"> harm to strangers from harm to friends</label>
-      <label><input type="radio" name="q2" value="Action from inaction in every case"> action from inaction in every case</label>
+      <p><strong>2.</strong> His reply to al-Ghazali is titled</p>
+      <label><input type="radio" name="q2" value="The Incoherence of the Incoherence"> the Incoherence of the Incoherence</label>
+      <label><input type="radio" name="q2" value="The Decisive Incoherence"> the Decisive Incoherence</label>
+      <label><input type="radio" name="q2" value="Against the Professors"> against the Professors</label>
 
-      <p><strong>3.</strong> In the footbridge case, the large man's death is</p>
-      <label><input type="radio" name="q3" value="The means by which the five are saved"> the means by which the five are saved</label>
-      <label><input type="radio" name="q3" value="A side effect of redirecting the threat"> a side effect of redirecting the threat</label>
-      <label><input type="radio" name="q3" value="Unrelated to whether the five are saved"> unrelated to whether the five are saved</label>
+      <p><strong>3.</strong> Averroes reached Europe chiefly through</p>
+      <label><input type="radio" name="q3" value="Latin translations of his commentaries taught Europe to read Aristotle"> Latin translations of his commentaries, which taught Europe to read Aristotle</label>
+      <label><input type="radio" name="q3" value="His personal lectures in Paris"> his personal lectures in Paris</label>
+      <label><input type="radio" name="q3" value="A correspondence with Aquinas"> a correspondence with Aquinas</label>
 
       <p><button id="gradeBtn">Grade the quiz</button></p>
       <p id="quizResult"></p>
@@ -213,49 +213,49 @@ textarea{
 
 <script>
 "use strict";
-const ACTIVITY_KEY = "phil_map_footbridge";
+const ACTIVITY_KEY = "phil_map_averroes";
 
 /* =========================================================
    Prompts, quiz key, and log
    ========================================================= */
 const prompts = {
   first: {
-    title: "Stage 0: Your answer at the lever",
-    text: "At the prologue you stood at a lever: divert the trolley and one person dies instead of five. Before this situation unfolds, record what you chose there, or would choose now.",
-    mcq: ["I pulled it, one death instead of five", "I did not pull it", "Not sure, but I would pull it now", "Not sure, but I would not pull it now"],
-    requireText: true
+    title: "Stage 0: Explanation without natures",
+    text: "Suppose everything that happens is done directly by God at each moment, as al-Ghazali argued. Before the judge replies, answer this. What happens to explanation on that account?",
+    mcq: ["It survives, since the customs are regular enough to state", "It collapses into one answer for every question", "It improves, since the true cause is finally named", "Nothing changes, explanation never needed causes"],
+    requireText: false
   },
-  push: {
-    title: "Stage 1: The bridge",
-    text: "The numbers are the lever's numbers: one life against five. The only difference is what you would have to do. Record your decision.",
-    mcq: ["I push him, five lives outweigh one", "I do not push him, this feels different", "I do neither, here or at the lever", "I cannot decide"],
-    requireText: true
+  natures: {
+    title: "Stage 1: The natures of things",
+    text: "Averroes holds that fire burns because of what fire is, that things have natures from which their actions follow, and that to know a thing is to know it through its causes. What kind of claim is a nature claim?",
+    mcq: ["An explanation of regularity by what things are, testable through their behavior", "A restatement of the regularity in Latin", "A religious doctrine in disguise", "A guess that observation can never touch"],
+    requireText: false
   },
-  asymmetry: {
-    title: "Stage 2: The asymmetry",
-    text: "Across many studies, most people pull the lever and refuse to push, though the arithmetic is identical. If the majority is responding to a real difference, what is that difference?",
-    mcq: ["Touching someone is different from pulling a switch", "On the bridge, his body is the tool that stops it", "Nothing real, people are just inconsistent", "The lever answer was wrong too"],
-    requireText: true
+  reply: {
+    title: "Stage 2: The exchange judged",
+    text: "Al-Ghazali argued that necessity is never observed. Averroes answers that deny the natures of things and knowledge itself goes with them, since to know is to grasp why, and a world of sheer custom has no why in it, only a that. Weigh the exchange. Where does it stand?",
+    mcq: ["Al-Ghazali wins on the observation and Averroes wins on the cost of denying natures", "Al-Ghazali wins outright, the necessity was never earned", "Averroes wins outright, the denial refutes itself", "Neither lands, they argue past each other"],
+    requireText: false
   },
-  intention: {
-    title: "Stage 3: Intending and foreseeing",
-    text: "The doctrine of double effect says harm you intend as your means is worse than the same harm foreseen as a side effect. At the lever, if the one person somehow survived, your plan still works. On the bridge, if the man survives untouched by the trolley, your plan has failed. Does that difference carry moral weight?",
-    mcq: ["Yes, what you aim at is what you do", "Some, but the result matters more", "No, it is a trick that excuses the lever", "It matters in law and practice, whatever theory says"],
-    requireText: true
+  harmony: {
+    title: "Stage 3: One truth, two teachings",
+    text: "In the Decisive Treatise, Averroes argues that demonstrative philosophy and revelation cannot truly conflict, since truth does not contradict truth, and that the law itself directs those capable of demonstration to pursue it, while most people are rightly taught by persuasion and example. Is that a harmony of philosophy and religion, or a ranking of people dressed as one?",
+    mcq: ["A harmony, one truth reached by the routes each person can travel", "A ranking, with philosophers placed quietly on top", "Both at once, and the tension is the point to examine", "Neither, the conflict is real and the treatise papers it over"],
+    requireText: false
   },
-  consistency: {
-    title: "Stage 4: Your two answers",
-    text: "Set your lever answer beside your bridge answer. Are they consistent? If they are, state the principle that covers both. If they are not, say which answer you would change, or defend keeping both without a principle.",
+  final: {
+    title: "Stage 4: Closing the region",
+    text: "The region gave you a three-cornered argument. Avicenna's necessity in the natures of things, al-Ghazali's custom of God, and, waiting down the road in Edinburgh, Hume's habit in the observer. State which account of causal connection is strongest, defend it against the best objection from one of the other two, and name one thing your account still owes.",
     mcq: null,
     requireText: true,
-    textHint: "The principle, the change, or the defense."
+    textHint: "Your account, the objection answered, and the debt remaining."
   }
 };
 
 const quizKeys = [
-  "Pull the lever, but do not push the man",
-  "Harm intended as a means from harm foreseen as a side effect",
-  "The means by which the five are saved"
+  "That things have natures, and to know is to know through causes",
+  "The Incoherence of the Incoherence",
+  "Latin translations of his commentaries taught Europe to read Aristotle"
 ];
 
 let reflectionLog = [];
@@ -286,9 +286,8 @@ const W = 900, H = 500;
 let started = false;
 let paused = false;
 let t = 0;
-let trolleyOn = false;
-let trolleyX = -80;
-const record = { lever: null, bridge: null };
+let fountainT = 0;
+
 
 /* =========================================================
    Narration and the modal
@@ -364,7 +363,6 @@ function continueDlg() {
     if (window.speechSynthesis) speechSynthesis.cancel();
     if (cb) cb();
   } else {
-    if (dlg.steps[dlg.i].trolley) trolleyOn = true;
     renderDlg();
   }
 }
@@ -451,8 +449,6 @@ submitBtn.addEventListener("click", () => {
     choice: p.mcq ? (sel ? sel.value : null) : null,
     response: modalText.value.trim()
   });
-  if (activePrompt.key === "first" && sel) record.lever = sel.value;
-  if (activePrompt.key === "push" && sel) record.bridge = sel.value;
   if (window.speechSynthesis) speechSynthesis.cancel();
   overlay.classList.remove("open");
   paused = false;
@@ -469,25 +465,32 @@ function setObjective(txt) { objectiveEl.textContent = txt; }
 function runScene() {
   openPrompt("first", () => {
     startDlg([
-      { say: "The pass road crosses a gorge on a footbridge, and the rail line runs through the gorge below. You are halfway across when you hear it: a runaway trolley, brakes gone, coming down the grade. Further along the line, five workers are in a cutting with their backs to it, and the walls of the cutting leave them nowhere to go.", trolley: false },
-      { trolley: true, say: "There is no lever here. There is no side track. There is only one thing on this bridge heavy enough to stop a trolley, and it is not you." },
-    { say: "A very large man stands at the railing beside you, looking down at the line, unaware. If he falls onto the track, the trolley stops, and he dies, and the five live. You would have to push him." },
-      { note: true, say: "This is the footbridge case, introduced by Judith Jarvis Thomson in 1976, building on Philippa Foot's original trolley problem of 1967. The numbers are identical to the lever case on purpose: one life against five. Everything that differs is in what the one who acts must do." }
+      { say: "The reply to Baghdad was written at the other end of the Islamic world, and the road crosses to reach it, North Africa, the strait, and up into al-Andalus, to Cordoba. In a courtyard off the judicial quarter, striped arches over a small fountain, the chief judge of the city works through the early morning before court convenes, and a traveler with the right questions is given the bench opposite." },
+      { note: true, say: "Ibn Rushd, known in Europe as Averroes, 1126 to 1198, came from a family of Cordoban judges and served as chief judge and court physician. At his ruler's request he wrote commentaries on nearly the whole of Aristotle, in three lengths, and his Incoherence of the Incoherence answers al-Ghazali point by point, eighty years after the challenge. Late in life he was briefly banished when the political weather turned, and restored before his death." },
+      { say: "Averroes: You come from the Nizamiyya, so you have watched the cotton burn and heard that the connection is custom. I have read that argument more closely than any man alive, since I answered it discussion by discussion, and I will give you the answer at its center." },
+      { say: "Averroes: Deny that things have natures, and see what you have spent. Fire that does not burn by what it is could as well freeze, and the name fire no longer marks anything. Knowledge is grasp of causes. Take away the why and every science becomes a list, this happened, then this happened, a chronicle where there was an understanding.",
+        choices: [
+          { tag: "custom", text: "Al-Ghazali would say the custom is stable enough to know by.",
+            reply: ["Averroes: Stable enough to predict by, I grant. But ask his account one question and listen. Why does fire burn cotton? Because God so acts. Why does water quench it? Because God so acts. Why does bread nourish and hemlock kill? One answer, always the same, to every question. An answer that fits every question equally answers none of them, and that is what I mean when I say his world has no why in it."] },
+          { tag: "observed", text: "But he was right that the necessity is never observed.",
+            reply: ["Averroes: He was, and I do not claim the eye sees necessity. I claim the mind infers natures from what the eye sees, the way your physician infers the disease from the signs. No one has observed a nature, and no one has observed a custom of God either. Both of us go past the report of the senses. The question is which going-past preserves the sciences, and mine is the one that leaves your questions answerable."] }
+        ] },
+      { note: true, say: "The exchange over fire and cotton is the seventeenth discussion of both books, al-Ghazali's Incoherence of the Philosophers and Averroes' Incoherence of the Incoherence. The dispute, whether regularity rests on the natures of things, on the custom of God, or, as Hume would later argue, on habit in the observer, remains a live question in philosophy of science under the name of laws of nature." }
     ], () => {
-      openPrompt("push", () => {
+      openPrompt("natures", () => {
         startDlg([
-          { say: "Whichever you chose, notice what making the choice was like this time, and whether anything besides the numbers weighed on it." }
+          { say: "The call to court sounds from the street, and the judge stacks his pages without hurry. Averroes: Before I go, the other book, since travelers always ask. I wrote that philosophy and revelation cannot truly conflict. Truth does not contradict truth. Where they appear to collide, the appearance sets a task of interpretation, not a war." },
+          { say: "Averroes: And I wrote that the law itself commands those who can follow a demonstration to study philosophy, while those who cannot are rightly taught by persuasion and by example, and harmed by being given arguments they cannot weigh. Men in this city call that arrogant, and men in Paris will later call it dangerous, and I call it the plain truth about teaching." }
         ], () => {
-          openPrompt("asymmetry", () => {
+          openPrompt("reply", () => {
             startDlg([
-              { note: true, say: "One well known analysis uses the doctrine of double effect, an idea that goes back to Aquinas. It says harm you intend as your means is worse than the same harm you only foresee." },
-    { say: "Test it here. At the lever, if the one worker scrambled clear, your plan still works. On the bridge, if the man is never struck, the five die. The trolley must hit him for the plan to work." }
+              { note: true, say: "The Decisive Treatise, on the harmony of religion and philosophy, made both arguments. Within decades of his death, Latin translations of the commentaries reached the new universities of Europe, where he was cited simply as the Commentator. Aquinas, whom you met walking a church in the snow, argued with him on nearly every page, and Dante placed him among the honored philosophers. The books you carried into Baghdad have completed their circuit, Greek into Arabic at the House of Wisdom, and Arabic into Latin for Europe, with Cordoba's commentaries attached." }
             ], () => {
-              openPrompt("intention", () => {
+              openPrompt("harmony", () => {
                 startDlg([
-                  { say: "Below, it is over one way or another, and the road goes on. Situations like this one do not look like philosophy while they are happening. They demand a decision, and leave you to work out afterward what your answer committed you to." }
+                  { say: "The judge leaves for court through the striped arches, and the fountain continues without him. The region's argument is complete, three accounts of why fire burns, and the road east is open again for whatever remains unfinished there." }
                 ], () => {
-                  openPrompt("consistency", () => endGame());
+                  openPrompt("final", () => endGame());
                 });
               });
             });
@@ -496,13 +499,14 @@ function runScene() {
       });
     });
   });
+
 }
 
 /* =========================================================
    End screen, quiz, and report
    ========================================================= */
 function endGame() {
-  try { localStorage.setItem("phil_map_footbridge", "1"); } catch (err) { /* storage is optional */ }
+  try { localStorage.setItem("phil_map_averroes", "1"); } catch (err) { /* storage is optional */ }
   const summary = document.getElementById("reflectionSummary");
   summary.innerHTML = "";
   reflectionLog.forEach(r => {
@@ -548,8 +552,8 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const d1 = document.getElementById("discussion1").value.trim();
   const d2 = document.getElementById("discussion2").value.trim();
   const d3 = document.getElementById("discussion3").value.trim();
-  let text = "The Bridge Crossing, Report\n";
-  text += "===========================\n\nResponses at each stage:\n";
+  let text = "The Answer from Cordoba, Report\n";
+  text += "=========================\n\nResponses at each stage:\n";
   reflectionLog.forEach(r => {
     text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
     if (r.choice) text += "Choice: " + r.choice + "\n";
@@ -557,12 +561,10 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
     text += "-".repeat(50);
   });
   text += "\n\nThe pair of answers:\n";
-  text += "At the lever: " + (record.lever || "(none)") + "\n";
-  text += "On the bridge: " + (record.bridge || "(none)") + "\n";
   text += "\nDiscussion questions:\n";
-  text += "1. A third variant isolating one difference.\n" + (d1 || "(no answer)") + "\n\n";
-  text += "2. Encoding answers before the emergency.\n" + (d2 || "(no answer)") + "\n\n";
-  text += "3. Different answers without a principle.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "1. Prediction without explanation.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Different teachings for different audiences.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. One idea across four languages.\n" + (d3 || "(no answer)") + "\n\n";
   text += "Quiz:\n";
   if (quizScore) {
     quizScore.answers.forEach((ans, i) => {
@@ -575,7 +577,7 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const blob = new Blob([text], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = "Bridge_Crossing_Report.txt"; a.click();
+  a.href = url; a.download = "Cordoba_Report.txt"; a.click();
   URL.revokeObjectURL(url);
 });
 document.getElementById("restartBtn").addEventListener("click", () => location.reload());
@@ -594,89 +596,94 @@ function drawFigure(x, y, s, color) {
   ctx.fillRect(1, -11, 4, 11);
   ctx.restore();
 }
+function drawSitter(x, y, s, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(s, s);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -26, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -20, 12, 14);
+  ctx.fillRect(-9, -6, 18, 5);
+  ctx.restore();
+}
 function render() {
   ctx.clearRect(0, 0, W, H);
-  // Dusk sky.
+  // Early light in a Cordoban courtyard.
   const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, "#232338");
-  sky.addColorStop(0.6, "#3c3450");
-  sky.addColorStop(1, "#584458");
+  sky.addColorStop(0, "#7a86a8");
+  sky.addColorStop(0.6, "#a89a8c");
+  sky.addColorStop(1, "#c0a878");
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, W, H);
-  // Mountains behind.
-  ctx.fillStyle = "rgba(40,40,58,0.9)";
-  ctx.beginPath();
-  ctx.moveTo(0, 240); ctx.lineTo(160, 110); ctx.lineTo(300, 220); ctx.lineTo(470, 90);
-  ctx.lineTo(650, 210); ctx.lineTo(800, 130); ctx.lineTo(900, 200); ctx.lineTo(900, 500); ctx.lineTo(0, 500);
-  ctx.closePath(); ctx.fill();
-  // The gorge walls.
-  ctx.fillStyle = "#2c2c3c";
-  ctx.fillRect(0, 300, 240, 200);
-  ctx.fillRect(660, 300, 240, 200);
-  ctx.fillStyle = "#242432";
-  ctx.beginPath();
-  ctx.moveTo(240, 300); ctx.lineTo(240, 500); ctx.lineTo(300, 500); ctx.closePath(); ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(660, 300); ctx.lineTo(660, 500); ctx.lineTo(600, 500); ctx.closePath(); ctx.fill();
-  // The rail line along the gorge floor.
-  ctx.strokeStyle = "#8b95a5";
-  ctx.lineWidth = 4;
-  [448, 466].forEach(ry => {
-    ctx.beginPath(); ctx.moveTo(0, ry); ctx.lineTo(900, ry); ctx.stroke();
+  // The arcade: striped horseshoe arches on columns.
+  ctx.fillStyle = "#d6cbb4";
+  ctx.fillRect(0, 90, W, 250);
+  [140, 330, 520, 710].forEach(ax => {
+    ctx.fillStyle = "#8a5a3a";
+    ctx.beginPath();
+    ctx.arc(ax, 200, 62, Math.PI, 0);
+    ctx.lineTo(ax + 62, 340); ctx.lineTo(ax + 48, 340); ctx.lineTo(ax + 48, 205);
+    ctx.arc(ax, 205, 48, 0, Math.PI, true);
+    ctx.lineTo(ax - 48, 340); ctx.lineTo(ax - 62, 340);
+    ctx.closePath(); ctx.fill();
+    // The stripes.
+    ctx.strokeStyle = "#e8e0cc";
+    ctx.lineWidth = 7;
+    for (let a2 = 0.35; a2 < Math.PI; a2 += 0.52) {
+      ctx.beginPath();
+      ctx.moveTo(ax + Math.cos(Math.PI + a2) * 48, 202 + Math.sin(Math.PI + a2) * 48);
+      ctx.lineTo(ax + Math.cos(Math.PI + a2) * 62, 200 + Math.sin(Math.PI + a2) * 62);
+      ctx.stroke();
+    }
+    ctx.fillStyle = "#b0a088";
+    ctx.fillRect(ax - 56, 340, 14, 60); ctx.fillRect(ax + 42, 340, 14, 60);
+    ctx.fillStyle = "#2e2820";
+    ctx.beginPath();
+    ctx.moveTo(ax - 44, 340); ctx.lineTo(ax - 44, 210);
+    ctx.arc(ax, 208, 44, Math.PI, 0);
+    ctx.lineTo(ax + 44, 340);
+    ctx.closePath(); ctx.fill();
   });
-  ctx.strokeStyle = "#4a3c30";
-  for (let x = 10; x < 900; x += 30) {
-    ctx.beginPath(); ctx.moveTo(x, 442); ctx.lineTo(x, 472); ctx.stroke();
-  }
-  // The cutting with the five workers, right of the bridge.
-  ctx.fillStyle = "#242432";
-  ctx.fillRect(700, 396, 200, 44);
-  for (let i = 0; i < 5; i++) drawFigure(730 + i * 36, 452, 0.8, "#8fb7dd");
+  // The courtyard floor and the fountain.
+  ctx.fillStyle = "#c0b494";
+  ctx.fillRect(0, 400, W, 100);
+  ctx.fillStyle = "#8a9ab0";
+  ctx.beginPath(); ctx.ellipse(450, 430, 70, 20, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#b0a088";
+  ctx.beginPath(); ctx.ellipse(450, 430, 78, 24, 0, 0, Math.PI * 2); ctx.stroke();
+  const jet = REDUCED_MOTION ? 8 : 8 + Math.sin(fountainT * 4) * 3;
+  ctx.strokeStyle = "rgba(200,220,238,0.8)";
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(450, 428); ctx.quadraticCurveTo(450, 404 - jet, 456, 402 - jet); ctx.stroke();
+  // Orange trees in tubs.
+  [[80, 424], [820, 428]].forEach(p => {
+    ctx.fillStyle = "#8a5a3a";
+    ctx.fillRect(p[0] - 14, p[1] - 8, 28, 18);
+    ctx.strokeStyle = "#5c4a34"; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(p[0], p[1] - 8); ctx.lineTo(p[0], p[1] - 36); ctx.stroke();
+    ctx.fillStyle = "#3f6248";
+    ctx.beginPath(); ctx.ellipse(p[0], p[1] - 46, 26, 18, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#dfae5c";
+    ctx.beginPath(); ctx.arc(p[0] - 8, p[1] - 48, 3, 0, Math.PI * 2); ctx.arc(p[0] + 9, p[1] - 40, 3, 0, Math.PI * 2); ctx.fill();
+  });
+  // The work bench with pages, the judge, and you.
+  ctx.fillStyle = "#6a5a44";
+  ctx.fillRect(220, 430, 150, 10);
+  ctx.fillStyle = "#e8e0cc";
+  ctx.fillRect(240, 420, 46, 10); ctx.fillRect(300, 422, 46, 8);
+  drawFigure(200, 462, 1.1, "#8fb7dd");
+  drawFigure(620, 464, 1, "#5b84b1");
   ctx.fillStyle = "#eef2f6";
   ctx.font = "13px 'Segoe UI', sans-serif";
-  ctx.fillText("five workers", 748, 492);
-  // The footbridge across the gorge.
-  ctx.fillStyle = "#57503f";
-  ctx.fillRect(220, 262, 460, 14);
-  ctx.strokeStyle = "#57503f";
-  ctx.lineWidth = 5;
-  ctx.beginPath(); ctx.moveTo(220, 240); ctx.lineTo(680, 240); ctx.stroke();
-  for (let x = 240; x < 680; x += 44) {
-    ctx.beginPath(); ctx.moveTo(x, 240); ctx.lineTo(x, 262); ctx.stroke();
-  }
-  ctx.fillStyle = "#484236";
-  ctx.fillRect(206, 262, 18, 238);
-  ctx.fillRect(676, 262, 18, 238);
-  // You, and the large man at the railing.
-  drawFigure(392, 262, 1, "#5b84b1");
-  ctx.fillStyle = "#5a7d8f";
-  ctx.beginPath(); ctx.arc(470, 220, 10, 0, Math.PI * 2); ctx.fill();
-  ctx.fillRect(455, 228, 30, 30);
-  ctx.fillRect(457, 258, 10, 6);
-  ctx.fillRect(473, 258, 10, 6);
-  ctx.fillStyle = "#eef2f6";
-  ctx.fillText("you", 380, 292);
-  ctx.fillText("the large man", 428, 210);
-  // The trolley, rolling in on the line when the scene calls it.
-  if (trolleyOn) {
-    ctx.fillStyle = "#8f3b3b";
-    ctx.fillRect(trolleyX - 46, 408, 92, 40);
-    ctx.fillStyle = "#c9b98a";
-    ctx.fillRect(trolleyX - 36, 416, 24, 16);
-    ctx.fillRect(trolleyX + 6, 416, 24, 16);
-    ctx.fillStyle = "#1c1c26";
-    ctx.beginPath();
-    ctx.arc(trolleyX - 26, 452, 9, 0, Math.PI * 2);
-    ctx.arc(trolleyX + 26, 452, 9, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  ctx.fillText("Averroes", 168, 486);
+  ctx.fillText("you", 610, 488);
   if (!started) {
     ctx.fillStyle = "rgba(16,16,22,0.55)";
     ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = "#f0f0f5";
     ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
     ctx.textAlign = "center";
-    ctx.fillText("The Bridge Crossing", W / 2, H / 2 - 12);
+    ctx.fillText("The Answer from Cordoba", W / 2, H / 2 - 12);
     ctx.font = "15px 'Segoe UI', sans-serif";
     ctx.fillStyle = "#a9a9bc";
     ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
@@ -691,9 +698,8 @@ let last = performance.now();
 function update(dt) {
   if (typeof tickStatus === "function") tickStatus();
   t += dt;
-  if (trolleyOn && !paused) {
-    trolleyX = Math.min(trolleyX + (REDUCED_MOTION ? 20 : 60) * dt, 250);
-  }
+  fountainT += dt;
+
 }
 function loop(now) {
   const dt = Math.min((now - last) / 1000, 0.05);

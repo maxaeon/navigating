@@ -222,14 +222,14 @@ const ACTIVITY_KEY = "phil_map_prologue";
 const prompts = {
   first: {
     title: "Stage 0: Your question",
-    text: "Philosophy is the attempt to answer the largest questions by reasoning carefully about them. Which kind of question pulls at you most?",
+    text: "Philosophy is the attempt to answer the largest questions by reasoning carefully about them. Which kind of question interests you most?",
     mcq: ["What exists, really?", "How can anyone know anything?", "How should we live?", "What follows from what?", "What makes something beautiful?"],
     requireText: true,
     textHint: "Write the question in your own words."
   },
   knowing: {
     title: "Stage 1: Knowing and being sure",
-    text: "The person below is certain of many things: that the sun will rise, that their memories are their own, that the world outside their head is really there. Pick one thing you are certain of, and say how you know it.",
+    text: "The person below is certain of many things. The sun will rise, their memories are their own, and the world outside their head is really there. Pick one thing you are certain of, and say how you know it.",
     mcq: null,
     requireText: true,
     textHint: "Name the thing, then say how you know it."
@@ -239,14 +239,14 @@ const prompts = {
     text: "A runaway trolley is rolling toward five people on the track. You stand at a lever. Pull it, and the trolley switches to a side track where it will hit one person instead. Nobody can be warned in time. What do you do?",
     mcq: ["Pull the lever, so one is struck instead of five", "Do not pull the lever, so I do not redirect the harm myself", "I cannot decide"],
     requireText: true,
-    textHint: "Give your reason. The reason is the philosophy."
+    textHint: "Give the reason for your choice."
   },
   branches: {
     title: "Stage 3: Sorting your question",
     text: "You wrote a question at the start. Which branch of philosophy does it belong to?",
     mcq: ["Metaphysics, what exists", "Epistemology, how we know", "Ethics, how to live", "Logic, what follows from what", "Aesthetics, beauty and art"],
     requireText: true,
-    textHint: "Say why it belongs there, or why it straddles branches."
+    textHint: "Say why it belongs there, or why it belongs to more than one branch."
   },
   hopes: {
     title: "Stage 4: What you hope for",
@@ -307,24 +307,24 @@ let finished = false;
 
 const SCENE_CARDS = [
   [
-    { note: true, say: "This is where the questions live. Every person on this planet has asked at least one question that no measurement, no telescope, and no survey could settle." },
-    { note: true, say: "Philosophy is the craft of taking such questions seriously: stating them clearly, proposing answers, and testing the answers with reasons. It began independently in Greece, India, and China, and it has never stopped." }
+    { note: true, say: "Does life have a meaning? Most people ask this question at some point, along with others like it. Is there a God? What happens after death? Do we have free will? No measurement, telescope, or survey can settle these questions on its own." },
+    { note: true, say: "Philosophy is the discipline that studies these questions. The word comes from the Greek for love of wisdom. Philosophers state a question clearly, propose answers, and test the answers with reasons. Philosophy began independently in Greece, India, and China, and it continues today." }
   ],
   [
-    { note: true, say: "Zoom in far enough and the questions belong to someone. This person is wondering what there is: matter, minds, numbers, time, God, nothing at all. Questions about what exists belong to metaphysics." },
-    { note: true, say: "Now they are wondering how they could know any of it. Their eyes have fooled them before, and their memory too. What separates knowledge from confident guessing? Questions about knowing belong to epistemology." }
+    { note: true, say: "This person is wondering what exists. Matter, minds, numbers, time, God. Questions about what exists belong to the branch of philosophy called metaphysics." },
+    { note: true, say: "They are also wondering how they could know any of it. Their eyes have fooled them before, and so has their memory. What separates knowledge from a confident guess? Questions about knowledge belong to epistemology." }
   ],
   [
-    { note: true, say: "Pull back and the questions get urgent. The same person now stands at a lever beside a track junction. A runaway trolley is coming, five people are on the main track, and one person is on the side track." },
+    { note: true, say: "Some philosophical questions ask what a person should do. This person now stands at a lever beside a track junction. A runaway trolley is approaching. Five people are on the main track, and one person is on the side track." },
     { note: true, say: "Questions about what to do, what we owe each other, and what kind of person to be belong to ethics. This one has a famous name, the trolley problem, and your answer to it comes next." }
   ],
   [
     { note: true, say: "Your reason mattered more than your choice. If you weighed outcomes, five lives against one, philosophers call that consequentialist thinking. If you refused to make yourself the cause of a death, whatever the count, that is deontological thinking. Both have serious defenders." },
-    { note: true, say: "The questions sort into branches. Metaphysics asks what exists. Epistemology asks how we know. Ethics asks how to live." },
+    { note: true, say: "Philosophical questions are grouped into branches. Metaphysics asks what exists. Epistemology asks how we know. Ethics asks how we should live." },
     { say: "Logic asks what follows from what. Aesthetics asks about beauty and art. Every stop on this journey belongs to at least one of these branches." }
   ],
   [
-    { note: true, say: "The journey starts where written philosophy in the West began, on the coast of ancient Greece, and it will travel far beyond: Europe, India, China, Japan, and some strange detours in between." }
+    { note: true, say: "The journey begins in ancient Greece, where written philosophy in the West started. From there it continues across Europe and Asia, with stops along the road for problems philosophers still debate today." }
   ]
 ];
 </script>

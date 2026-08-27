@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Analytic Room</title>
+<title>China</title>
 <style>
 :root{
   --page:#141721;
@@ -35,11 +35,6 @@ canvas#mapCanvas{
 }
 #progressLine{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:15px; min-height:22px}
 .cards{max-width:900px; margin:18px auto 0}
-.roomlinks{max-width:900px; margin:14px auto 0; display:flex; gap:12px; flex-wrap:wrap; align-items:center}
-.roomlinks span{color:var(--muted); font-size:14px}
-.roomlinks a{color:var(--sea); font-size:14px; text-decoration:none;
-  border:1px solid var(--line); border-radius:8px; padding:7px 13px}
-.roomlinks a:hover{background:var(--panel-2)}
 .card{
   background:var(--panel); border:1px solid var(--line); border-radius:10px;
   padding:14px 16px; margin-bottom:12px; display:flex; gap:14px; align-items:center;
@@ -79,21 +74,15 @@ canvas#mapCanvas{
 
 <header class="wrap">
   <div class="about-wrap">
-    <h1>The Analytic Room</h1>
+    <h1>China</h1>
     <p class="about-cue">About this page</p>
-    <div class="about" id="aboutText"><p>Philosophy done by taking claims apart, testing them against clear cases, and keeping arguments short enough to check. The stops here are set in the twentieth century and each states its own time and place. This room and The Continental Room are two habits of doing philosophy rather than two sets of doctrines, and a student can walk either or both.</p></div>
+    <div class="about" id="aboutText"><p>The valley of the Yellow River and the lands south of it. The region opens with Confucius on how a person is made good, and continues toward the Daoist answers that laugh at his rites. The stops jump across centuries on purpose. The unit is organized by its question, and each activity states its real time and place.</p></div>
   </div>
 </header>
 
 <div class="wrap">
   <canvas id="mapCanvas" width="900" height="520"></canvas>
   <p id="progressLine"></p>
-  <div class="roomlinks">
-    <span>Other rooms in Europe:</span>
-    <a href="../modern-europe/modern_europe_map.html">Early Modern European Philosophy</a>
-    <a href="../continental/continental_map.html">The Continental Room</a>
-  </div>
-
   <div class="cards" id="cardList"></div>
   <p id="storageNote"></p>
 </div>
@@ -103,36 +92,36 @@ canvas#mapCanvas{
 
 const ACTIVITIES = [
   {
-    key: "phil_map_gettier",
-    title: "Knowledge and the Gettier Cases",
-    place: "A seminar room",
-    desc: "A stopped clock, a rock that looks like a sheep, and a valley of barn fronts, set against the definition of knowledge as justified true belief.",
-    file: "gettier_classroom.html",
-    node: { x: 245, y: 215 }
+    key: "phil_map_confucius",
+    title: "Confucius and the Rites",
+    place: "Qufu, in the state of Lu, around 484 BCE",
+    desc: "Hear the teaching on humaneness and the rites, watch two students receive opposite advice about one question, and compare the mean in Lu with the mean at the Lyceum, which arose independently.",
+    file: "confucius_and_the_rites.html",
+    node: { x: 250, y: 330 }
   },
   {
-    key: "phil_map_mary",
-    title: "Mary in the Black and White Room",
-    place: "A viewing gallery",
-    desc: "Every physical fact about colour vision, and no colour ever seen. What happens when she walks out, and the three standard ways of denying that anything follows.",
-    file: "marys_room.html",
-    node: { x: 234, y: 234 }
+    key: "phil_map_daodejing",
+    title: "The Daodejing",
+    place: "Attributed to Laozi, compiled by the fourth century BCE",
+    desc: "Hear the keeper of the pass tell how the book was said to be written, weigh the usefulness of what is empty, and take the book's quarrel with the courtyard at Lu.",
+    file: "daodejing.html",
+    node: { x: 440, y: 268 }
   },
   {
-    key: "phil_map_logic",
-    title: "Taking the Sentence Apart",
-    place: "Cambridge",
-    desc: "What a sentence is made of, and what changes when you can see its structure.",
-    file: null,
-    node: { x: 234, y: 221 }
+    key: "phil_map_zhuangzi",
+    title: "Zhuangzi's Butterfly",
+    place: "The fourth century BCE",
+    desc: "The butterfly dream set beside the stove-heated room, the tortoise who preferred the mud, the useless tree, and the debate about the happiness of fish.",
+    file: "zhuangzi_butterfly.html",
+    node: { x: 600, y: 330 }
   },
   {
-    key: "phil_map_meaning",
-    title: "What a Word Does",
-    place: "Oxford",
-    desc: "Meaning as use, and what happens to old puzzles when you ask how a word is actually handled.",
-    file: null,
-    node: { x: 375, y: 266 }
+    key: "phil_map_banzhao",
+    title: "Ban Zhao",
+    place: "Luoyang, around 100 CE",
+    desc: "Meet the scholar who completed the dynasty's history, hear her argument that daughters must be educated, and face the problem of reading a thinker inside constraints.",
+    file: "ban_zhao.html",
+    node: { x: 760, y: 386 }
   }
 ];
 const ENFORCE_ORDER = true;
@@ -147,7 +136,7 @@ function isDone(key) {
    difficult stop never blocks the rest of the route. */
 function skipKey(k) { return k + "_skipped"; }
 
-const MINUTES = {"phil_map_mary": "about 20 minutes", "phil_map_kant": "about 25 minutes", "phil_map_berkeley": "about 20 minutes", "phil_map_elisabeth": "about 20 minutes", "phil_map_hume": "about 25 minutes", "phil_map_berkeley": "about 25 minutes", "phil_map_prologue": "about 10 minutes", "phil_map_presocratics": "about 20 minutes", "phil_map_ship": "about 15 minutes", "phil_map_clouds": "about 15 minutes", "phil_map_apology": "about 25 minutes", "phil_map_academy": "about 20 minutes", "phil_map_cave": "about 20 minutes", "phil_map_phaedo": "about 20 minutes", "phil_map_aristotle": "about 25 minutes", "phil_map_anselm": "about 20 minutes", "phil_map_aquinas": "about 20 minutes", "phil_map_evil": "about 20 minutes", "phil_map_pascal": "about 20 minutes", "phil_map_paley": "about 20 minutes", "phil_map_footbridge": "about 10 minutes"};
+const MINUTES = {"phil_map_confucius": "about 20 minutes", "phil_map_daodejing": "about 15 minutes", "phil_map_zhuangzi": "about 20 minutes", "phil_map_banzhao": "about 15 minutes", "phil_map_footbridge": "about 10 minutes", "phil_map_prologue": "about 10 minutes", "phil_map_presocratics": "about 20 minutes", "phil_map_ship": "about 15 minutes", "phil_map_clouds": "about 15 minutes", "phil_map_apology": "about 25 minutes", "phil_map_academy": "about 20 minutes", "phil_map_cave": "about 20 minutes", "phil_map_phaedo": "about 20 minutes", "phil_map_aristotle": "about 25 minutes", "phil_map_anselm": "about 20 minutes", "phil_map_aquinas": "about 20 minutes", "phil_map_evil": "about 20 minutes", "phil_map_pascal": "about 20 minutes", "phil_map_paley": "about 20 minutes", "phil_map_footbridge": "about 10 minutes"};
 function isSkipped(k) {
   try { return localStorage.getItem(skipKey(k)) === "1"; }
   catch (err) { return false; }
@@ -172,53 +161,79 @@ const canvas = document.getElementById("mapCanvas");
 const ctx = canvas.getContext("2d");
 const MW = 900, MH = 520;
 
-const MAP_IMG = typeof Image !== "undefined" ? new Image() : null;
-if (MAP_IMG) {
-  MAP_IMG.onload = () => drawMap();
-  MAP_IMG.src = "../shared/img/map_west.png";
-}
-
-/* A compass, so north is never in doubt. */
-function drawCompass(cx, cy, r) {
-  ctx.save();
-  ctx.fillStyle = "rgba(12,16,22,0.55)";
-  ctx.beginPath(); ctx.arc(cx, cy, r + 8, 0, Math.PI * 2); ctx.fill();
-  ctx.strokeStyle = "rgba(238,242,246,0.85)";
-  ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.arc(cx, cy, r + 8, 0, Math.PI * 2); ctx.stroke();
-  // The north half, filled.
-  ctx.fillStyle = "#eef2f6";
-  ctx.beginPath();
-  ctx.moveTo(cx, cy - r);
-  ctx.lineTo(cx + r * 0.34, cy + r * 0.28);
-  ctx.lineTo(cx, cy + r * 0.06);
-  ctx.closePath(); ctx.fill();
-  // The south half, outlined.
-  ctx.fillStyle = "rgba(238,242,246,0.35)";
-  ctx.beginPath();
-  ctx.moveTo(cx, cy - r);
-  ctx.lineTo(cx - r * 0.34, cy + r * 0.28);
-  ctx.lineTo(cx, cy + r * 0.06);
-  ctx.closePath(); ctx.fill();
-  ctx.fillStyle = "#eef2f6";
-  ctx.font = "bold 12px 'Segoe UI', sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText("N", cx, cy - r - 12);
-  ctx.textAlign = "left";
-  ctx.restore();
-}
-
 function drawMap() {
   ctx.clearRect(0, 0, MW, MH);
-  if (MAP_IMG && MAP_IMG.complete) {
-    ctx.drawImage(MAP_IMG, 0, 0, MW, MH);
-  } else {
-    ctx.fillStyle = "#2c5a80";
-    ctx.fillRect(0, 0, MW, MH);
+  // Morning over the river valley.
+  const sky = ctx.createLinearGradient(0, 0, 0, MH);
+  sky.addColorStop(0, "#6a80a4");
+  sky.addColorStop(0.6, "#98a08c");
+  sky.addColorStop(1, "#b0a67c");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, MW, 250);
+  ctx.fillStyle = "#8a9464";
+  ctx.fillRect(0, 250, MW, MH - 250);
+  // Mountains south and west.
+  ctx.fillStyle = "rgba(90,96,116,0.6)";
+  ctx.beginPath();
+  ctx.moveTo(0, 250); ctx.lineTo(110, 150); ctx.lineTo(210, 250); ctx.closePath(); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(150, 250); ctx.lineTo(260, 172); ctx.lineTo(370, 250); ctx.closePath(); ctx.fill();
+  // The Yellow River, wide and pale, looping across the plain.
+  ctx.fillStyle = "#b0a06c";
+  ctx.beginPath();
+  ctx.moveTo(0, 160);
+  ctx.quadraticCurveTo(300, 190, 480, 250);
+  ctx.quadraticCurveTo(660, 310, 900, 300);
+  ctx.lineTo(900, 336); ctx.quadraticCurveTo(640, 348, 450, 286);
+  ctx.quadraticCurveTo(260, 224, 0, 196);
+  ctx.closePath(); ctx.fill();
+  // Terraced fields near the mountains.
+  ctx.strokeStyle = "rgba(240,244,248,0.35)";
+  ctx.lineWidth = 2;
+  for (let i2 = 0; i2 < 5; i2++) {
+    ctx.beginPath();
+    ctx.moveTo(60, 300 + i2 * 22);
+    ctx.quadraticCurveTo(160, 288 + i2 * 22, 260, 302 + i2 * 22);
+    ctx.stroke();
   }
-  ctx.fillStyle = "rgba(238,242,246,0.6)";
+  // A walled town near the first stop.
+  ctx.fillStyle = "#9a8e78";
+  ctx.fillRect(198, 296, 104, 10);
+  ctx.fillRect(198, 268, 10, 32); ctx.fillRect(292, 268, 10, 32);
+  ctx.fillStyle = "#5c4a34";
+  ctx.beginPath();
+  ctx.moveTo(192, 268); ctx.quadraticCurveTo(250, 246, 308, 268);
+  ctx.lineTo(300, 276); ctx.lineTo(200, 276); ctx.closePath(); ctx.fill();
+  // Pines near the later stops.
+  [[430, 246], [612, 306], [700, 300]].forEach(p => {
+    ctx.strokeStyle = "#4a5a44"; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(p[0], p[1] - 26); ctx.stroke();
+    ctx.fillStyle = "#4a6a46";
+    ctx.beginPath(); ctx.ellipse(p[0], p[1] - 30, 18, 10, 0, 0, Math.PI * 2); ctx.fill();
+  });
+  // The sea at the eastern edge.
+  ctx.fillStyle = "#48607e";
+  ctx.beginPath();
+  ctx.moveTo(900, 340); ctx.quadraticCurveTo(846, 400, 866, 520);
+  ctx.lineTo(900, 520); ctx.closePath(); ctx.fill();
+  // The road across the region.
+  ctx.strokeStyle = "rgba(240,234,208,0.9)";
+  ctx.lineWidth = 5;
+  ctx.setLineDash([10, 8]);
+  ctx.beginPath();
+  ctx.moveTo(14, 396);
+  ctx.quadraticCurveTo(130, 366, 250, 330);
+  ctx.quadraticCurveTo(350, 296, 440, 268);
+  ctx.quadraticCurveTo(530, 296, 600, 330);
+  ctx.quadraticCurveTo(690, 366, 760, 386);
+  ctx.quadraticCurveTo(830, 402, 888, 410);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  // Labels.
+  ctx.fillStyle = "rgba(20,23,33,0.7)";
   ctx.font = "italic 13px Georgia, serif";
-
+  ctx.fillText("the Yellow River", 420, 236);
+  ctx.fillText("the sea, toward Japan", 700, 470);
   // The route between the stops.
   ctx.strokeStyle = "rgba(240,234,208,0.9)";
   ctx.lineWidth = 2.5;
@@ -251,8 +266,6 @@ function drawMap() {
     ctx.fillStyle = done || unlocked ? "#eef1f7" : "#8b93a8";
     ctx.fillText(label, lx, ly + 2);
   });
-
-  drawCompass(838, 74, 22);
 
   // The way back to the world map.
   ctx.fillStyle = "rgba(20,23,33,0.8)";
@@ -308,11 +321,9 @@ function refresh() {
     }
     list.appendChild(card);
   });
-  const anyLive = ACTIVITIES.some(a => a.file !== null);
   const next = ACTIVITIES.find((a, i) => a.file !== null && !isDone(a.key) && isUnlocked(i));
   document.getElementById("progressLine").textContent =
-    !anyLive ? "The stops of this region are in preparation."
-    : next ? "Next: " + next.title + "." : "Every open stop in this region is complete.";
+    next ? "Next: " + next.title + "." : "Every open stop in this region is complete.";
   document.getElementById("storageNote").textContent = storageOk ? "" :
     "This browser is blocking saved progress, so completion cannot be tracked automatically here.";
 }

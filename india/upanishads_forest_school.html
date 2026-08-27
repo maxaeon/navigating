@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Bridge Crossing</title>
+<title>The Self in the Upanishads</title>
 <style>
 :root{
   --page:#131318;
@@ -117,9 +117,9 @@ textarea{
 
 <header class="wrap">
   <div class="about-wrap">
-    <h1>The Bridge Crossing</h1>
+    <h1>The Self in the Upanishads</h1>
     <p class="about-cue">What this activity covers</p>
-    <div class="about" id="aboutText"><p>A mountain pass on the road between regions, at dusk. This is a situation on the road. It was not on your itinerary, and it will not wait for a convenient moment. Below the footbridge runs a rail line, and something is wrong on it. You faced a version of this once before, at a lever, in the prologue. This version is harder, and the difference between the two versions is what this activity examines. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+    <div class="about" id="aboutText"><p>A forest school on the Ganges plain, in the centuries before the Buddha. A father is teaching his son the doctrine that stands at the end of the Vedas, and the lesson uses a fig, a bowl of salt water, and a question about what the word I points to. You take part in the demonstrations. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
   </div>
 </header>
 
@@ -165,7 +165,7 @@ textarea{
 <div id="endScreen">
   <div class="wrap">
     <h1>Activity completed</h1>
-    <p id="nextStop">The road continues where it was going. The world map remembers this crossing.</p>
+    <p id="nextStop">The next stop is The Self and Its Denial, at the deer park. The world map remembers the forest school.</p>
 
     <div class="section-box">
       <h3>Your responses at each stage</h3>
@@ -174,30 +174,30 @@ textarea{
 
     <div class="section-box">
       <h3>Discussion questions</h3>
-      <p>1. Design a third variant of the situation that isolates exactly one difference from the footbridge, physical contact, intention, or the use of a person as a means, and predict how people would answer it.</p>
+      <p>1. Uddalaka teaches by demonstration, a fig and a bowl of salt water, rather than by definition. Compare his method with the sand lesson at the grove of Akademos. What does each method assume about where knowledge comes from?</p>
       <textarea id="discussion1"></textarea>
-      <p>2. Self-driving vehicles, triage protocols, and military targeting rules all encode answers to cases like these in advance. Should such answers be written down before the emergency, and by whom?</p>
+      <p>2. In the beginning this was Being alone, one only, without a second. The sentence stands near Parmenides. Compare what each teacher does next, since Parmenides denies motion and change while Uddalaka keeps the changing world as names and shapes of the one. Which of the two handles ordinary experience better?</p>
       <textarea id="discussion2"></textarea>
-      <p>3. Suppose someone answers the lever and the footbridge differently and cannot state a principle that separates them. Is that a defect in their reasoning, or evidence that morality does not reduce to statable principles?</p>
+      <p>3. If tat tvam asi were true, what, if anything, should change in how a person treats other people? Trace the step from the metaphysics to the ethics, and mark where the step is weakest.</p>
       <textarea id="discussion3"></textarea>
     </div>
 
     <div class="section-box" id="quizSection">
       <h3>Quiz</h3>
-      <p><strong>1.</strong> Across many surveys, most people say</p>
-      <label><input type="radio" name="q1" value="Pull the lever, but do not push the man"> pull the lever, but do not push the man</label>
-      <label><input type="radio" name="q1" value="Push the man, but do not pull the lever"> push the man, but do not pull the lever</label>
-      <label><input type="radio" name="q1" value="The same thing in both cases"> the same thing in both cases</label>
+      <p><strong>1.</strong> Tat tvam asi, the refrain of the lesson, means</p>
+      <label><input type="radio" name="q1" value="That art thou"> that art thou</label>
+      <label><input type="radio" name="q1" value="All is suffering"> all is suffering</label>
+      <label><input type="radio" name="q1" value="Being is a fig seed"> being is a fig seed</label>
 
-      <p><strong>2.</strong> The doctrine of double effect distinguishes</p>
-      <label><input type="radio" name="q2" value="Harm intended as a means from harm foreseen as a side effect"> harm intended as a means from harm foreseen as a side effect</label>
-      <label><input type="radio" name="q2" value="Harm to strangers from harm to friends"> harm to strangers from harm to friends</label>
-      <label><input type="radio" name="q2" value="Action from inaction in every case"> action from inaction in every case</label>
+      <p><strong>2.</strong> In the salt demonstration, the salt</p>
+      <label><input type="radio" name="q2" value="It cannot be seen and is tasted everywhere in the water"> cannot be seen and is tasted everywhere in the water</label>
+      <label><input type="radio" name="q2" value="It settles at the bottom of the bowl"> settles at the bottom of the bowl</label>
+      <label><input type="radio" name="q2" value="It vanishes completely, taste and all"> vanishes completely, taste and all</label>
 
-      <p><strong>3.</strong> In the footbridge case, the large man's death is</p>
-      <label><input type="radio" name="q3" value="The means by which the five are saved"> the means by which the five are saved</label>
-      <label><input type="radio" name="q3" value="A side effect of redirecting the threat"> a side effect of redirecting the threat</label>
-      <label><input type="radio" name="q3" value="Unrelated to whether the five are saved"> unrelated to whether the five are saved</label>
+      <p><strong>3.</strong> Vedanta means</p>
+      <label><input type="radio" name="q3" value="The end of the Veda"> the end of the Veda</label>
+      <label><input type="radio" name="q3" value="The middle way"> the middle way</label>
+      <label><input type="radio" name="q3" value="The forest school"> the forest school</label>
 
       <p><button id="gradeBtn">Grade the quiz</button></p>
       <p id="quizResult"></p>
@@ -213,49 +213,49 @@ textarea{
 
 <script>
 "use strict";
-const ACTIVITY_KEY = "phil_map_footbridge";
+const ACTIVITY_KEY = "phil_map_upanishads";
 
 /* =========================================================
    Prompts, quiz key, and log
    ========================================================= */
 const prompts = {
   first: {
-    title: "Stage 0: Your answer at the lever",
-    text: "At the prologue you stood at a lever: divert the trolley and one person dies instead of five. Before this situation unfolds, record what you chose there, or would choose now.",
-    mcq: ["I pulled it, one death instead of five", "I did not pull it", "Not sure, but I would pull it now", "Not sure, but I would not pull it now"],
-    requireText: true
+    title: "Stage 0: What the word I points to",
+    text: "When you say the word I, what do you take it to point to? Answer before the lesson begins.",
+    mcq: ["This body", "The mind, the thoughts and memories", "Something deeper that has the body and the thoughts", "The word points to nothing single at all"],
+    requireText: false
   },
-  push: {
-    title: "Stage 1: The bridge",
-    text: "The numbers are the lever's numbers: one life against five. The only difference is what you would have to do. Record your decision.",
-    mcq: ["I push him, five lives outweigh one", "I do not push him, this feels different", "I do neither, here or at the lever", "I cannot decide"],
-    requireText: true
+  clay: {
+    title: "Stage 1: The lump of clay",
+    text: "By one lump of clay, everything made of clay is known. Uddalaka claims that knowing the one Being would be knowing everything in the same way. Is the clay a good model for the world?",
+    mcq: ["Yes, differences of name and shape are shallow, and the underlying reality is the truth", "No, the differences between things are exactly what knowledge is about", "It works for materials, and it fails for minds", "It is a promise of knowledge rather than knowledge"],
+    requireText: false
   },
-  asymmetry: {
-    title: "Stage 2: The asymmetry",
-    text: "Across many studies, most people pull the lever and refuse to push, though the arithmetic is identical. If the majority is responding to a real difference, what is that difference?",
-    mcq: ["Touching someone is different from pulling a switch", "On the bridge, his body is the tool that stops it", "Nothing real, people are just inconsistent", "The lever answer was wrong too"],
-    requireText: true
+  fig: {
+    title: "Stage 2: The seed of the banyan",
+    text: "The fig demonstration argues from what you cannot see inside the seed to an unseen essence in everything. What does the demonstration actually establish?",
+    mcq: ["That an unseen essence is present in the seed", "That the tree grows from something too small to see, and no more", "That seeing is not the test of being", "Nothing, it is an image rather than an argument"],
+    requireText: false
   },
-  intention: {
-    title: "Stage 3: Intending and foreseeing",
-    text: "The doctrine of double effect says harm you intend as your means is worse than the same harm foreseen as a side effect. At the lever, if the one person somehow survived, your plan still works. On the bridge, if the man survives untouched by the trolley, your plan has failed. Does that difference carry moral weight?",
-    mcq: ["Yes, what you aim at is what you do", "Some, but the result matters more", "No, it is a trick that excuses the lever", "It matters in law and practice, whatever theory says"],
-    requireText: true
+  salt: {
+    title: "Stage 3: That art thou",
+    text: "Take the teaching at full strength. The self in you and the one Being under everything are the same. What kind of claim is that?",
+    mcq: ["A literal identity, to be argued for and tested", "A teaching image, meant to change the hearer rather than to describe", "A hypothesis that experience could support or undermine", "A category mistake, since selves and world-stuff are different kinds"],
+    requireText: false
   },
-  consistency: {
-    title: "Stage 4: Your two answers",
-    text: "Set your lever answer beside your bridge answer. Are they consistent? If they are, state the principle that covers both. If they are not, say which answer you would change, or defend keeping both without a principle.",
+  final: {
+    title: "Stage 4: The strongest challenge",
+    text: "State the strongest challenge you can put to Uddalaka's teaching, aimed either at the demonstrations themselves or at the step from them to that art thou. Then say what a defender of the teaching should answer.",
     mcq: null,
     requireText: true,
-    textHint: "The principle, the change, or the defense."
+    textHint: "The challenge, then the best reply to it."
   }
 };
 
 const quizKeys = [
-  "Pull the lever, but do not push the man",
-  "Harm intended as a means from harm foreseen as a side effect",
-  "The means by which the five are saved"
+  "That art thou",
+  "It cannot be seen and is tasted everywhere in the water",
+  "The end of the Veda"
 ];
 
 let reflectionLog = [];
@@ -286,9 +286,9 @@ const W = 900, H = 500;
 let started = false;
 let paused = false;
 let t = 0;
-let trolleyOn = false;
-let trolleyX = -80;
-const record = { lever: null, bridge: null };
+let saltOn = false;
+let leafT = 0;
+
 
 /* =========================================================
    Narration and the modal
@@ -364,7 +364,7 @@ function continueDlg() {
     if (window.speechSynthesis) speechSynthesis.cancel();
     if (cb) cb();
   } else {
-    if (dlg.steps[dlg.i].trolley) trolleyOn = true;
+    if (dlg.steps[dlg.i].salt) saltOn = true;
     renderDlg();
   }
 }
@@ -451,8 +451,6 @@ submitBtn.addEventListener("click", () => {
     choice: p.mcq ? (sel ? sel.value : null) : null,
     response: modalText.value.trim()
   });
-  if (activePrompt.key === "first" && sel) record.lever = sel.value;
-  if (activePrompt.key === "push" && sel) record.bridge = sel.value;
   if (window.speechSynthesis) speechSynthesis.cancel();
   overlay.classList.remove("open");
   paused = false;
@@ -469,25 +467,43 @@ function setObjective(txt) { objectiveEl.textContent = txt; }
 function runScene() {
   openPrompt("first", () => {
     startDlg([
-      { say: "The pass road crosses a gorge on a footbridge, and the rail line runs through the gorge below. You are halfway across when you hear it: a runaway trolley, brakes gone, coming down the grade. Further along the line, five workers are in a cutting with their backs to it, and the walls of the cutting leave them nowhere to go.", trolley: false },
-      { trolley: true, say: "There is no lever here. There is no side track. There is only one thing on this bridge heavy enough to stop a trolley, and it is not you." },
-    { say: "A very large man stands at the railing beside you, looking down at the line, unaware. If he falls onto the track, the trolley stops, and he dies, and the five live. You would have to push him." },
-      { note: true, say: "This is the footbridge case, introduced by Judith Jarvis Thomson in 1976, building on Philippa Foot's original trolley problem of 1967. The numbers are identical to the lever case on purpose: one life against five. Everything that differs is in what the one who acts must do." }
+      { say: "The road descends from the passes into the plain of the Ganges, wide, green, and slow. Toward evening you reach a forest school, a cluster of huts under a great banyan tree, where families send their sons to memorize the Vedas. The teacher, Uddalaka Aruni, is receiving his own son Shvetaketu, home after twelve years of study, and visitors may sit and listen." },
+      { note: true, say: "The scene is adapted from the sixth chapter of the Chandogya Upanishad, among the oldest of the Upanishads, composed in northern India, most likely before the Buddha. The Upanishads stand at the end of the Vedic corpus, and the schools built on them are called Vedanta, the end of the Veda. The dialogue of Uddalaka and Shvetaketu is one of the most studied passages in Indian philosophy." },
+      { say: "Uddalaka: Shvetaketu, you return knowing every verse, and you walk like a man who knows every verse. Now let me ask about what you were not taught. Did you ask for that teaching by which the unheard becomes heard, the unthought becomes thought, the unknown becomes known?" },
+      { say: "Shvetaketu: There was no such teaching, father. How could one teaching do all that? Tell it to me." },
+      { say: "Uddalaka: Begin with clay. By one lump of clay, everything made of clay is known. The shapes differ and take different names, pot and brick and bowl, and the truth of each is the clay. In the beginning, my son, this world was Being alone, one only, without a second. Everything you meet is that one Being, wearing different names and shapes." },
+      { note: true, say: "Readers have long noticed that this stands close to two Greek positions you have met, the Milesian search for one nature under all things, and Parmenides' claim that what is, is one. The texts are independent. No contact between the schools is documented for this period, and the resemblance arose on its own." }
     ], () => {
-      openPrompt("push", () => {
+      openPrompt("clay", () => {
         startDlg([
-          { say: "Whichever you chose, notice what making the choice was like this time, and whether anything besides the numbers weighed on it." }
+          { say: "Uddalaka turns to you, the visitor, and points up into the banyan. Uddalaka: Bring me one of its figs, and split it open, and tell me what you see.",
+            choices: [
+              { tag: "seeds", text: "Seeds, sir. Very many, and very small.",
+                reply: ["Uddalaka: Now split one of the seeds. You split it with your thumbnail, and inside there is nothing you can point to. Uddalaka: What do you see? Nothing, you say. From that subtle part which you cannot see, this great banyan stands. That fineness runs through everything, and it is the self of all this. That is truth. That is the self. And that art thou, Shvetaketu."] },
+              { tag: "why", text: "Why a fig, sir? What can a fruit show about the self?",
+                reply: ["Uddalaka: Split it and find out. You split it, and it is full of small seeds, and he has you split a seed as well, and inside the seed there is nothing you can point to. Uddalaka: From that subtle part which you cannot see, this great banyan stands. That fineness runs through everything, and it is the self of all this. That is truth. That is the self. And that art thou, Shvetaketu."] }
+            ] },
+          { note: true, say: "That art thou, tat tvam asi in Sanskrit, is the refrain of the chapter, repeated after each demonstration. It became one of the great sentences of Vedanta, and the demonstrations were designed to be repeated by anyone, with a fruit, a bowl, and a lump of salt." }
         ], () => {
-          openPrompt("asymmetry", () => {
+          openPrompt("fig", () => {
             startDlg([
-              { note: true, say: "One well known analysis uses the doctrine of double effect, an idea that goes back to Aquinas. It says harm you intend as your means is worse than the same harm you only foresee." },
-    { say: "Test it here. At the lever, if the one worker scrambled clear, your plan still works. On the bridge, if the man is never struck, the five die. The trolley must hit him for the plan to work." }
+              { salt: true, say: "Uddalaka: One more, and this one takes until morning. Put this lump of salt in that bowl of water, and come back at dawn." },
+              { say: "At dawn the bowl stands where you left it. Uddalaka: Bring me the salt you put in. You reach into the water and there is nothing to bring. Uddalaka: Taste from this side of the bowl. Now from the middle. Now from the far side.",
+                choices: [
+                  { tag: "everywhere", text: "Salt, everywhere, though I cannot see it.",
+                    reply: ["Uddalaka: Just so. Being is in this body the way the salt is in the water. You do not see it, and it is not therefore absent."] },
+                  { tag: "gone", text: "The salt is gone. Only the taste remains.",
+                    reply: ["Uddalaka: Listen to what you said. Gone, and yet tasted from every side of the bowl. What you call gone is only invisible. Being is in this body the way the salt is in this water."] }
+                ] },
+              { say: "Shvetaketu: Then what am I, father? This body ages. These thoughts come and go. Which part of me is the self you speak of?" },
+              { say: "Uddalaka: Not the body, which changes like the fig. Not the thoughts, which come and go like the shapes of clay. The self is the being in you that all of those depend on, the same being that everything depends on. That art thou." },
+              { note: true, say: "What the identity of Atman, the self, and Brahman, the one reality, amounts to became the dividing question of Vedanta. Shankara, around 700 CE, read it strictly, the self and the one Being are simply identical, and the world of many separate things is a misreading. Ramanuja, around 1100, read the many as real parts of the one. The argument between their schools continues, and this activity does not decide it." }
             ], () => {
-              openPrompt("intention", () => {
+              openPrompt("salt", () => {
                 startDlg([
-                  { say: "Below, it is over one way or another, and the road goes on. Situations like this one do not look like philosophy while they are happening. They demand a decision, and leave you to work out afterward what your answer committed you to." }
+                  { say: "In the morning the road continues east along the river. Word at the school is of a teacher some days downstream who denies this doctrine at its root, and who tells his hearers to search their own experience and report what they actually find." }
                 ], () => {
-                  openPrompt("consistency", () => endGame());
+                  openPrompt("final", () => endGame());
                 });
               });
             });
@@ -496,13 +512,14 @@ function runScene() {
       });
     });
   });
+
 }
 
 /* =========================================================
    End screen, quiz, and report
    ========================================================= */
 function endGame() {
-  try { localStorage.setItem("phil_map_footbridge", "1"); } catch (err) { /* storage is optional */ }
+  try { localStorage.setItem("phil_map_upanishads", "1"); } catch (err) { /* storage is optional */ }
   const summary = document.getElementById("reflectionSummary");
   summary.innerHTML = "";
   reflectionLog.forEach(r => {
@@ -548,8 +565,8 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const d1 = document.getElementById("discussion1").value.trim();
   const d2 = document.getElementById("discussion2").value.trim();
   const d3 = document.getElementById("discussion3").value.trim();
-  let text = "The Bridge Crossing, Report\n";
-  text += "===========================\n\nResponses at each stage:\n";
+  let text = "The Self in the Upanishads, Report\n";
+  text += "============================\n\nResponses at each stage:\n";
   reflectionLog.forEach(r => {
     text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
     if (r.choice) text += "Choice: " + r.choice + "\n";
@@ -557,12 +574,10 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
     text += "-".repeat(50);
   });
   text += "\n\nThe pair of answers:\n";
-  text += "At the lever: " + (record.lever || "(none)") + "\n";
-  text += "On the bridge: " + (record.bridge || "(none)") + "\n";
   text += "\nDiscussion questions:\n";
-  text += "1. A third variant isolating one difference.\n" + (d1 || "(no answer)") + "\n\n";
-  text += "2. Encoding answers before the emergency.\n" + (d2 || "(no answer)") + "\n\n";
-  text += "3. Different answers without a principle.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "1. Demonstration against definition.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Uddalaka beside Parmenides.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. From the metaphysics to the ethics.\n" + (d3 || "(no answer)") + "\n\n";
   text += "Quiz:\n";
   if (quizScore) {
     quizScore.answers.forEach((ans, i) => {
@@ -575,7 +590,7 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const blob = new Blob([text], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = "Bridge_Crossing_Report.txt"; a.click();
+  a.href = url; a.download = "Upanishads_Report.txt"; a.click();
   URL.revokeObjectURL(url);
 });
 document.getElementById("restartBtn").addEventListener("click", () => location.reload());
@@ -594,89 +609,93 @@ function drawFigure(x, y, s, color) {
   ctx.fillRect(1, -11, 4, 11);
   ctx.restore();
 }
+function drawSitter(x, y, s, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(s, s);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -26, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -20, 12, 14);
+  ctx.fillRect(-9, -6, 18, 5);
+  ctx.restore();
+}
 function render() {
   ctx.clearRect(0, 0, W, H);
-  // Dusk sky.
+  // Evening light over the plain.
   const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, "#232338");
-  sky.addColorStop(0.6, "#3c3450");
-  sky.addColorStop(1, "#584458");
+  sky.addColorStop(0, "#4a5a80");
+  sky.addColorStop(0.55, "#8a7a74");
+  sky.addColorStop(1, "#b09a5c");
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, W, H);
-  // Mountains behind.
-  ctx.fillStyle = "rgba(40,40,58,0.9)";
+  // The river, far and slow.
+  ctx.fillStyle = "#48607e";
   ctx.beginPath();
-  ctx.moveTo(0, 240); ctx.lineTo(160, 110); ctx.lineTo(300, 220); ctx.lineTo(470, 90);
-  ctx.lineTo(650, 210); ctx.lineTo(800, 130); ctx.lineTo(900, 200); ctx.lineTo(900, 500); ctx.lineTo(0, 500);
+  ctx.moveTo(0, 262); ctx.quadraticCurveTo(340, 246, 900, 268);
+  ctx.lineTo(900, 300); ctx.quadraticCurveTo(400, 284, 0, 296);
   ctx.closePath(); ctx.fill();
-  // The gorge walls.
-  ctx.fillStyle = "#2c2c3c";
-  ctx.fillRect(0, 300, 240, 200);
-  ctx.fillRect(660, 300, 240, 200);
-  ctx.fillStyle = "#242432";
+  // The plain.
+  ctx.fillStyle = "#6c7a4c";
+  ctx.fillRect(0, 296, W, 204);
+  // The banyan: broad crown, main trunk, and hanging prop roots.
+  ctx.fillStyle = "#3f5a3c";
   ctx.beginPath();
-  ctx.moveTo(240, 300); ctx.lineTo(240, 500); ctx.lineTo(300, 500); ctx.closePath(); ctx.fill();
+  ctx.ellipse(430, 178, 250, 86, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#4a6a46";
   ctx.beginPath();
-  ctx.moveTo(660, 300); ctx.lineTo(660, 500); ctx.lineTo(600, 500); ctx.closePath(); ctx.fill();
-  // The rail line along the gorge floor.
-  ctx.strokeStyle = "#8b95a5";
+  ctx.ellipse(340, 156, 120, 56, 0, 0, Math.PI * 2);
+  ctx.ellipse(540, 160, 130, 58, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#5c4a34";
+  ctx.lineWidth = 16;
+  ctx.beginPath(); ctx.moveTo(430, 420); ctx.lineTo(430, 220); ctx.stroke();
   ctx.lineWidth = 4;
-  [448, 466].forEach(ry => {
-    ctx.beginPath(); ctx.moveTo(0, ry); ctx.lineTo(900, ry); ctx.stroke();
+  [300, 356, 508, 566].forEach((rx, i) => {
+    const sway = REDUCED_MOTION ? 0 : Math.sin(leafT * 1.2 + i) * 3;
+    ctx.beginPath();
+    ctx.moveTo(rx, 236 + (i % 2) * 10);
+    ctx.quadraticCurveTo(rx + sway, 330, rx + sway, 408);
+    ctx.stroke();
   });
-  ctx.strokeStyle = "#4a3c30";
-  for (let x = 10; x < 900; x += 30) {
-    ctx.beginPath(); ctx.moveTo(x, 442); ctx.lineTo(x, 472); ctx.stroke();
-  }
-  // The cutting with the five workers, right of the bridge.
-  ctx.fillStyle = "#242432";
-  ctx.fillRect(700, 396, 200, 44);
-  for (let i = 0; i < 5; i++) drawFigure(730 + i * 36, 452, 0.8, "#8fb7dd");
+  // Huts of the school.
+  [[120, 400], [200, 428], [700, 404]].forEach(p => {
+    ctx.fillStyle = "#8a7450";
+    ctx.fillRect(p[0] - 30, p[1] - 26, 60, 26);
+    ctx.fillStyle = "#c9b060";
+    ctx.beginPath();
+    ctx.moveTo(p[0] - 38, p[1] - 26); ctx.lineTo(p[0], p[1] - 52); ctx.lineTo(p[0] + 38, p[1] - 26);
+    ctx.closePath(); ctx.fill();
+  });
+  // The teaching place under the tree: a mat, the bowl, and the fig basket.
+  ctx.fillStyle = "#c9bda0";
+  ctx.fillRect(360, 442, 150, 10);
+  ctx.fillStyle = "#8a7450";
+  ctx.beginPath(); ctx.ellipse(492, 440, 13, 7, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = saltOn ? "#a9c3dd" : "#8a9ab0";
+  ctx.beginPath(); ctx.ellipse(492, 438, 10, 5, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#eef2f6";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  if (saltOn) ctx.fillText("the bowl, overnight", 452, 466);
+  // Uddalaka, Shvetaketu, and you.
+  drawFigure(400, 436, 1, "#8fb7dd");
+  drawSitter(452, 448, 1, "#5a7d8f");
+  drawSitter(372, 462, 1, "#5b84b1");
   ctx.fillStyle = "#eef2f6";
   ctx.font = "13px 'Segoe UI', sans-serif";
-  ctx.fillText("five workers", 748, 492);
-  // The footbridge across the gorge.
-  ctx.fillStyle = "#57503f";
-  ctx.fillRect(220, 262, 460, 14);
-  ctx.strokeStyle = "#57503f";
-  ctx.lineWidth = 5;
-  ctx.beginPath(); ctx.moveTo(220, 240); ctx.lineTo(680, 240); ctx.stroke();
-  for (let x = 240; x < 680; x += 44) {
-    ctx.beginPath(); ctx.moveTo(x, 240); ctx.lineTo(x, 262); ctx.stroke();
-  }
-  ctx.fillStyle = "#484236";
-  ctx.fillRect(206, 262, 18, 238);
-  ctx.fillRect(676, 262, 18, 238);
-  // You, and the large man at the railing.
-  drawFigure(392, 262, 1, "#5b84b1");
-  ctx.fillStyle = "#5a7d8f";
-  ctx.beginPath(); ctx.arc(470, 220, 10, 0, Math.PI * 2); ctx.fill();
-  ctx.fillRect(455, 228, 30, 30);
-  ctx.fillRect(457, 258, 10, 6);
-  ctx.fillRect(473, 258, 10, 6);
-  ctx.fillStyle = "#eef2f6";
-  ctx.fillText("you", 380, 292);
-  ctx.fillText("the large man", 428, 210);
-  // The trolley, rolling in on the line when the scene calls it.
-  if (trolleyOn) {
-    ctx.fillStyle = "#8f3b3b";
-    ctx.fillRect(trolleyX - 46, 408, 92, 40);
-    ctx.fillStyle = "#c9b98a";
-    ctx.fillRect(trolleyX - 36, 416, 24, 16);
-    ctx.fillRect(trolleyX + 6, 416, 24, 16);
-    ctx.fillStyle = "#1c1c26";
-    ctx.beginPath();
-    ctx.arc(trolleyX - 26, 452, 9, 0, Math.PI * 2);
-    ctx.arc(trolleyX + 26, 452, 9, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  ctx.fillText("Uddalaka", 372, 388);
+  ctx.fillText("Shvetaketu", 436, 478);
+  ctx.fillText("you", 356, 486);
+  ctx.font = "italic 13px Georgia, serif";
+  ctx.fillStyle = "rgba(238,242,246,0.75)";
+  ctx.fillText("the Ganges", 60, 288);
   if (!started) {
     ctx.fillStyle = "rgba(16,16,22,0.55)";
     ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = "#f0f0f5";
     ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
     ctx.textAlign = "center";
-    ctx.fillText("The Bridge Crossing", W / 2, H / 2 - 12);
+    ctx.fillText("The Self in the Upanishads", W / 2, H / 2 - 12);
     ctx.font = "15px 'Segoe UI', sans-serif";
     ctx.fillStyle = "#a9a9bc";
     ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
@@ -691,9 +710,8 @@ let last = performance.now();
 function update(dt) {
   if (typeof tickStatus === "function") tickStatus();
   t += dt;
-  if (trolleyOn && !paused) {
-    trolleyX = Math.min(trolleyX + (REDUCED_MOTION ? 20 : 60) * dt, 250);
-  }
+  leafT += dt;
+
 }
 function loop(now) {
   const dt = Math.min((now - last) / 1000, 0.05);

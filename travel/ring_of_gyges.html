@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Bridge Crossing</title>
+<title>The Ring of Gyges</title>
 <style>
 :root{
   --page:#131318;
@@ -117,9 +117,9 @@ textarea{
 
 <header class="wrap">
   <div class="about-wrap">
-    <h1>The Bridge Crossing</h1>
+    <h1>The Ring of Gyges</h1>
     <p class="about-cue">What this activity covers</p>
-    <div class="about" id="aboutText"><p>A mountain pass on the road between regions, at dusk. This is a situation on the road. It was not on your itinerary, and it will not wait for a convenient moment. Below the footbridge runs a rail line, and something is wrong on it. You faced a version of this once before, at a lever, in the prologue. This version is harder, and the difference between the two versions is what this activity examines. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+    <div class="about" id="aboutText"><p>A night camp on the road east, in the hill country the Greeks called Lydia. This is a situation on the road. A storyteller at the fire retells the oldest thought experiment about justice, from the second book of Plato’s Republic, and the tale ends by asking what you would do. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
   </div>
 </header>
 
@@ -165,7 +165,7 @@ textarea{
 <div id="endScreen">
   <div class="wrap">
     <h1>Activity completed</h1>
-    <p id="nextStop">The road continues where it was going. The world map remembers this crossing.</p>
+    <p id="nextStop">The road east continues toward Baghdad. The world map remembers this camp.</p>
 
     <div class="section-box">
       <h3>Your responses at each stage</h3>
@@ -174,30 +174,30 @@ textarea{
 
     <div class="section-box">
       <h3>Discussion questions</h3>
-      <p>1. Design a third variant of the situation that isolates exactly one difference from the footbridge, physical contact, intention, or the use of a person as a means, and predict how people would answer it.</p>
+      <p>1. Ordinary life hands out partial invisibility, in anonymous accounts, in crowds, and at a distance from the people affected. Name one such place, describe how people behave there, and say whether the behavior supports Glaucon's claim.</p>
       <textarea id="discussion1"></textarea>
-      <p>2. Self-driving vehicles, triage protocols, and military targeting rules all encode answers to cases like these in advance. Should such answers be written down before the emergency, and by whom?</p>
+      <p>2. Audits, cameras, and checks on power are institutions designed for people holding small rings. Would you design institutions for the people Glaucon describes or for the people who would stay just, and what does each design cost?</p>
       <textarea id="discussion2"></textarea>
-      <p>3. Suppose someone answers the lever and the footbridge differently and cannot state a principle that separates them. Is that a defect in their reasoning, or evidence that morality does not reduce to statable principles?</p>
+      <p>3. Socrates answers the tale by arguing that injustice damages the person who does it, whatever the audience, as illness damages a body. State that idea in your own words and give one piece of evidence for or against it from lives you have seen.</p>
       <textarea id="discussion3"></textarea>
     </div>
 
     <div class="section-box" id="quizSection">
       <h3>Quiz</h3>
-      <p><strong>1.</strong> Across many surveys, most people say</p>
-      <label><input type="radio" name="q1" value="Pull the lever, but do not push the man"> pull the lever, but do not push the man</label>
-      <label><input type="radio" name="q1" value="Push the man, but do not pull the lever"> push the man, but do not pull the lever</label>
-      <label><input type="radio" name="q1" value="The same thing in both cases"> the same thing in both cases</label>
+      <p><strong>1.</strong> In the tale, the ring makes its wearer</p>
+      <label><input type="radio" name="q1" value="Invisible whenever the collet is turned inward"> invisible whenever the collet is turned inward</label>
+      <label><input type="radio" name="q1" value="Immortal"> immortal</label>
+      <label><input type="radio" name="q1" value="Able to read minds"> able to read minds</label>
 
-      <p><strong>2.</strong> The doctrine of double effect distinguishes</p>
-      <label><input type="radio" name="q2" value="Harm intended as a means from harm foreseen as a side effect"> harm intended as a means from harm foreseen as a side effect</label>
-      <label><input type="radio" name="q2" value="Harm to strangers from harm to friends"> harm to strangers from harm to friends</label>
-      <label><input type="radio" name="q2" value="Action from inaction in every case"> action from inaction in every case</label>
+      <p><strong>2.</strong> Glaucon claims that the just and the unjust person, each given a ring,</p>
+      <label><input type="radio" name="q2" value="They would end up acting alike"> would end up acting alike</label>
+      <label><input type="radio" name="q2" value="The just person would stay just"> would diverge, the just person staying just</label>
+      <label><input type="radio" name="q2" value="The unjust person would reform"> would diverge, the unjust person reforming</label>
 
-      <p><strong>3.</strong> In the footbridge case, the large man's death is</p>
-      <label><input type="radio" name="q3" value="The means by which the five are saved"> the means by which the five are saved</label>
-      <label><input type="radio" name="q3" value="A side effect of redirecting the threat"> a side effect of redirecting the threat</label>
-      <label><input type="radio" name="q3" value="Unrelated to whether the five are saved"> unrelated to whether the five are saved</label>
+      <p><strong>3.</strong> The tale is built to test whether justice is</p>
+      <label><input type="radio" name="q3" value="Good in itself, apart from its consequences"> good in itself, apart from its consequences</label>
+      <label><input type="radio" name="q3" value="Possible without laws"> possible without laws</label>
+      <label><input type="radio" name="q3" value="Older than the kingdom of Lydia"> older than the kingdom of Lydia</label>
 
       <p><button id="gradeBtn">Grade the quiz</button></p>
       <p id="quizResult"></p>
@@ -213,49 +213,49 @@ textarea{
 
 <script>
 "use strict";
-const ACTIVITY_KEY = "phil_map_footbridge";
+const ACTIVITY_KEY = "phil_map_gyges";
 
 /* =========================================================
    Prompts, quiz key, and log
    ========================================================= */
 const prompts = {
   first: {
-    title: "Stage 0: Your answer at the lever",
-    text: "At the prologue you stood at a lever: divert the trolley and one person dies instead of five. Before this situation unfolds, record what you chose there, or would choose now.",
-    mcq: ["I pulled it, one death instead of five", "I did not pull it", "Not sure, but I would pull it now", "Not sure, but I would not pull it now"],
-    requireText: true
+    title: "Stage 0: Acting unobserved",
+    text: "Before the tale is told, answer for yourself. When you are certain that nobody is watching and that nothing can be traced to you, does your behavior change?",
+    mcq: ["It changes in small things", "It changes in large things too", "It does not change", "I have never been unobserved long enough to know"],
+    requireText: false
   },
-  push: {
-    title: "Stage 1: The bridge",
-    text: "The numbers are the lever's numbers: one life against five. The only difference is what you would have to do. Record your decision.",
-    mcq: ["I push him, five lives outweigh one", "I do not push him, this feels different", "I do neither, here or at the lever", "I cannot decide"],
-    requireText: true
+  claim: {
+    title: "Stage 1: Glaucon's claim",
+    text: "Glaucon tells the tale to defend a claim. Give the same ring to a just person and an unjust person, and their conduct will come out alike, because people are just only under compulsion. Is he right about people?",
+    mcq: ["Right about most people", "Right about everyone, including me", "Wrong, some people would stay just", "Wrong, most people would stay just"],
+    requireText: false
   },
-  asymmetry: {
-    title: "Stage 2: The asymmetry",
-    text: "Across many studies, most people pull the lever and refuse to push, though the arithmetic is identical. If the majority is responding to a real difference, what is that difference?",
-    mcq: ["Touching someone is different from pulling a switch", "On the bridge, his body is the tool that stops it", "Nothing real, people are just inconsistent", "The lever answer was wrong too"],
-    requireText: true
+  ring: {
+    title: "Stage 2: The ring in your hand",
+    text: "Suppose the ring is yours for one month and can never be traced to you. Answer honestly rather than admirably. What is the first use you make of it?",
+    mcq: ["Small advantages, going where I please and hearing what is said about me", "Money or power I could not otherwise reach", "Good done in secret, with no credit to me", "Nothing, I would leave it in a drawer"],
+    requireText: false
   },
-  intention: {
-    title: "Stage 3: Intending and foreseeing",
-    text: "The doctrine of double effect says harm you intend as your means is worse than the same harm foreseen as a side effect. At the lever, if the one person somehow survived, your plan still works. On the bridge, if the man survives untouched by the trolley, your plan has failed. Does that difference carry moral weight?",
-    mcq: ["Yes, what you aim at is what you do", "Some, but the result matters more", "No, it is a trick that excuses the lever", "It matters in law and practice, whatever theory says"],
-    requireText: true
+  question: {
+    title: "Stage 3: What justice is good for",
+    text: "Glaucon is not asking for a prediction. He is asking why justice is good. Is it good only for its consequences, safety and a good name, or also in itself, for what it does to the person who has it? The ring removes the consequences so that the second answer can be tested. Which do you say?",
+    mcq: ["Only for its consequences", "In itself, apart from any consequences", "For both, and the tale cannot separate them", "Justice is a tool of the strong, and good for neither reason"],
+    requireText: false
   },
-  consistency: {
-    title: "Stage 4: Your two answers",
-    text: "Set your lever answer beside your bridge answer. Are they consistent? If they are, state the principle that covers both. If they are not, say which answer you would change, or defend keeping both without a principle.",
+  final: {
+    title: "Stage 4: Your reason",
+    text: "State the best reason you can give for acting justly when discovery is impossible. If you hold that there is no such reason, state that instead, and say what follows for how laws and institutions should be built.",
     mcq: null,
     requireText: true,
-    textHint: "The principle, the change, or the defense."
+    textHint: "Your reason, or what follows without one."
   }
 };
 
 const quizKeys = [
-  "Pull the lever, but do not push the man",
-  "Harm intended as a means from harm foreseen as a side effect",
-  "The means by which the five are saved"
+  "Invisible whenever the collet is turned inward",
+  "They would end up acting alike",
+  "Good in itself, apart from its consequences"
 ];
 
 let reflectionLog = [];
@@ -286,9 +286,8 @@ const W = 900, H = 500;
 let started = false;
 let paused = false;
 let t = 0;
-let trolleyOn = false;
-let trolleyX = -80;
-const record = { lever: null, bridge: null };
+let emberT = 0;
+
 
 /* =========================================================
    Narration and the modal
@@ -364,7 +363,6 @@ function continueDlg() {
     if (window.speechSynthesis) speechSynthesis.cancel();
     if (cb) cb();
   } else {
-    if (dlg.steps[dlg.i].trolley) trolleyOn = true;
     renderDlg();
   }
 }
@@ -451,8 +449,6 @@ submitBtn.addEventListener("click", () => {
     choice: p.mcq ? (sel ? sel.value : null) : null,
     response: modalText.value.trim()
   });
-  if (activePrompt.key === "first" && sel) record.lever = sel.value;
-  if (activePrompt.key === "push" && sel) record.bridge = sel.value;
   if (window.speechSynthesis) speechSynthesis.cancel();
   overlay.classList.remove("open");
   paused = false;
@@ -469,25 +465,33 @@ function setObjective(txt) { objectiveEl.textContent = txt; }
 function runScene() {
   openPrompt("first", () => {
     startDlg([
-      { say: "The pass road crosses a gorge on a footbridge, and the rail line runs through the gorge below. You are halfway across when you hear it: a runaway trolley, brakes gone, coming down the grade. Further along the line, five workers are in a cutting with their backs to it, and the walls of the cutting leave them nowhere to go.", trolley: false },
-      { trolley: true, say: "There is no lever here. There is no side track. There is only one thing on this bridge heavy enough to stop a trolley, and it is not you." },
-    { say: "A very large man stands at the railing beside you, looking down at the line, unaware. If he falls onto the track, the trolley stops, and he dies, and the five live. You would have to push him." },
-      { note: true, say: "This is the footbridge case, introduced by Judith Jarvis Thomson in 1976, building on Philippa Foot's original trolley problem of 1967. The numbers are identical to the lever case on purpose: one life against five. Everything that differs is in what the one who acts must do." }
+      { say: "The road east climbs away from the coast into hill country, and the caravan you have joined makes camp at dusk. This was the kingdom of Lydia once, rich in gold, and the drivers say its old capital lies a day to the south. After the meal, a storyteller takes the place nearest the fire." },
+      { note: true, say: "The tale that follows is told in the second book of Plato's Republic by Glaucon, Plato's older brother, the young man you met in the grove of Akademos. Glaucon does not believe the conclusion he argues for. He states the strongest case he can find against justice and dares Socrates to answer it. The Republic, one of the longest books Plato wrote, is the answer." },
+      { say: "Storyteller: They tell this of a shepherd in these hills, in the service of the king of Lydia. There was a storm, and an earthquake, and the ground opened where his flock grazed. He went down into the crack and found wonders, among them a hollow horse of bronze with little doors, and inside it a corpse of more than human size, wearing nothing but a gold ring. He took the ring and climbed out." },
+      { say: "Storyteller: At the monthly gathering of the shepherds he sat turning the ring on his finger, and when the collet faced his palm, the men beside him began to speak of him as if he had gone. He turned it outward and they saw him again. He tested it until he was certain. Turned one way, the ring made him invisible. Turned back, it returned him." },
+      { say: "Storyteller: Knowing what he now was, he arranged to be among the messengers sent up to the palace. There he seduced the queen, and with her help he fell upon the king, killed him, and took the kingdom.",
+        choices: [
+          { tag: "impossible", text: "No shepherd ever ruled Lydia this way. The tale is impossible.",
+            reply: ["Storyteller: So is a cave where people take shadows for the whole world, and you walked through one. A tale can be impossible and still be an instrument. This one is built to remove exactly one thing, the chance of being caught, and then to watch what is left of a person."] },
+          { tag: "whyfast", text: "Why did he go wrong so fast? He could have done anything with it.",
+            reply: ["Storyteller: Could he? That is the question the tale hands you. The man who fixed this version of it claims that anyone given the ring would use it as the shepherd did, and that the just man and the unjust man become indistinguishable once discovery is impossible."] }
+        ] },
+      { note: true, say: "A king Gyges of Lydia is historical, and Herodotus tells a story of how he took the throne, with no ring and no invisibility in it. The magic ring belongs to the philosophical retelling in the Republic, written around 375 BC, where it is equipment for a thought experiment rather than a report." },
+      { say: "Storyteller: Now the dare, as the young Athenian put it. Imagine two such rings. Give one to the most unjust of men and one to the most just. If the just man keeps to justice with the ring on his finger, people will praise him to his face and call him a fool among themselves, because they believe, every one of them, that they would not." }
     ], () => {
-      openPrompt("push", () => {
+      openPrompt("claim", () => {
         startDlg([
-          { say: "Whichever you chose, notice what making the choice was like this time, and whether anything besides the numbers weighed on it." }
+          { say: "The fire burns low. The storyteller looks around the circle and asks each traveler in turn what they would do with such a ring, and laughs at some of the answers, and then it is your turn." }
         ], () => {
-          openPrompt("asymmetry", () => {
+          openPrompt("ring", () => {
             startDlg([
-              { note: true, say: "One well known analysis uses the doctrine of double effect, an idea that goes back to Aquinas. It says harm you intend as your means is worse than the same harm you only foresee." },
-    { say: "Test it here. At the lever, if the one worker scrambled clear, your plan still works. On the bridge, if the man is never struck, the five die. The trolley must hit him for the plan to work." }
+              { say: "Storyteller: Whatever you answered, notice what the tale has done. It has taken away the watchers, the courts, and the gossip, everything that rewards justice from outside, and then asked whether anything is left that still recommends it." }
             ], () => {
-              openPrompt("intention", () => {
+              openPrompt("question", () => {
                 startDlg([
-                  { say: "Below, it is over one way or another, and the road goes on. Situations like this one do not look like philosophy while they are happening. They demand a decision, and leave you to work out afterward what your answer committed you to." }
+                  { say: "In the Republic, Socrates does not answer the dare with another tale. He spends the rest of the book arguing that justice is a kind of order in the person, as health is an order in the body, and that the unjust man is harmed by what he becomes, audience or no audience. Whether that answer succeeds is a fair question to carry east." }
                 ], () => {
-                  openPrompt("consistency", () => endGame());
+                  openPrompt("final", () => endGame());
                 });
               });
             });
@@ -496,13 +500,14 @@ function runScene() {
       });
     });
   });
+
 }
 
 /* =========================================================
    End screen, quiz, and report
    ========================================================= */
 function endGame() {
-  try { localStorage.setItem("phil_map_footbridge", "1"); } catch (err) { /* storage is optional */ }
+  try { localStorage.setItem("phil_map_gyges", "1"); } catch (err) { /* storage is optional */ }
   const summary = document.getElementById("reflectionSummary");
   summary.innerHTML = "";
   reflectionLog.forEach(r => {
@@ -548,8 +553,8 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const d1 = document.getElementById("discussion1").value.trim();
   const d2 = document.getElementById("discussion2").value.trim();
   const d3 = document.getElementById("discussion3").value.trim();
-  let text = "The Bridge Crossing, Report\n";
-  text += "===========================\n\nResponses at each stage:\n";
+  let text = "The Ring of Gyges, Report\n";
+  text += "===================\n\nResponses at each stage:\n";
   reflectionLog.forEach(r => {
     text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
     if (r.choice) text += "Choice: " + r.choice + "\n";
@@ -557,12 +562,10 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
     text += "-".repeat(50);
   });
   text += "\n\nThe pair of answers:\n";
-  text += "At the lever: " + (record.lever || "(none)") + "\n";
-  text += "On the bridge: " + (record.bridge || "(none)") + "\n";
   text += "\nDiscussion questions:\n";
-  text += "1. A third variant isolating one difference.\n" + (d1 || "(no answer)") + "\n\n";
-  text += "2. Encoding answers before the emergency.\n" + (d2 || "(no answer)") + "\n\n";
-  text += "3. Different answers without a principle.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "1. Partial invisibility in ordinary life.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Designing institutions for ring-holders.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. Injustice as damage to the person.\n" + (d3 || "(no answer)") + "\n\n";
   text += "Quiz:\n";
   if (quizScore) {
     quizScore.answers.forEach((ans, i) => {
@@ -575,7 +578,7 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const blob = new Blob([text], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = "Bridge_Crossing_Report.txt"; a.click();
+  a.href = url; a.download = "Ring_of_Gyges_Report.txt"; a.click();
   URL.revokeObjectURL(url);
 });
 document.getElementById("restartBtn").addEventListener("click", () => location.reload());
@@ -594,89 +597,109 @@ function drawFigure(x, y, s, color) {
   ctx.fillRect(1, -11, 4, 11);
   ctx.restore();
 }
+function drawSitter(x, y, s, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(s, s);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -26, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -20, 12, 14);
+  ctx.fillRect(-9, -6, 18, 5);
+  ctx.restore();
+}
 function render() {
   ctx.clearRect(0, 0, W, H);
-  // Dusk sky.
+  // Night sky over the Lydian hills.
   const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, "#232338");
-  sky.addColorStop(0.6, "#3c3450");
-  sky.addColorStop(1, "#584458");
+  sky.addColorStop(0, "#0d1020");
+  sky.addColorStop(0.65, "#1a1e33");
+  sky.addColorStop(1, "#2a2438");
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, W, H);
-  // Mountains behind.
-  ctx.fillStyle = "rgba(40,40,58,0.9)";
-  ctx.beginPath();
-  ctx.moveTo(0, 240); ctx.lineTo(160, 110); ctx.lineTo(300, 220); ctx.lineTo(470, 90);
-  ctx.lineTo(650, 210); ctx.lineTo(800, 130); ctx.lineTo(900, 200); ctx.lineTo(900, 500); ctx.lineTo(0, 500);
-  ctx.closePath(); ctx.fill();
-  // The gorge walls.
-  ctx.fillStyle = "#2c2c3c";
-  ctx.fillRect(0, 300, 240, 200);
-  ctx.fillRect(660, 300, 240, 200);
-  ctx.fillStyle = "#242432";
-  ctx.beginPath();
-  ctx.moveTo(240, 300); ctx.lineTo(240, 500); ctx.lineTo(300, 500); ctx.closePath(); ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(660, 300); ctx.lineTo(660, 500); ctx.lineTo(600, 500); ctx.closePath(); ctx.fill();
-  // The rail line along the gorge floor.
-  ctx.strokeStyle = "#8b95a5";
-  ctx.lineWidth = 4;
-  [448, 466].forEach(ry => {
-    ctx.beginPath(); ctx.moveTo(0, ry); ctx.lineTo(900, ry); ctx.stroke();
-  });
-  ctx.strokeStyle = "#4a3c30";
-  for (let x = 10; x < 900; x += 30) {
-    ctx.beginPath(); ctx.moveTo(x, 442); ctx.lineTo(x, 472); ctx.stroke();
+  // Stars, fixed by index so they do not shimmer.
+  ctx.fillStyle = "rgba(238,242,246,0.85)";
+  for (let i = 0; i < 70; i++) {
+    const sx = (i * 131) % W, sy = (i * 67) % 250;
+    ctx.fillRect(sx, sy, i % 9 === 0 ? 2 : 1, i % 9 === 0 ? 2 : 1);
   }
-  // The cutting with the five workers, right of the bridge.
-  ctx.fillStyle = "#242432";
-  ctx.fillRect(700, 396, 200, 44);
-  for (let i = 0; i < 5; i++) drawFigure(730 + i * 36, 452, 0.8, "#8fb7dd");
+  // The moon.
+  ctx.fillStyle = "#d9dde6";
+  ctx.beginPath(); ctx.arc(760, 84, 26, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#0d1020";
+  ctx.beginPath(); ctx.arc(770, 78, 22, 0, Math.PI * 2); ctx.fill();
+  // Hills in two layers.
+  ctx.fillStyle = "#171a2c";
+  ctx.beginPath();
+  ctx.moveTo(0, 300); ctx.quadraticCurveTo(180, 210, 360, 288);
+  ctx.quadraticCurveTo(560, 356, 900, 262);
+  ctx.lineTo(900, 500); ctx.lineTo(0, 500); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#121424";
+  ctx.beginPath();
+  ctx.moveTo(0, 356); ctx.quadraticCurveTo(260, 300, 520, 366);
+  ctx.quadraticCurveTo(720, 412, 900, 372);
+  ctx.lineTo(900, 500); ctx.lineTo(0, 500); ctx.closePath(); ctx.fill();
+  // The road, passing the camp and continuing east.
+  ctx.strokeStyle = "rgba(200,192,168,0.35)";
+  ctx.lineWidth = 16;
+  ctx.beginPath();
+  ctx.moveTo(-10, 470);
+  ctx.quadraticCurveTo(300, 440, 560, 452);
+  ctx.quadraticCurveTo(760, 460, 910, 420);
+  ctx.stroke();
+  // Two tents.
+  ctx.fillStyle = "#2c3048";
+  ctx.beginPath(); ctx.moveTo(120, 430); ctx.lineTo(170, 372); ctx.lineTo(220, 430); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(650, 438); ctx.lineTo(694, 388); ctx.lineTo(738, 438); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#171a28";
+  ctx.beginPath(); ctx.moveTo(156, 430); ctx.lineTo(170, 402); ctx.lineTo(184, 430); ctx.closePath(); ctx.fill();
+  // Pack animals dozing by the far tent.
+  ctx.fillStyle = "#3a3f58";
+  ctx.fillRect(770, 414, 44, 18);
+  ctx.fillRect(806, 400, 10, 18);
+  ctx.fillRect(774, 432, 6, 12); ctx.fillRect(802, 432, 6, 12);
+  // The fire: logs, then flame layers that move with emberT.
+  const fx = 430, fy = 428;
+  ctx.strokeStyle = "#4a3826";
+  ctx.lineWidth = 7;
+  ctx.beginPath(); ctx.moveTo(fx - 26, fy + 8); ctx.lineTo(fx + 26, fy + 2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(fx - 22, fy + 2); ctx.lineTo(fx + 22, fy + 8); ctx.stroke();
+  const flick = REDUCED_MOTION ? 0 : Math.sin(emberT * 7) * 4;
+  const flick2 = REDUCED_MOTION ? 0 : Math.cos(emberT * 9) * 3;
+  ctx.fillStyle = "#b0512e";
+  ctx.beginPath();
+  ctx.moveTo(fx - 18, fy + 4);
+  ctx.quadraticCurveTo(fx - 10 + flick2, fy - 34, fx, fy - 46 + flick);
+  ctx.quadraticCurveTo(fx + 10 - flick2, fy - 34, fx + 18, fy + 4);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#dfae5c";
+  ctx.beginPath();
+  ctx.moveTo(fx - 10, fy + 4);
+  ctx.quadraticCurveTo(fx - 5 - flick2, fy - 20, fx + flick * 0.5, fy - 30);
+  ctx.quadraticCurveTo(fx + 5 + flick2, fy - 20, fx + 10, fy + 4);
+  ctx.closePath(); ctx.fill();
+  // A warm glow on the ground.
+  const glow = ctx.createRadialGradient(fx, fy, 10, fx, fy, 150);
+  glow.addColorStop(0, "rgba(223,174,92,0.18)");
+  glow.addColorStop(1, "rgba(223,174,92,0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(fx - 160, fy - 160, 320, 200);
+  // The circle: the storyteller standing, travelers seated, and you.
+  drawFigure(340, 420, 1, "#8fb7dd");
+  drawSitter(508, 436, 1, "#5b84b1");
+  drawSitter(548, 448, 1, "#5a7d8f");
+  drawSitter(300, 452, 1, "#5a7d8f");
+  drawSitter(388, 462, 1, "#5b84b1");
   ctx.fillStyle = "#eef2f6";
   ctx.font = "13px 'Segoe UI', sans-serif";
-  ctx.fillText("five workers", 748, 492);
-  // The footbridge across the gorge.
-  ctx.fillStyle = "#57503f";
-  ctx.fillRect(220, 262, 460, 14);
-  ctx.strokeStyle = "#57503f";
-  ctx.lineWidth = 5;
-  ctx.beginPath(); ctx.moveTo(220, 240); ctx.lineTo(680, 240); ctx.stroke();
-  for (let x = 240; x < 680; x += 44) {
-    ctx.beginPath(); ctx.moveTo(x, 240); ctx.lineTo(x, 262); ctx.stroke();
-  }
-  ctx.fillStyle = "#484236";
-  ctx.fillRect(206, 262, 18, 238);
-  ctx.fillRect(676, 262, 18, 238);
-  // You, and the large man at the railing.
-  drawFigure(392, 262, 1, "#5b84b1");
-  ctx.fillStyle = "#5a7d8f";
-  ctx.beginPath(); ctx.arc(470, 220, 10, 0, Math.PI * 2); ctx.fill();
-  ctx.fillRect(455, 228, 30, 30);
-  ctx.fillRect(457, 258, 10, 6);
-  ctx.fillRect(473, 258, 10, 6);
-  ctx.fillStyle = "#eef2f6";
-  ctx.fillText("you", 380, 292);
-  ctx.fillText("the large man", 428, 210);
-  // The trolley, rolling in on the line when the scene calls it.
-  if (trolleyOn) {
-    ctx.fillStyle = "#8f3b3b";
-    ctx.fillRect(trolleyX - 46, 408, 92, 40);
-    ctx.fillStyle = "#c9b98a";
-    ctx.fillRect(trolleyX - 36, 416, 24, 16);
-    ctx.fillRect(trolleyX + 6, 416, 24, 16);
-    ctx.fillStyle = "#1c1c26";
-    ctx.beginPath();
-    ctx.arc(trolleyX - 26, 452, 9, 0, Math.PI * 2);
-    ctx.arc(trolleyX + 26, 452, 9, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  ctx.fillText("the storyteller", 288, 384);
+  ctx.fillText("you", 380, 484);
   if (!started) {
     ctx.fillStyle = "rgba(16,16,22,0.55)";
     ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = "#f0f0f5";
     ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
     ctx.textAlign = "center";
-    ctx.fillText("The Bridge Crossing", W / 2, H / 2 - 12);
+    ctx.fillText("The Ring of Gyges", W / 2, H / 2 - 12);
     ctx.font = "15px 'Segoe UI', sans-serif";
     ctx.fillStyle = "#a9a9bc";
     ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
@@ -691,9 +714,8 @@ let last = performance.now();
 function update(dt) {
   if (typeof tickStatus === "function") tickStatus();
   t += dt;
-  if (trolleyOn && !paused) {
-    trolleyX = Math.min(trolleyX + (REDUCED_MOTION ? 20 : 60) * dt, 250);
-  }
+  emberT += dt;
+
 }
 function loop(now) {
   const dt = Math.min((now - last) / 1000, 0.05);

@@ -294,7 +294,7 @@ const prompts = {
     textHint: "Name the trait, the two extremes, and your tendency."
   },
   legacy: {
-    title: "Unit reflection: the bigger picture",
+    title: "Unit reflection: what Greek philosophy contributed",
     text: "This is the last stop of the Ancient Greece unit. Looking across the whole journey, from Miletus to this colonnade, name two ways the ideas and practices you met, such as demanding reasons and definitions, testing claims against observation, arguing both sides of a question, staging public debate, and deciding cases by citizen juries, contributed to what later became the sciences and the humanities. Then say which contribution matters most in your own field of study, and why.",
     mcq: null,
     requireText: true,
@@ -600,10 +600,10 @@ function dlgAristotle() {
   startDlg([
     { say: "Aristotle: Welcome to the Lyceum. I teach while walking, so keep up." },
     { say: "Aristotle: I came to Plato's Academy at seventeen and stayed twenty years, and everything I do began there. Those who watched us argue said he pointed always upward, toward forms the eye cannot see, while I kept turning my hand back toward the ground, toward the things in front of us." },
-    { say: "Aristotle: They were right about both of us. He was dear to me. The truth is dearer still, and the truth, I find, lives in the things." },
+    { say: "Aristotle: They were right about both of us. He was dear to me. The truth is dearer still, and the truth, I find, is in the things themselves." },
     { say: "Aristotle: Between the Academy and this school I spent years in Macedon, tutor to the king's son, a boy named Alexander. That student now rules from Greece to Persia. He asked better questions about animals than about moderation, and I taught him what I could of both." },
     { note: true, say: "This is historical: Aristotle tutored the young Alexander in Macedon in the 340s BC, before founding the Lyceum. Later ancient writers report that Alexander's campaigns sent plants and animals back to Aristotle for study, a claim historians repeat with caution." },
-    { say: "Aristotle: Three tools, three stops. First we will sort what lives, then we will ask what causes a thing, and then we will look for the mean in matters of character. Come." }
+    { say: "Aristotle: We will make three stops. First we will sort living things, then we will ask what causes a thing, and then we will look for the mean in matters of character. Come." }
   ], () => {
     setObjective("Walk right with Aristotle to the sorting bench.");
   });
@@ -695,7 +695,7 @@ function dlgClose() {
   startDlg([
     { say: "Aristotle: You came to me through Miletus, where they sought one material under everything, and through my teacher's cave, where the prisoners mistook shadows for things." },
     { say: "Aristotle: I keep what was good in both. The Milesians were right to study nature. Plato was right that knowledge must go past appearances." },
-    { say: "But the forms of things live in the things, and the good life is not a vision. It is a practice, day after day, for a whole life." },
+    { say: "But the forms of things are in the things themselves, and the good life is not a vision. It is a practice, day after day, for a whole life." },
     { say: "Aristotle: One more thing before that, since you sat on the jury once. Athens tolerates me while my old student is strong, and no longer than that." },
     { say: "If the city's mood turns, I will not wait here for a cup of hemlock. Athens will not sin twice against philosophy on my account." },
     { note: true, say: "When Alexander died in 323 BC, Athens turned against everything Macedonian, and Aristotle was charged with impiety, the charge once brought against Socrates. He left the city for Chalcis, reportedly saying that he would not let Athens sin twice against philosophy, and died there the following year." },

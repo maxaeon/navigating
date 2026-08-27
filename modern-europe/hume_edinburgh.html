@@ -279,7 +279,7 @@ const prompts = {
     requireText: true
   },
   roads: {
-    title: "Stage 5: The two roads, compared",
+    title: "Stage 5: Comparing the two roads",
     text: "You have now walked both roads of this region. Descartes doubted the senses and rebuilt from reason. Hume trusted experience and found that reason cannot deliver what we expected of it. Say which road ends in the more uncomfortable place, and why, and then say which you would rather have to defend.",
     mcq: null,
     requireText: true,
@@ -563,7 +563,7 @@ function dlgFriar() {
   startDlg([
     { say: "A stout, cheerful man in his late thirties falls into step beside you on the pavement. Hume: You look like someone with an hour. I have one too, and I have been indoors with a manuscript since morning." },
     { say: "Hume: David Hume. I write history to pay for the philosophy, and the philosophy has not sold a hundred copies. My first book fell dead-born from the press, as I put it in a moment of self-pity that I have decided to keep." },
-    { say: "Hume: Walk with me and I will lay out the argument that emptied the room. It has three steps and each one looks harmless." },
+    { say: "Hume: Walk with me and I will lay out the argument that lost me my readers. It has three steps and each one looks harmless." },
     { note: true, say: "David Hume, 1711 to 1776, published A Treatise of Human Nature in 1739 to almost no notice, then rewrote its core as An Enquiry Concerning Human Understanding in 1748. He was twice refused a university chair, and earned his living largely from a bestselling History of England." }
   ], () => {
     setObjective("Walk right to the first marked spot, the printer's window, and press E.");
@@ -575,7 +575,7 @@ function dlgBeat1() {
     { diagram: 1,
       say: "At a printer's window the fresh sheets are pinned up, ink still dark. Hume: First, an inventory. Everything in your mind arrives as one of two things." },
     { diagram: 1,
-      say: "Hume: Impressions come in hot. Seeing that red, feeling the cold on your hands, the anger you had this morning. They have a force to them." },
+      say: "Hume: Impressions arrive with force and liveliness. Seeing that red, feeling the cold on your hands, the anger you had this morning." },
     { diagram: 2,
       say: "Hume: Ideas are the faint copies you keep afterward. Remember the red. It is the same thing, weaker. Try to think of a colour you have never seen and you will find you cannot." },
     { diagram: 2,
@@ -633,7 +633,7 @@ function dlgBeat3() {
           reply: ["Hume: And how do you know nature is uniform? From experience, which is entirely of the past. So the premise you need is the very thing in question."] }
       ] },
     { diagram: 4,
-      say: "Hume: Every road runs into the same circle. To argue from what has happened to what will happen, I must assume that what has happened is a guide to what will happen, which is the thing I was trying to establish." },
+      say: "Hume: Every attempt runs into the same circle. To argue from what has happened to what will happen, I must assume that what has happened is a guide to what will happen, which is the thing I was trying to establish." },
     { diagram: 4,
       say: "Hume: So I say it plainly. There is no argument that carries us from the past to the future. Not a bad argument. None." }
   ], () => {

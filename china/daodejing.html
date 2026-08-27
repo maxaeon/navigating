@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Bridge Crossing</title>
+<title>The Daodejing</title>
 <style>
 :root{
   --page:#131318;
@@ -117,9 +117,9 @@ textarea{
 
 <header class="wrap">
   <div class="about-wrap">
-    <h1>The Bridge Crossing</h1>
+    <h1>The Daodejing</h1>
     <p class="about-cue">What this activity covers</p>
-    <div class="about" id="aboutText"><p>A mountain pass on the road between regions, at dusk. This is a situation on the road. It was not on your itinerary, and it will not wait for a convenient moment. Below the footbridge runs a rail line, and something is wrong on it. You faced a version of this once before, at a lever, in the prologue. This version is harder, and the difference between the two versions is what this activity examines. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+    <div class="about" id="aboutText"><p>A gate station at a mountain pass west of the Yellow River valley. The keeper of the pass owns a copy of a short book, about five thousand characters, and tells the story of how the book came to be written at a station like this one. The activity covers the way that cannot be spoken, the usefulness of what is empty, acting without forcing, and the book’s quarrel with everything you heard in the courtyard at Lu. Press Continue to move through the scene, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
   </div>
 </header>
 
@@ -165,7 +165,7 @@ textarea{
 <div id="endScreen">
   <div class="wrap">
     <h1>Activity completed</h1>
-    <p id="nextStop">The road continues where it was going. The world map remembers this crossing.</p>
+    <p id="nextStop">The road continues to a riverbank downstream. The world map remembers the pass.</p>
 
     <div class="section-box">
       <h3>Your responses at each stage</h3>
@@ -174,30 +174,30 @@ textarea{
 
     <div class="section-box">
       <h3>Discussion questions</h3>
-      <p>1. Design a third variant of the situation that isolates exactly one difference from the footbridge, physical contact, intention, or the use of a person as a means, and predict how people would answer it.</p>
+      <p>1. The hub, the vessel, and the room repeat the argument of the dry garden about empty space. State what the two traditions are each doing with absence, and whether it is the same discovery made twice.</p>
       <textarea id="discussion1"></textarea>
-      <p>2. Self-driving vehicles, triage protocols, and military targeting rules all encode answers to cases like these in advance. Should such answers be written down before the emergency, and by whom?</p>
+      <p>2. Water benefits all things without contending, and the soft outwears the hard. Name one real situation where the water-like approach plainly wins, and one where it plainly fails, and say what separates the two situations.</p>
       <textarea id="discussion2"></textarea>
-      <p>3. Suppose someone answers the lever and the footbridge differently and cannot state a principle that separates them. Is that a defect in their reasoning, or evidence that morality does not reduce to statable principles?</p>
+      <p>3. Govern a great state as you would cook a small fish, the book advises, that is, with minimal handling. Translate that into one concrete rule for any institution you know, and give the strongest case against your rule.</p>
       <textarea id="discussion3"></textarea>
     </div>
 
     <div class="section-box" id="quizSection">
       <h3>Quiz</h3>
-      <p><strong>1.</strong> Across many surveys, most people say</p>
-      <label><input type="radio" name="q1" value="Pull the lever, but do not push the man"> pull the lever, but do not push the man</label>
-      <label><input type="radio" name="q1" value="Push the man, but do not pull the lever"> push the man, but do not pull the lever</label>
-      <label><input type="radio" name="q1" value="The same thing in both cases"> the same thing in both cases</label>
+      <p><strong>1.</strong> The Daodejing opens with the warning that</p>
+      <label><input type="radio" name="q1" value="The way that can be spoken of is not the constant way"> the way that can be spoken of is not the constant way</label>
+      <label><input type="radio" name="q1" value="The way is five thousand characters long"> the way is five thousand characters long</label>
+      <label><input type="radio" name="q1" value="Only rulers may read it"> only rulers may read it</label>
 
-      <p><strong>2.</strong> The doctrine of double effect distinguishes</p>
-      <label><input type="radio" name="q2" value="Harm intended as a means from harm foreseen as a side effect"> harm intended as a means from harm foreseen as a side effect</label>
-      <label><input type="radio" name="q2" value="Harm to strangers from harm to friends"> harm to strangers from harm to friends</label>
-      <label><input type="radio" name="q2" value="Action from inaction in every case"> action from inaction in every case</label>
+      <p><strong>2.</strong> Wu wei is best rendered as</p>
+      <label><input type="radio" name="q2" value="Acting without forcing, as water does"> acting without forcing, as water does</label>
+      <label><input type="radio" name="q2" value="Doing nothing whatever"> doing nothing whatever</label>
+      <label><input type="radio" name="q2" value="Acting only at night"> acting only at night</label>
 
-      <p><strong>3.</strong> In the footbridge case, the large man's death is</p>
-      <label><input type="radio" name="q3" value="The means by which the five are saved"> the means by which the five are saved</label>
-      <label><input type="radio" name="q3" value="A side effect of redirecting the threat"> a side effect of redirecting the threat</label>
-      <label><input type="radio" name="q3" value="Unrelated to whether the five are saved"> unrelated to whether the five are saved</label>
+      <p><strong>3.</strong> The book's answer to Confucian cultivation is that</p>
+      <label><input type="radio" name="q3" value="Benevolence and righteousness appear when the great way is lost"> benevolence and righteousness appear when the great way is lost</label>
+      <label><input type="radio" name="q3" value="Cultivation should begin earlier in childhood"> cultivation should begin earlier in childhood</label>
+      <label><input type="radio" name="q3" value="The rites are correct but too expensive"> the rites are correct but too expensive</label>
 
       <p><button id="gradeBtn">Grade the quiz</button></p>
       <p id="quizResult"></p>
@@ -213,49 +213,49 @@ textarea{
 
 <script>
 "use strict";
-const ACTIVITY_KEY = "phil_map_footbridge";
+const ACTIVITY_KEY = "phil_map_daodejing";
 
 /* =========================================================
    Prompts, quiz key, and log
    ========================================================= */
 const prompts = {
   first: {
-    title: "Stage 0: Your answer at the lever",
-    text: "At the prologue you stood at a lever: divert the trolley and one person dies instead of five. Before this situation unfolds, record what you chose there, or would choose now.",
-    mcq: ["I pulled it, one death instead of five", "I did not pull it", "Not sure, but I would pull it now", "Not sure, but I would not pull it now"],
-    requireText: true
+    title: "Stage 0: What can be said",
+    text: "The book opens by warning about itself. The way that can be spoken of is not the constant way. Before the keeper reads further, answer this. Can the most important things be said?",
+    mcq: ["Yes, anything understood can be stated", "No, the most important things are shown or lived rather than said", "Some can and some cannot, and the line between them matters", "If it cannot be said, there is nothing there to say"],
+    requireText: false
   },
-  push: {
-    title: "Stage 1: The bridge",
-    text: "The numbers are the lever's numbers: one life against five. The only difference is what you would have to do. Record your decision.",
-    mcq: ["I push him, five lives outweigh one", "I do not push him, this feels different", "I do neither, here or at the lever", "I cannot decide"],
-    requireText: true
+  empty: {
+    title: "Stage 1: The use of what is not there",
+    text: "Thirty spokes share one hub, and the cart is useful because of the hole at the center. Clay is shaped into a vessel, and the vessel is useful because of the hollow. Walls make a room, and the room is useful because of the space inside. What is the argument?",
+    mcq: ["What is absent does real work, so absence is not nothing", "Carts, pots, and rooms are poorly made", "Everything useful is empty", "Words for absence are words for nothing"],
+    requireText: false
   },
-  asymmetry: {
-    title: "Stage 2: The asymmetry",
-    text: "Across many studies, most people pull the lever and refuse to push, though the arithmetic is identical. If the majority is responding to a real difference, what is that difference?",
-    mcq: ["Touching someone is different from pulling a switch", "On the bridge, his body is the tool that stops it", "Nothing real, people are just inconsistent", "The lever answer was wrong too"],
-    requireText: true
+  wuwei: {
+    title: "Stage 2: Acting without forcing",
+    text: "Wu wei is usually translated as non-action, and the keeper insists the translation misleads, since the book praises water, which does more than anything while contending with nothing. What is wu wei?",
+    mcq: ["Acting without forcing, the way water moves and wears stone", "Doing nothing at all and letting the world decay", "Acting secretly so no one sees the effort", "A counsel for rulers only, with nothing for anyone else"],
+    requireText: false
   },
-  intention: {
-    title: "Stage 3: Intending and foreseeing",
-    text: "The doctrine of double effect says harm you intend as your means is worse than the same harm foreseen as a side effect. At the lever, if the one person somehow survived, your plan still works. On the bridge, if the man survives untouched by the trolley, your plan has failed. Does that difference carry moral weight?",
-    mcq: ["Yes, what you aim at is what you do", "Some, but the result matters more", "No, it is a trick that excuses the lever", "It matters in law and practice, whatever theory says"],
-    requireText: true
+  confucius: {
+    title: "Stage 3: The answer to the courtyard",
+    text: "When the great way is lost, the book says, benevolence and righteousness appear. Where Confucius saw ritual and training as the making of goodness, the Daodejing sees them as the symptom of its loss, splints on a limb that should never have broken. Weigh the disagreement. Which claim is stronger?",
+    mcq: ["The courtyard's, goodness is made by practice or it is not made at all", "The pass's, cultivated goodness replaces something better that was effortless", "Both hold for different people and different times", "The two are not really in conflict"],
+    requireText: false
   },
-  consistency: {
-    title: "Stage 4: Your two answers",
-    text: "Set your lever answer beside your bridge answer. Are they consistent? If they are, state the principle that covers both. If they are not, say which answer you would change, or defend keeping both without a principle.",
+  final: {
+    title: "Stage 4: The two teachers and a city",
+    text: "Suppose a city is yours to govern for ten years. State whether you would govern it by the courtyard's teaching or by the pass's, describe one policy each teaching would give you, and name what your choice risks.",
     mcq: null,
     requireText: true,
-    textHint: "The principle, the change, or the defense."
+    textHint: "Your teacher, one policy from each, and the risk you accept."
   }
 };
 
 const quizKeys = [
-  "Pull the lever, but do not push the man",
-  "Harm intended as a means from harm foreseen as a side effect",
-  "The means by which the five are saved"
+  "The way that can be spoken of is not the constant way",
+  "Acting without forcing, as water does",
+  "Benevolence and righteousness appear when the great way is lost"
 ];
 
 let reflectionLog = [];
@@ -286,9 +286,9 @@ const W = 900, H = 500;
 let started = false;
 let paused = false;
 let t = 0;
-let trolleyOn = false;
-let trolleyX = -80;
-const record = { lever: null, bridge: null };
+let mistT = 0;
+let slipsOn = false;
+
 
 /* =========================================================
    Narration and the modal
@@ -364,7 +364,7 @@ function continueDlg() {
     if (window.speechSynthesis) speechSynthesis.cancel();
     if (cb) cb();
   } else {
-    if (dlg.steps[dlg.i].trolley) trolleyOn = true;
+    if (dlg.steps[dlg.i].slips) slipsOn = true;
     renderDlg();
   }
 }
@@ -451,8 +451,6 @@ submitBtn.addEventListener("click", () => {
     choice: p.mcq ? (sel ? sel.value : null) : null,
     response: modalText.value.trim()
   });
-  if (activePrompt.key === "first" && sel) record.lever = sel.value;
-  if (activePrompt.key === "push" && sel) record.bridge = sel.value;
   if (window.speechSynthesis) speechSynthesis.cancel();
   overlay.classList.remove("open");
   paused = false;
@@ -469,25 +467,32 @@ function setObjective(txt) { objectiveEl.textContent = txt; }
 function runScene() {
   openPrompt("first", () => {
     startDlg([
-      { say: "The pass road crosses a gorge on a footbridge, and the rail line runs through the gorge below. You are halfway across when you hear it: a runaway trolley, brakes gone, coming down the grade. Further along the line, five workers are in a cutting with their backs to it, and the walls of the cutting leave them nowhere to go.", trolley: false },
-      { trolley: true, say: "There is no lever here. There is no side track. There is only one thing on this bridge heavy enough to stop a trolley, and it is not you." },
-    { say: "A very large man stands at the railing beside you, looking down at the line, unaware. If he falls onto the track, the trolley stops, and he dies, and the five live. You would have to push him." },
-      { note: true, say: "This is the footbridge case, introduced by Judith Jarvis Thomson in 1976, building on Philippa Foot's original trolley problem of 1967. The numbers are identical to the lever case on purpose: one life against five. Everything that differs is in what the one who acts must do." }
+      { say: "West of the river valley the road climbs to a mountain pass, and a gate station sits in the saddle, where travelers are recorded and tolls are taken. The keeper waves you inside out of the wind, and while he writes your name he asks whether you have come from the courtyard schools, and smiles at the answer." },
+      { note: true, say: "The Daodejing, the Classic of the Way and of Virtue, is a short text of about five thousand characters, attributed to Laozi, the Old Master. The oldest account of the man, written centuries later, already treats him as uncertain, and modern scholarship reads the text as a compilation reaching its form by the fourth century BCE. Tomb discoveries at Mawangdui and Guodian in 1973 and 1993 produced the oldest copies, and the book stands among the most translated in the world." },
+      { slips: true, say: "The keeper takes a bundle of bamboo slips from a chest and unrolls part of it on the table. Keeper: The story we tell at stations like this one is that the Old Master, leaving the world by a western pass, was stopped by the keeper of the gate, who refused him passage until he wrote his teaching down. Five thousand characters, and then he rode on and was not seen again. I tell the story because keepers come out well in it, and I hold it as a story, not a record." },
+      { say: "Keeper: Now listen to how a book can begin. The way that can be spoken of is not the constant way. The name that can be named is not the constant name. It warns you about itself in the first line, and everything after is written by a man who has told you words will not carry it.",
+        choices: [
+          { tag: "why", text: "Then why write five thousand characters?",
+            reply: ["Keeper: The question every reader asks first, and the book leaves you to answer it. Perhaps words can point where they cannot carry. A finger indicating the moon is not the moon, and a traveler who refuses to look along the finger stays lost all the same."] },
+          { tag: "contradiction", text: "The first line refutes the book that follows.",
+            reply: ["Keeper: Say instead that it lowers the book's own price before a single claim is made, which no other book I keep has the honesty to do. What follows is offered as pointing, not as capture, and you are to hold it that lightly."] }
+        ] }
     ], () => {
-      openPrompt("push", () => {
+      openPrompt("empty", () => {
         startDlg([
-          { say: "Whichever you chose, notice what making the choice was like this time, and whether anything besides the numbers weighed on it." }
+          { say: "Keeper: The passage travelers remember is about a cart. Thirty spokes share one hub, and it is the hole at the center that makes the wheel a wheel. Clay is shaped into a vessel, and it is the hollow that holds. Doors and windows are cut for a room, and it is the space inside that is lived in. So profit comes from what is there, and use from what is not there." },
+          { say: "Keeper: And the passage rulers should remember is about water. The highest good is like water. It benefits all things and contends with none, and it settles in the low places that people disdain, and in the end nothing wears away stone but the soft. The book calls the practice wu wei, and travelers mistranslate it as doing nothing, and then wonder why a book about doing nothing discusses governing." }
         ], () => {
-          openPrompt("asymmetry", () => {
+          openPrompt("wuwei", () => {
             startDlg([
-              { note: true, say: "One well known analysis uses the doctrine of double effect, an idea that goes back to Aquinas. It says harm you intend as your means is worse than the same harm you only foresee." },
-    { say: "Test it here. At the lever, if the one worker scrambled clear, your plan still works. On the bridge, if the man is never struck, the five die. The trolley must hit him for the plan to work." }
+              { say: "Keeper: You sat in the courtyard at Lu, so hear the quarrel plainly. When the great way is lost, the book says, benevolence and righteousness appear. When the family falls out of harmony, filial piety is praised. The virtues your Confucius spent a life cultivating are, to this book, the splints and bandages of an injury, and the teacher proudest of his bandages has forgotten there was ever a whole limb." },
+              { note: true, say: "The passages adapted here are chapters one, eight, eleven, eighteen, and sixty of the received text. The quarrel with Confucian cultivation runs through the book, and later Chinese thought held the two teachings in a long balance rather than a verdict, with officials serving by the courtyard's book and retiring by the pass's, sometimes in the same lifetime." }
             ], () => {
-              openPrompt("intention", () => {
+              openPrompt("confucius", () => {
                 startDlg([
-                  { say: "Below, it is over one way or another, and the road goes on. Situations like this one do not look like philosophy while they are happening. They demand a decision, and leave you to work out afterward what your answer committed you to." }
+                  { say: "The wind drops toward evening and the keeper stamps your record. Keeper: Downstream from the valley there is a man who fishes and declines ministries, and he argues the way this book would argue if it argued. You will know him by the laughing." }
                 ], () => {
-                  openPrompt("consistency", () => endGame());
+                  openPrompt("final", () => endGame());
                 });
               });
             });
@@ -496,13 +501,14 @@ function runScene() {
       });
     });
   });
+
 }
 
 /* =========================================================
    End screen, quiz, and report
    ========================================================= */
 function endGame() {
-  try { localStorage.setItem("phil_map_footbridge", "1"); } catch (err) { /* storage is optional */ }
+  try { localStorage.setItem("phil_map_daodejing", "1"); } catch (err) { /* storage is optional */ }
   const summary = document.getElementById("reflectionSummary");
   summary.innerHTML = "";
   reflectionLog.forEach(r => {
@@ -548,8 +554,8 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const d1 = document.getElementById("discussion1").value.trim();
   const d2 = document.getElementById("discussion2").value.trim();
   const d3 = document.getElementById("discussion3").value.trim();
-  let text = "The Bridge Crossing, Report\n";
-  text += "===========================\n\nResponses at each stage:\n";
+  let text = "The Daodejing, Report\n";
+  text += "===============\n\nResponses at each stage:\n";
   reflectionLog.forEach(r => {
     text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
     if (r.choice) text += "Choice: " + r.choice + "\n";
@@ -557,12 +563,10 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
     text += "-".repeat(50);
   });
   text += "\n\nThe pair of answers:\n";
-  text += "At the lever: " + (record.lever || "(none)") + "\n";
-  text += "On the bridge: " + (record.bridge || "(none)") + "\n";
   text += "\nDiscussion questions:\n";
-  text += "1. A third variant isolating one difference.\n" + (d1 || "(no answer)") + "\n\n";
-  text += "2. Encoding answers before the emergency.\n" + (d2 || "(no answer)") + "\n\n";
-  text += "3. Different answers without a principle.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "1. Absence in the garden and at the pass.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Where water wins and where it fails.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. A minimal-handling rule and its strongest objection.\n" + (d3 || "(no answer)") + "\n\n";
   text += "Quiz:\n";
   if (quizScore) {
     quizScore.answers.forEach((ans, i) => {
@@ -575,7 +579,7 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   const blob = new Blob([text], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = "Bridge_Crossing_Report.txt"; a.click();
+  a.href = url; a.download = "Daodejing_Report.txt"; a.click();
   URL.revokeObjectURL(url);
 });
 document.getElementById("restartBtn").addEventListener("click", () => location.reload());
@@ -594,89 +598,89 @@ function drawFigure(x, y, s, color) {
   ctx.fillRect(1, -11, 4, 11);
   ctx.restore();
 }
+function drawSitter(x, y, s, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(s, s);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -26, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -20, 12, 14);
+  ctx.fillRect(-9, -6, 18, 5);
+  ctx.restore();
+}
 function render() {
   ctx.clearRect(0, 0, W, H);
-  // Dusk sky.
+  // The pass, with mist moving through.
   const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, "#232338");
-  sky.addColorStop(0.6, "#3c3450");
-  sky.addColorStop(1, "#584458");
+  sky.addColorStop(0, "#6a7690");
+  sky.addColorStop(0.6, "#8a8e94");
+  sky.addColorStop(1, "#a0a094");
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, W, H);
-  // Mountains behind.
-  ctx.fillStyle = "rgba(40,40,58,0.9)";
+  // Peaks on both sides.
+  ctx.fillStyle = "#4a5468";
   ctx.beginPath();
-  ctx.moveTo(0, 240); ctx.lineTo(160, 110); ctx.lineTo(300, 220); ctx.lineTo(470, 90);
-  ctx.lineTo(650, 210); ctx.lineTo(800, 130); ctx.lineTo(900, 200); ctx.lineTo(900, 500); ctx.lineTo(0, 500);
-  ctx.closePath(); ctx.fill();
-  // The gorge walls.
-  ctx.fillStyle = "#2c2c3c";
-  ctx.fillRect(0, 300, 240, 200);
-  ctx.fillRect(660, 300, 240, 200);
-  ctx.fillStyle = "#242432";
+  ctx.moveTo(0, 420); ctx.lineTo(60, 160); ctx.lineTo(180, 300); ctx.lineTo(250, 120); ctx.lineTo(330, 360);
+  ctx.lineTo(0, 420); ctx.closePath(); ctx.fill();
   ctx.beginPath();
-  ctx.moveTo(240, 300); ctx.lineTo(240, 500); ctx.lineTo(300, 500); ctx.closePath(); ctx.fill();
+  ctx.moveTo(900, 420); ctx.lineTo(840, 140); ctx.lineTo(740, 300); ctx.lineTo(660, 180); ctx.lineTo(580, 380);
+  ctx.lineTo(900, 420); ctx.closePath(); ctx.fill();
+  // Mist bands drifting.
+  const drift = REDUCED_MOTION ? 0 : (mistT * 12) % 300;
+  ctx.fillStyle = "rgba(238,242,246,0.22)";
+  ctx.beginPath(); ctx.ellipse(200 + drift * 0.5, 260, 180, 26, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(700 - drift * 0.4, 320, 200, 30, 0, 0, Math.PI * 2); ctx.fill();
+  // The saddle of the pass and the road through it.
+  ctx.fillStyle = "#8a8468";
+  ctx.fillRect(0, 400, W, 100);
+  ctx.strokeStyle = "rgba(220,208,180,0.6)";
+  ctx.lineWidth = 14;
   ctx.beginPath();
-  ctx.moveTo(660, 300); ctx.lineTo(660, 500); ctx.lineTo(600, 500); ctx.closePath(); ctx.fill();
-  // The rail line along the gorge floor.
-  ctx.strokeStyle = "#8b95a5";
-  ctx.lineWidth = 4;
-  [448, 466].forEach(ry => {
-    ctx.beginPath(); ctx.moveTo(0, ry); ctx.lineTo(900, ry); ctx.stroke();
-  });
-  ctx.strokeStyle = "#4a3c30";
-  for (let x = 10; x < 900; x += 30) {
-    ctx.beginPath(); ctx.moveTo(x, 442); ctx.lineTo(x, 472); ctx.stroke();
+  ctx.moveTo(-10, 470); ctx.quadraticCurveTo(300, 440, 450, 430);
+  ctx.quadraticCurveTo(620, 424, 910, 452);
+  ctx.stroke();
+  // The gate station: wall across the saddle, gatehouse with curved roof.
+  ctx.fillStyle = "#9a8e78";
+  ctx.fillRect(300, 356, 300, 46);
+  ctx.fillStyle = "#6a5a44";
+  ctx.fillRect(418, 340, 64, 62);
+  ctx.fillStyle = "#5c4a34";
+  ctx.beginPath();
+  ctx.moveTo(404, 340); ctx.quadraticCurveTo(450, 314, 496, 340);
+  ctx.lineTo(488, 348); ctx.lineTo(412, 348); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#2e2820";
+  ctx.fillRect(438, 366, 24, 36);
+  // The keeper's table, the bamboo slips, and an ox dozing by the wall.
+  ctx.fillStyle = "#6a5a44";
+  ctx.fillRect(240, 428, 120, 10);
+  if (slipsOn) {
+    ctx.strokeStyle = "#c9b060";
+    ctx.lineWidth = 3;
+    for (let i = 0; i < 12; i++) {
+      ctx.beginPath(); ctx.moveTo(252 + i * 8, 420); ctx.lineTo(252 + i * 8, 436); ctx.stroke();
+    }
+    ctx.fillStyle = "#eef2f6";
+    ctx.font = "12px 'Segoe UI', sans-serif";
+    ctx.fillText("the five thousand characters", 218, 458);
   }
-  // The cutting with the five workers, right of the bridge.
-  ctx.fillStyle = "#242432";
-  ctx.fillRect(700, 396, 200, 44);
-  for (let i = 0; i < 5; i++) drawFigure(730 + i * 36, 452, 0.8, "#8fb7dd");
+  ctx.fillStyle = "#4a4234";
+  ctx.fillRect(640, 402, 48, 22);
+  ctx.fillRect(682, 390, 12, 20);
+  ctx.fillRect(644, 424, 7, 12); ctx.fillRect(674, 424, 7, 12);
+  // The keeper and you.
+  drawFigure(400, 470, 1.05, "#8fb7dd");
+  drawFigure(520, 476, 1, "#5b84b1");
   ctx.fillStyle = "#eef2f6";
   ctx.font = "13px 'Segoe UI', sans-serif";
-  ctx.fillText("five workers", 748, 492);
-  // The footbridge across the gorge.
-  ctx.fillStyle = "#57503f";
-  ctx.fillRect(220, 262, 460, 14);
-  ctx.strokeStyle = "#57503f";
-  ctx.lineWidth = 5;
-  ctx.beginPath(); ctx.moveTo(220, 240); ctx.lineTo(680, 240); ctx.stroke();
-  for (let x = 240; x < 680; x += 44) {
-    ctx.beginPath(); ctx.moveTo(x, 240); ctx.lineTo(x, 262); ctx.stroke();
-  }
-  ctx.fillStyle = "#484236";
-  ctx.fillRect(206, 262, 18, 238);
-  ctx.fillRect(676, 262, 18, 238);
-  // You, and the large man at the railing.
-  drawFigure(392, 262, 1, "#5b84b1");
-  ctx.fillStyle = "#5a7d8f";
-  ctx.beginPath(); ctx.arc(470, 220, 10, 0, Math.PI * 2); ctx.fill();
-  ctx.fillRect(455, 228, 30, 30);
-  ctx.fillRect(457, 258, 10, 6);
-  ctx.fillRect(473, 258, 10, 6);
-  ctx.fillStyle = "#eef2f6";
-  ctx.fillText("you", 380, 292);
-  ctx.fillText("the large man", 428, 210);
-  // The trolley, rolling in on the line when the scene calls it.
-  if (trolleyOn) {
-    ctx.fillStyle = "#8f3b3b";
-    ctx.fillRect(trolleyX - 46, 408, 92, 40);
-    ctx.fillStyle = "#c9b98a";
-    ctx.fillRect(trolleyX - 36, 416, 24, 16);
-    ctx.fillRect(trolleyX + 6, 416, 24, 16);
-    ctx.fillStyle = "#1c1c26";
-    ctx.beginPath();
-    ctx.arc(trolleyX - 26, 452, 9, 0, Math.PI * 2);
-    ctx.arc(trolleyX + 26, 452, 9, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  ctx.fillText("the keeper of the pass", 330, 494);
+  ctx.fillText("you", 510, 498);
   if (!started) {
     ctx.fillStyle = "rgba(16,16,22,0.55)";
     ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = "#f0f0f5";
     ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
     ctx.textAlign = "center";
-    ctx.fillText("The Bridge Crossing", W / 2, H / 2 - 12);
+    ctx.fillText("The Daodejing", W / 2, H / 2 - 12);
     ctx.font = "15px 'Segoe UI', sans-serif";
     ctx.fillStyle = "#a9a9bc";
     ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
@@ -691,9 +695,8 @@ let last = performance.now();
 function update(dt) {
   if (typeof tickStatus === "function") tickStatus();
   t += dt;
-  if (trolleyOn && !paused) {
-    trolleyX = Math.min(trolleyX + (REDUCED_MOTION ? 20 : 60) * dt, 250);
-  }
+  mistT += dt;
+
 }
 function loop(now) {
   const dt = Math.min((now - last) / 1000, 0.05);
