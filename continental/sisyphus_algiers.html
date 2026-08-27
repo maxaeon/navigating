@@ -235,6 +235,7 @@ textarea{
     <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
     <div class="end-actions">
       <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="mapBtn">Return to the map</button>
       <button id="restartBtn">Start over</button>
     </div>
   </div>
@@ -752,6 +753,7 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+document.getElementById("mapBtn").addEventListener("click", () => location.href = "continental_map.html");
 
 /* =========================================================
    Input

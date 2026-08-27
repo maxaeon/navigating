@@ -207,6 +207,7 @@ textarea{
     <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
     <div class="end-actions">
       <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="mapBtn">Continue to the map</button>
       <button id="restartBtn">Start over</button>
     </div>
   </div>
@@ -582,6 +583,7 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+document.getElementById("mapBtn").addEventListener("click", () => location.href = "../map/world_map.html");
 
 /* =========================================================
    Drawing
@@ -930,55 +932,75 @@ function render() {
     ctx.strokeStyle = "#e8deb4";
     ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(gx, gy, 7, 0, Math.PI * 2); ctx.stroke();
-    // A dashed line from the marker to a magnified inset.
+    // A zoom wedge from the marker to a framed chart of the region.
+    const rx = 520, ry = 128, rw = 316, rh = 226;
     ctx.setLineDash([6, 6]);
     ctx.strokeStyle = "rgba(232,222,180,0.8)";
-    ctx.beginPath();
-    ctx.moveTo(gx + 8, gy);
-    ctx.lineTo(548, 240);
-    ctx.stroke();
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(gx + 7, gy - 3); ctx.lineTo(rx, ry); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(gx + 7, gy + 3); ctx.lineTo(rx, ry + rh); ctx.stroke();
     ctx.setLineDash([]);
-    // The inset: the Aegean, magnified.
-    const ix = 660, iy = 245, ir = 100;
+    // The chart itself, a rectangular cut of the same map. The sea fills it
+    // and every coastline runs off an edge, so the region reads as part of
+    // the world above rather than a world of its own.
     ctx.fillStyle = "#3d7ba6";
-    ctx.strokeStyle = "#e8deb4";
-    ctx.lineWidth = 2.5;
-    ctx.beginPath(); ctx.arc(ix, iy, ir, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillRect(rx, ry, rw, rh);
     ctx.save();
-    ctx.beginPath(); ctx.arc(ix, iy, ir, 0, Math.PI * 2); ctx.clip();
+    ctx.beginPath(); ctx.rect(rx, ry, rw, rh); ctx.clip();
     ctx.fillStyle = "#5f8f5a";
-    // The Greek mainland at the upper left of the inset.
+    // The Greek mainland, entering from the top and left edges, with the
+    // Peloponnese as its lower lobe.
     ctx.beginPath();
-    ctx.moveTo(ix - 100, iy - 100);
-    ctx.lineTo(ix - 4, iy - 100);
-    ctx.lineTo(ix - 22, iy - 58);
-    ctx.lineTo(ix - 44, iy - 40);
-    ctx.lineTo(ix - 30, iy - 10);
-    ctx.lineTo(ix - 56, iy + 14);
-    ctx.lineTo(ix - 100, iy - 4);
+    ctx.moveTo(rx - 20, ry - 20);
+    ctx.lineTo(rx + 152, ry - 20);
+    ctx.lineTo(rx + 130, ry + 44);
+    ctx.lineTo(rx + 98, ry + 72);
+    ctx.lineTo(rx + 120, ry + 104);
+    ctx.lineTo(rx + 92, ry + 122);
+    ctx.lineTo(rx + 102, ry + 152);
+    ctx.lineTo(rx + 74, ry + 176);
+    ctx.lineTo(rx + 40, ry + 168);
+    ctx.lineTo(rx + 28, ry + 132);
+    ctx.lineTo(rx - 20, ry + 124);
     ctx.closePath(); ctx.fill();
-    // The coast of Ionia at the right.
+    // The coast of Anatolia, entering from the top and right edges.
     ctx.beginPath();
-    ctx.moveTo(ix + 100, iy - 100);
-    ctx.lineTo(ix + 100, iy + 60);
-    ctx.lineTo(ix + 64, iy + 42);
-    ctx.lineTo(ix + 74, iy + 6);
-    ctx.lineTo(ix + 56, iy - 30);
-    ctx.lineTo(ix + 68, iy - 66);
-    ctx.lineTo(ix + 44, iy - 100);
+    ctx.moveTo(rx + rw + 20, ry - 20);
+    ctx.lineTo(rx + 216, ry - 20);
+    ctx.lineTo(rx + 238, ry + 32);
+    ctx.lineTo(rx + 214, ry + 68);
+    ctx.lineTo(rx + 234, ry + 108);
+    ctx.lineTo(rx + 210, ry + 148);
+    ctx.lineTo(rx + 230, ry + 184);
+    ctx.lineTo(rx + rw + 20, ry + 204);
     ctx.closePath(); ctx.fill();
-    // Islands, and Crete along the bottom.
-    [[ix - 6, iy + 6], [ix + 16, iy - 8], [ix + 30, iy + 22], [ix + 4, iy + 34], [ix - 16, iy + 44]].forEach(p => {
-      ctx.beginPath(); ctx.ellipse(p[0], p[1], 6, 4, 0.3, 0, Math.PI * 2); ctx.fill();
+    // Islands of the Aegean, and Crete running off the bottom edge.
+    [[rx + 140, ry + 96], [rx + 168, ry + 78], [rx + 182, ry + 116],
+     [rx + 152, ry + 138], [rx + 128, ry + 156], [rx + 186, ry + 160]].forEach(p => {
+      ctx.beginPath(); ctx.ellipse(p[0], p[1], 7, 4.5, 0.3, 0, Math.PI * 2); ctx.fill();
     });
     ctx.beginPath();
-    ctx.ellipse(ix + 6, iy + 78, 34, 7, 0.05, 0, Math.PI * 2);
+    ctx.ellipse(rx + 150, ry + rh + 2, 70, 13, 0.04, 0, Math.PI * 2);
     ctx.fill();
+    // The journey's two ends, marked and named.
+    ctx.fillStyle = "#e8deb4";
+    ctx.beginPath(); ctx.arc(rx + 104, ry + 118, 3.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(rx + 218, ry + 154, 3.5, 0, Math.PI * 2); ctx.fill();
+    ctx.font = "12px 'Segoe UI', sans-serif";
+    ctx.fillText("Athens", rx + 58, ry + 112);
+    ctx.fillText("Miletus", rx + 230, ry + 158);
+    ctx.font = "italic 12px Georgia, serif";
+    ctx.fillStyle = "rgba(238,242,246,0.8)";
+    ctx.fillText("the Aegean Sea", rx + 128, ry + 60);
     ctx.restore();
+    // The frame of the chart.
+    ctx.strokeStyle = "#e8deb4";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(rx, ry, rw, rh);
     ctx.fillStyle = "#eef2f6";
     ctx.font = "17px 'Iowan Old Style', Georgia, serif";
     ctx.textAlign = "center";
-    ctx.fillText("Ancient Greece and the Aegean Sea", ix, iy + ir + 28);
+    ctx.fillText("Ancient Greece and the Aegean Sea", rx + rw / 2, ry + rh + 28);
     ctx.textAlign = "left";
   }
 
