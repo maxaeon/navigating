@@ -1,6 +1,6 @@
 # Navigating Philosophy
 
-A route through the history of philosophy, walked one place at a time. Every activity is a single self-contained HTML file that runs in the browser with no build step and no external dependencies.
+A route through the history of philosophy. Every activity is a single self-contained HTML file that runs in the browser with no build step and no external dependencies.
 
 ## Deploying to GitHub Pages
 
@@ -22,11 +22,7 @@ Each folder holds its activity, a README describing what the activity covers and
 
 Activities open in relaxed mode, where every question can be skipped and the quiz and discussion questions stay hidden. A toggle at the top switches to course mode, which shows the quiz and discussion questions and requires a written answer to the final question.
 
-To lock an activity into course mode for an assignment, add `?mode=course` to the link, which also hides the toggle:
-
-```
-https://YOURUSER.github.io/YOURREPO/monastery/paleys_watch.html?mode=course
-```
+To lock an activity into course mode for an assignment, add `?mode=course` to the link, which also hides the toggle.
 
 ## Progress
 
