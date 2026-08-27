@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kant in Königsberg</title>
+<style>
+:root{
+  --page:#12141d;
+  --panel:#1a1e2b;
+  --panel-2:#242a3c;
+  --line:#39415e;
+  --text:#f0f2f7;
+  --muted:#a9b1c4;
+  --candle:#e6c073;
+  --candle-deep:#a8862f;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2d3449}
+button.primary{background:var(--candle); border-color:var(--candle-deep); color:#221a08; font-weight:600}
+button.primary:hover{background:#f0d18e}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--candle); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0e1017; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--candle-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#1e2334; border-color:var(--candle)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--candle); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--candle)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--candle)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#10131c; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--candle)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--candle); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#10131c; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--candle)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--candle); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--candle)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>Kant in Königsberg</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>The last stop on both roads, and the one that tries to end the quarrel. It is 1781, and Immanuel Kant has published almost nothing for eleven years while working on a book that will run to eight hundred pages. He agrees with Hume that experience cannot deliver necessity, and refuses to conclude that we should give up on causes. His answer is to turn the question round and ask what the world must be like in order to be experienced by minds built as ours are. You walk his afternoon route with him while he lays it out, and he names the price at the end rather than hiding it. Best played after Descartes, Hume, and Berkeley. Walk with the arrow keys, press E at each marked spot, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you, and advances the evening at each marked spot. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">Finishing this activity opens The Atlantic World on the world map.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Kant claims some things can be known in advance of experience because they are conditions of any experience. Pick one such claim, that every event has a cause or that experience is in time, and try to describe what it would be like to encounter a counterexample. What does the attempt show?</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. His critics said within a decade that the thing in itself should be dropped. Argue the case for dropping it, then the case for keeping it, and say which you find stronger.</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. Descartes, Hume, Berkeley, and Kant all agree that we do not have unmediated access to the world. Set out what each thinks stands between us and it, and say whether they are really answering the same question.</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> Kant credits Hume with showing</p>
+      <label><input type="radio" name="q1" value="That experience cannot establish that causes are necessary"> that experience cannot establish that causes are necessary</label>
+      <label><input type="radio" name="q1" value="That the world is an illusion"> that the world is an illusion</label>
+      <label><input type="radio" name="q1" value="That mathematics is uncertain"> that mathematics is uncertain</label>
+
+      <p><strong>2.</strong> His Copernican turn proposes</p>
+      <label><input type="radio" name="q2" value="That objects, as we experience them, conform to the mind"> that objects, as we experience them, conform to the mind</label>
+      <label><input type="radio" name="q2" value="That the earth goes round the sun"> that the earth goes round the sun</label>
+      <label><input type="radio" name="q2" value="That knowledge conforms to objects"> that knowledge conforms to objects</label>
+
+      <p><strong>3.</strong> The price of his solution is</p>
+      <label><input type="radio" name="q3" value="That things as they are in themselves cannot be known"> that things as they are in themselves cannot be known</label>
+      <label><input type="radio" name="q3" value="That science becomes uncertain"> that science becomes uncertain</label>
+      <label><input type="radio" name="q3" value="That mathematics must be abandoned"> that mathematics must be abandoned</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_kant";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: The state of the road",
+    text: "You have walked both roads. Descartes trusted reason and rebuilt the world from one certainty. Hume trusted experience and found that reason cannot deliver what we expected of it. Before Kant speaks: which road do you arrive on?",
+    mcq: ["Descartes, since experience alone leaves too little standing", "Hume, since the honest inventory is the honest inventory", "Neither, since both end somewhere I cannot accept", "I am not sure yet"],
+    requireText: true
+  },
+  problem: {
+    title: "Stage 1: What Hume did",
+    text: "Kant says Hume showed that no experience can establish that causes are necessary, and that he could not answer him for years. Yet nobody actually gives up on causes. Which is the right way to describe that situation?",
+    mcq: ["Hume is right, and we are all irrational about it", "Hume is right about experience, and something other than experience is at work", "Hume is wrong, and a better argument from experience exists", "The question is confused and should be dropped"],
+    requireText: true
+  },
+  turn: {
+    title: "Stage 2: Turning the question round",
+    text: "Everyone before Kant asked how our knowledge can conform to objects. He proposes reversing it and asking what objects must be like in order to be known by minds built as ours are. Is that a real move or a trick?",
+    mcq: ["A real move, since it explains why some things hold for every experience", "A trick, since it makes the answer true by redefining the question", "A real move whose price is that we never reach things as they are", "I need to see it applied before judging"],
+    requireText: true
+  },
+  forms: {
+    title: "Stage 3: What the mind supplies",
+    text: "The spectacles cannot be taken off. Kant argues that space and time are not things found in the world but the forms any experience of ours must take, and that concepts such as cause work the same way. What follows about causation?",
+    mcq: ["It is a real feature of the world, and Hume was simply wrong", "It is a condition of any experience we can have, so it holds for every experience", "It is a habit dressed up in better clothes", "It is real for appearances and unknown for anything beyond them"],
+    requireText: true
+  },
+  limit: {
+    title: "Stage 4: The cost",
+    text: "The same argument that secures causation for every possible experience also says that what things are in themselves, apart from any experience, is closed to us. Kant thought this was worth it. Do you?",
+    mcq: ["Worth it, since it rescues science and honest limits are no loss", "Not worth it, since a world we can never reach is a strange thing to affirm", "Worth it, and the thing in itself is the weakest part of the system", "It is not a cost at all, since we never wanted that anyway"],
+    requireText: true
+  },
+  verdict: {
+    title: "Stage 5: The region, decided",
+    text: "You have now walked all of it. Descartes, Hume, Berkeley, and Kant each begin somewhere reasonable and end somewhere hard to accept. Write your own position on where knowledge comes from, name which of the four you are closest to, and say what your position still owes an answer for.",
+    mcq: null,
+    requireText: true,
+    textHint: "Your position, your nearest ally, and your outstanding debt."
+  }
+};
+
+const quizKeys = [
+  "That experience cannot establish that causes are necessary",
+  "That objects, as we experience them, conform to the mind",
+  "That things as they are in themselves cannot be known"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world: the stove-heated room, with marked spots along
+   it, and the desk where the letters are read.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 1560;
+
+const STATIONS = [
+  { x: 380,  name: "the milestone" },
+  { x: 700,  name: "the observatory steps" },
+  { x: 1020, name: "the spectacle maker's window" },
+  { x: 1340, name: "the cathedral corner" }
+];
+
+const flags = {
+  started: false,
+  firstDone: false,
+  friarMet: false,
+  beat1Done: false,
+  problemDone: false,
+  beat2Done: false,
+  turnDone: false,
+  beat3Done: false,
+  formsDone: false,
+  beat4Done: false,
+  limitDone: false,
+  finalDone: false
+};
+let closeView = null;    // "stick" or "wax" fills the view
+
+let paused = false;
+let startTimer = 0;
+let candleLit = true;
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  kant: { x: 300, color: "#6b6a76" }
+};
+const keys = {};
+const record = { verdicts: [] };
+
+/* Snow at the window. */
+const flakes = [];
+for (let i = 0; i < 50; i++) {
+  flakes.push({ x: (i * 137.3) % 1500, y: (i * 91.7) % 500, s: 0.5 + (i % 3) * 0.4, w: (i % 5) - 2 });
+}
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration, help, dialogue, and the modal
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  speechSynthesis.speak(new SpeechSynthesisUtterance(p.title + ". " + p.text));
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.friarMet) return "Walk right. Kant sets off along the walk ahead of you.";
+  if (!flags.finalDone) return "Walk to the next marked spot and press E there. The questions appear between the spots.";
+  return "The walk is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.close !== undefined) closeView = step.close === false ? null : step.close;
+
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  if (c.tag) record.verdicts.push(c.text);
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+function setObjective(txt) { setObjectiveText(txt); }
+function setObjectiveText(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   Konigsberg, on a walk that the neighbours set clocks by
+   ========================================================= */
+function dlgFriar() {
+  flags.friarMet = true;
+  startDlg([
+    { say: "A small, thin man in a grey coat sets off along the lime walk at exactly the same moment he did yesterday. Kant: You may walk with me if you keep the pace. I am fifty seven and I have published almost nothing for eleven years, and this year I am publishing something very long." },
+    { say: "Kant: Immanuel Kant. I have never left this province and I do not intend to. Everything I need to think about is available anywhere." },
+    { say: "Kant: You have come along the road from France and Scotland, I think. Then you already have my problem, and I have spent eleven years on it." },
+    { note: true, say: "Immanuel Kant, 1724 to 1804, spent his whole life in and around Konigsberg in East Prussia. After a long silence he published the Critique of Pure Reason in 1781, revised in 1787. The story that neighbours set their clocks by his afternoon walk was reported by early biographers and may be embroidered." }
+  ], () => {
+    setObjective("Walk right to the first marked spot, the milestone, and press E.");
+  });
+}
+function dlgBeat1() {
+  flags.beat1Done = true;
+  startDlg([
+    { say: "At a milestone Kant stops and taps it with his stick. Kant: Let me say what the Scotsman did to me, because I will not pretend it was small." },
+    { say: "Kant: Hume asked what experience gives us when one billiard ball strikes another. Succession, contact, repetition. Never necessity. And he was right." },
+    { say: "Kant: I could not answer him from experience, because there is no answer from experience. He had closed that road properly." },
+    { say: "Kant: I say openly that he interrupted my dogmatic slumber. I had been building systems on foundations he showed me were not there.",
+      choices: [
+        { tag: "give", text: "Then you should give up on causes, as he nearly did.",
+          reply: ["Kant: But nobody does. Not Hume. He goes on expecting bread to nourish him, and so do you, and so does every scientist in Europe, and the expectation is not idle. Something is going on that his inventory does not capture."] },
+        { tag: "other", text: "Then it must come from somewhere other than experience.",
+          reply: ["Kant: That is exactly the thought that took me eleven years to work out. If experience cannot supply necessity, and we plainly have it, then it does not come from experience."] }
+      ] }
+  ], () => {
+    openPrompt("problem", () => {
+      flags.problemDone = true;
+      setObjective("Walk to the observatory steps, marked with E.");
+    });
+  });
+}
+function dlgBeat2() {
+  flags.beat2Done = true;
+  startDlg([
+    { say: "They stop where a small observatory looks out over the rooftops. Kant: Here is what I did, and I take the comparison from astronomy because it is exact." },
+    { close: "copernicus",
+      say: "Kant: The astronomers could not make the heavens work while they held the earth still and had everything turn around it. Copernicus tried the opposite. Let the observer move, and see whether the sky becomes intelligible." },
+    { close: "copernicus",
+      say: "Kant: I propose the same reversal in philosophy. Everyone has assumed that our knowledge must conform to objects, and on that assumption we cannot explain how anything is known in advance of experience." },
+    { close: "copernicus",
+      say: "Kant: So let us try assuming that objects, as we can ever encounter them, must conform to the constitution of our minds. Not the world bending to our wishes. The world as experienced, taking the only shape an experience of ours can have." },
+    { close: false,
+      say: "Kant: If that is right, then some things can be known in advance of any particular experience, because they are conditions of there being an experience at all." },
+    { note: true, say: "Kant himself calls this his Copernican turn, in the preface to the second edition of the Critique. The comparison is to the change of standpoint rather than to any particular astronomical claim." }
+  ], () => {
+    openPrompt("turn", () => {
+      flags.turnDone = true;
+      setObjective("Walk to the spectacle maker's window, marked with E.");
+    });
+  });
+}
+function dlgBeat3() {
+  flags.beat3Done = true;
+  startDlg([
+    { say: "A shop window is full of spectacles on brass stands. Kant: An imperfect picture, but it will hold long enough to be useful." },
+    { close: "lenses",
+      say: "Kant: Suppose you were born wearing tinted lenses that cannot be removed. Everything you ever see is tinted. Now ask what you can know in advance about everything you will ever see." },
+      { close: "lenses",
+      say: "Kant: You can know that it will be tinted. Not because you have surveyed the world, but because the tint is in the lens rather than in the things.",
+      choices: [
+        { tag: "gets", text: "So the tint is guaranteed, and tells me nothing about the things.",
+          reply: ["Kant: Precisely so, and now take the lenses to be space and time, which I say are not properties we find in things but the forms any experience of ours must take."] },
+        { tag: "resists", text: "But then I know nothing about the world, only about my lenses.",
+          reply: ["Kant: About the world as it is in itself, nothing. About the world as it can ever be experienced, a great deal, and with certainty, which is more than Hume left us. Hold your objection, it is the right one."] }
+      ] },
+    { close: false,
+      say: "Kant: Space and time are the forms of intuition. And the understanding brings its own forms too, the categories, and among them cause and effect." },
+    { say: "Kant: So Hume asked where in experience we find necessary connection, and the answer is nowhere, because it is not delivered by experience. It is one of the conditions under which anything can be an experience for us at all." },
+    { say: "Kant: Which is why every event you will ever encounter will have a cause. Not because the world has been surveyed and found orderly, but because a series of impressions with no causal order would not add up to an experience of objects. It would not be a world at all." },
+    { note: true, say: "This is the core of the Critique. Space and time are argued for in the Transcendental Aesthetic as forms of intuition, and the categories, including causation, in the Transcendental Analytic. Kant's claim is that they hold necessarily for all possible experience, which is why he thinks he has answered Hume without returning to Descartes." }
+  ], () => {
+    openPrompt("forms", () => {
+      flags.formsDone = true;
+      setObjective("Walk to the cathedral corner, marked with E.");
+    });
+  });
+}
+function dlgBeat4() {
+  flags.beat4Done = true;
+  startDlg([
+    { say: "At the corner by the cathedral Kant turns for home at the usual hour. Kant: Now the bill, because there is one and I will not hide it." },
+    { say: "Kant: If what I know holds of the world as it appears under the conditions of my knowing, then of the world as it is apart from those conditions I know nothing whatever." },
+    { say: "Kant: I call that the thing in itself. It is not a hidden object behind a curtain. It is the world considered apart from any possible experience of it, and there is nothing to be said about it." },
+    { say: "Kant: And I accept the loss without much grief, since I never had access to it and neither did anyone who claimed to.",
+      choices: [
+        { tag: "worth", text: "That seems a fair trade for securing science.",
+          reply: ["Kant: I think so, and I will add what it buys elsewhere. If the world of appearances is thoroughly governed by cause, and I am also a being who is not merely an appearance, then freedom is at least not ruled out. I had to deny knowledge in order to make room for faith."] },
+        { tag: "strange", text: "Affirming a world you can never reach seems strange.",
+          reply: ["Kant: My critics say so within a decade, and they will say I should drop the thing in itself entirely. I say that without it, appearances would be appearances of nothing. Whether that is an argument or a stipulation is a fair thing to press."] }
+      ] }
+  ], () => {
+    openPrompt("limit", () => {
+      flags.limitDone = true;
+      setObjective("Press E once more at the corner for the end of the walk.");
+    });
+  });
+}
+function dlgClose() {
+  startDlg([
+    { say: "Kant: So the two roads you walked were both right and both incomplete. Without the senses no object would be given to us, and without the understanding none would be thought." },
+    { say: "Kant: Thoughts without content are empty. Intuitions without concepts are blind. Neither faculty is to be preferred to the other, and the whole quarrel came from asking which one alone could do the work." },
+    { say: "Kant: I do not expect you to accept my system. I expect you to see why the old question could not be answered in the old terms. That much I am confident of, and it is enough for one walk." }
+  ], () => {
+    openPrompt("verdict", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+function nextStationIndex() {
+  if (!flags.beat1Done) return 0;
+  if (!flags.problemDone) return -1;
+  if (!flags.beat2Done) return 1;
+  if (!flags.turnDone) return -1;
+  if (!flags.beat3Done) return 2;
+  if (!flags.formsDone) return -1;
+  if (!flags.beat4Done) return 3;
+  if (!flags.limitDone) return -1;
+  if (!flags.finalDone) return 3;
+  return -1;
+}
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.friarMet) return;
+  const idx = nextStationIndex();
+  if (idx < 0) return;
+  const st = STATIONS[idx];
+  if (Math.abs(player.x - st.x) < 45) {
+    if (idx === 3 && flags.beat4Done) { dlgClose(); return; }
+    [dlgBeat1, dlgBeat2, dlgBeat3, dlgBeat4][idx]();
+    return;
+  }
+  setStatus("The next spot, " + st.name + ", is marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_kant", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    if (r.response) parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "Kant in Konigsberg, Report\n";
+  text += "===========================================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    if (r.response) text += "Response: " + r.response + "\n";
+    text += "-".repeat(50);
+  });
+  text += "\n\nDiscussion questions:\n";
+  text += "1. The whole-series objection.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Modern cosmology and the first cause.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. The gap between a first cause and the God of worship.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Kant_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!REDUCED_MOTION) {
+    flakes.forEach(f => {
+      f.y += (14 + f.s * 16) * dt;
+      f.x += f.w * 6 * dt;
+      if (f.y > 500) { f.y = -4; f.x = (f.x + 137) % 1700; }
+    });
+  }
+  if (!flags.started || paused) return;
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right along the lime walk. Someone sets off at exactly the usual hour.");
+      });
+    }
+  }
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+  if (!flags.friarMet && !dialogueActive && player.x > 240) {
+    player.x = Math.min(player.x, 240);
+    dlgFriar();
+  }
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawKant(x, y) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = "#6b6a76";
+  ctx.beginPath(); ctx.arc(0, -50, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-8, -43); ctx.lineTo(8, -43); ctx.lineTo(14, 0); ctx.lineTo(-14, 0);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#e6e3d6";
+  ctx.fillRect(-6, -42, 12, 5);
+  ctx.strokeStyle = "rgba(230,227,214,0.75)";
+  ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.arc(0, -50, 9, 0, Math.PI * 2); ctx.stroke();
+  // The long hair and the white collar of the period.
+  ctx.fillStyle = "#23232a";
+  ctx.beginPath();
+  ctx.moveTo(-10, -54); ctx.lineTo(10, -54); ctx.lineTo(12, -38); ctx.lineTo(-12, -38);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#e6e3d6";
+  ctx.fillRect(-7, -42, 14, 4);
+  ctx.strokeStyle = "rgba(230,227,214,0.85)";
+  ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.arc(0, -50, 9, 0, Math.PI * 2); ctx.stroke();
+  ctx.restore();
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(230,192,115,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 76 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(230,192,115,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 72 + lift);
+}
+
+/* =========================================================
+   Close views. The stick in water and the wax fill the frame
+   while the conversation is looking at them.
+   ========================================================= */
+
+/* A close view is a zoom, not the scene at scale, so it is drawn
+   inside a frame that says as much. */
+function drawCloseFrame(caption) {
+  const pad = 26;
+  ctx.save();
+  ctx.strokeStyle = "rgba(230,221,194,0.55)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(pad, pad, W - pad * 2, H - pad * 2);
+  ctx.fillStyle = "rgba(230,221,194,0.9)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.letterSpacing = "1px";
+  const label = "A CLOSER LOOK";
+  const lw = ctx.measureText(label).width;
+  ctx.fillStyle = "rgba(20,22,31,0.95)";
+  ctx.fillRect(pad + 16, pad - 9, lw + 16, 18);
+  ctx.fillStyle = "rgba(230,221,194,0.9)";
+  ctx.fillText(label, pad + 24, pad + 4);
+  ctx.letterSpacing = "0px";
+  if (caption) {
+    ctx.fillStyle = "#e6ddc2";
+    ctx.font = "15px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText(caption, W / 2, H - pad - 14);
+    ctx.textAlign = "left";
+  }
+  ctx.restore();
+}
+
+function drawCopernicusClose() {
+  const cx = W / 2, cy = 250;
+  ctx.fillStyle = "#0f131c";
+  ctx.fillRect(0, 0, W, H);
+  const spin = REDUCED_MOTION ? 1.2 : t * 0.5;
+  // The old picture on the left: everything turning about a fixed centre.
+  ctx.strokeStyle = "rgba(190,205,225,0.35)";
+  ctx.lineWidth = 1.5;
+  [46, 82, 118].forEach(r => {
+    ctx.beginPath(); ctx.arc(250, cy, r, 0, Math.PI * 2); ctx.stroke();
+  });
+  ctx.fillStyle = "#7fa6d0";
+  ctx.beginPath(); ctx.arc(250, cy, 15, 0, Math.PI * 2); ctx.fill();
+  [[46, 1], [82, -0.7], [118, 0.4]].forEach((o, i) => {
+    ctx.fillStyle = ["#d8c78a", "#c98f6a", "#9fd0c0"][i];
+    ctx.beginPath();
+    ctx.arc(250 + Math.cos(spin * o[1] + i) * o[0], cy + Math.sin(spin * o[1] + i) * o[0], 8, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.fillStyle = "rgba(238,242,246,0.75)";
+  ctx.font = "13px 'Segoe UI', sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("the observer held still,", 250, cy + 158);
+  ctx.fillText("and the sky made to fit", 250, cy + 178);
+  // The new picture on the right: the observer moves instead.
+  ctx.strokeStyle = "rgba(190,205,225,0.35)";
+  [58, 100].forEach(r => {
+    ctx.beginPath(); ctx.arc(650, cy, r, 0, Math.PI * 2); ctx.stroke();
+  });
+  ctx.fillStyle = "#e0c86a";
+  ctx.beginPath(); ctx.arc(650, cy, 18, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#7fa6d0";
+  const ox = 650 + Math.cos(spin) * 100, oy = cy + Math.sin(spin) * 100;
+  ctx.beginPath(); ctx.arc(ox, oy, 11, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#9fd0c0";
+  ctx.beginPath(); ctx.arc(650 + Math.cos(spin * 1.7) * 58, cy + Math.sin(spin * 1.7) * 58, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "rgba(238,242,246,0.75)";
+  ctx.fillText("the observer moving,", 650, cy + 158);
+  ctx.fillText("and the sky made simple", 650, cy + 178);
+  ctx.textAlign = "left";
+  drawCloseFrame("The change of standpoint");
+}
+function drawLensesClose() {
+  const cx = W / 2, cy = 244;
+  ctx.fillStyle = "#0f131c";
+  ctx.fillRect(0, 0, W, H);
+  // Objects on the left, plain.
+  const objs = [["#cfd6e0", 0], ["#c98f6a", 1], ["#9fd0c0", 2]];
+  objs.forEach((o, i) => {
+    ctx.fillStyle = o[0];
+    ctx.beginPath(); ctx.arc(180, cy - 70 + i * 70, 26, 0, Math.PI * 2); ctx.fill();
+  });
+  ctx.fillStyle = "rgba(238,242,246,0.7)";
+  ctx.font = "13px 'Segoe UI', sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("things", 180, cy + 118);
+  // The lens in the middle.
+  ctx.fillStyle = "rgba(206,166,90,0.30)";
+  ctx.beginPath(); ctx.ellipse(450, cy, 42, 150, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = "#b89a54";
+  ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.ellipse(450, cy, 42, 150, 0, 0, Math.PI * 2); ctx.stroke();
+  ctx.fillStyle = "rgba(238,242,246,0.7)";
+  ctx.fillText("a lens that cannot", 450, cy + 186);
+  ctx.fillText("be taken off", 450, cy + 204);
+  // The same objects on the right, all carrying the tint.
+  objs.forEach((o, i) => {
+    ctx.fillStyle = o[0];
+    ctx.beginPath(); ctx.arc(730, cy - 70 + i * 70, 26, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "rgba(206,166,90,0.45)";
+    ctx.beginPath(); ctx.arc(730, cy - 70 + i * 70, 26, 0, Math.PI * 2); ctx.fill();
+  });
+  ctx.fillStyle = "rgba(238,242,246,0.7)";
+  ctx.fillText("things as they can be seen", 730, cy + 118);
+  ctx.textAlign = "left";
+  drawCloseFrame("Known in advance, because the tint is in the lens");
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  if (closeView === "copernicus") { drawCopernicusClose(); return; }
+  if (closeView === "lenses") { drawLensesClose(); return; }
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // Night outside, lamplight inside.
+  ctx.fillStyle = "#161a26";
+  ctx.fillRect(camX, 0, W, H);
+
+  // A Prussian town at the end of the afternoon: a lime walk, a
+  // row of gabled houses, and the cathedral at the far end.
+  ctx.fillStyle = "#4a4a58";
+  ctx.fillRect(200, 110, WORLD_W - 300, GROUND - 110);
+  for (let bx = 240; bx < WORLD_W - 200; bx += 132) {
+    const hgt = 190 + ((bx / 132) % 3) * 26;
+    ctx.fillStyle = "#5c5468";
+    ctx.fillRect(bx, GROUND - hgt, 116, hgt);
+    // A stepped gable.
+    ctx.fillStyle = "#4e4759";
+    for (let s2 = 0; s2 < 4; s2++)
+      ctx.fillRect(bx + s2 * 12, GROUND - hgt - 12 - s2 * 10, 116 - s2 * 24, 12);
+    ctx.fillStyle = "#8ea2bd";
+    for (let wy = GROUND - hgt + 30; wy < GROUND - 50; wy += 52) {
+      for (let wx = bx + 18; wx < bx + 100; wx += 42) ctx.fillRect(wx, wy, 24, 32);
+    }
+  }
+  // The paved walk and the row of limes along it.
+  ctx.fillStyle = "#6e6a62";
+  ctx.fillRect(200, GROUND, WORLD_W - 300, H - GROUND);
+  ctx.fillStyle = "#635f58";
+  for (let fx = 200; fx < WORLD_W - 100; fx += 40) ctx.fillRect(fx, GROUND + 10, 26, 3);
+  for (let tx = 300; tx < WORLD_W - 200; tx += 210) {
+    ctx.fillStyle = "#4a3c2c";
+    ctx.fillRect(tx - 7, GROUND - 96, 14, 96);
+    ctx.fillStyle = "#5e6b42";
+    [[-26, -124], [0, -142], [26, -122]].forEach(p => {
+      ctx.beginPath();
+      ctx.arc(tx + p[0], GROUND + p[1], 27, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  // The milestone.
+  const mxs = STATIONS[0].x;
+  ctx.fillStyle = "#9a927e";
+  ctx.fillRect(mxs - 12, GROUND - 46, 24, 46);
+  ctx.beginPath(); ctx.arc(mxs, GROUND - 46, 12, Math.PI, 0); ctx.fill();
+  ctx.fillStyle = "#6a6458";
+  ctx.fillRect(mxs - 7, GROUND - 40, 14, 4);
+
+  // The observatory steps, with a small dome above.
+  const oxs = STATIONS[1].x;
+  ctx.fillStyle = "#514a5c";
+  ctx.fillRect(oxs - 54, GROUND - 214, 108, 214);
+  ctx.fillStyle = "#6a6478";
+  ctx.beginPath(); ctx.arc(oxs, GROUND - 214, 54, Math.PI, 0); ctx.fill();
+  ctx.fillStyle = "#2f2b38";
+  ctx.fillRect(oxs - 10, GROUND - 250, 20, 40);
+  ctx.fillStyle = "#8d8674";
+  for (let s3 = 0; s3 < 3; s3++) ctx.fillRect(oxs - 46 + s3 * 6, GROUND - 8 - s3 * 8, 92 - s3 * 12, 8);
+
+  // The spectacle maker's window.
+  const sxs = STATIONS[2].x;
+  ctx.fillStyle = "#3a3444";
+  ctx.fillRect(sxs - 60, GROUND - 150, 120, 118);
+  ctx.fillStyle = "#c6bfa8";
+  ctx.fillRect(sxs - 52, GROUND - 142, 104, 102);
+  ctx.strokeStyle = "#4a4256";
+  ctx.lineWidth = 3;
+  [-30, 2, 34].forEach(dx2 => {
+    ctx.beginPath(); ctx.arc(sxs + dx2 - 8, GROUND - 100, 11, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(sxs + dx2 + 10, GROUND - 100, 11, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(sxs + dx2 + 3, GROUND - 100); ctx.lineTo(sxs + dx2 - 1, GROUND - 100); ctx.stroke();
+  });
+  ctx.fillStyle = "#3a3444";
+  ctx.fillRect(sxs - 66, GROUND - 158, 132, 12);
+
+  // The cathedral corner at the end of the walk.
+  const cxs = STATIONS[3].x;
+  ctx.fillStyle = "#453f52";
+  ctx.fillRect(cxs - 60, GROUND - 260, 120, 260);
+  ctx.beginPath();
+  ctx.moveTo(cxs - 60, GROUND - 260); ctx.lineTo(cxs, GROUND - 330); ctx.lineTo(cxs + 60, GROUND - 260);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#2f2b38";
+  ctx.fillRect(cxs - 22, GROUND - 96, 44, 96);
+  ctx.beginPath(); ctx.arc(cxs, GROUND - 96, 22, Math.PI, 0); ctx.fill();
+  ctx.fillStyle = "#8ea2bd";
+  ctx.beginPath(); ctx.arc(cxs, GROUND - 190, 22, 0, Math.PI * 2); ctx.fill();
+
+  const idx = nextStationIndex();
+  const dX = !flags.friarMet ? npcs.kant.x
+    : idx >= 0 ? STATIONS[idx].x - 64
+    : STATIONS[3].x - 64;
+  drawKant(dX, GROUND);
+  if (flags.friarMet && idx >= 0) drawMarker(STATIONS[idx].x, GROUND);
+  drawPerson(player.x, GROUND, player.color, player.facing);
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(14,16,23,0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f0f2f7";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Kant in K\u00f6nigsberg", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#a9b1c4";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You are at the edge of the town. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>
