@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Presocratic Philosophers</title>
+<style>
+:root{
+  --page:#101319;
+  --panel:#1a2029;
+  --panel-2:#232b37;
+  --line:#334050;
+  --text:#eef2f6;
+  --muted:#a7b4c2;
+  --aegean:#5aa7d4;
+  --aegean-deep:#33769f;
+  --olive:#8fae5f;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button,select{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2c3644}
+button.primary{background:var(--aegean); border-color:var(--aegean-deep); color:#0c1622; font-weight:600}
+button.primary:hover{background:#7cbde2}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--aegean); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0c1016; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--aegean-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--aegean)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+#bgPanel{max-width:900px; margin:10px auto 0; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:4px 16px 12px}
+#bgPanel summary{cursor:pointer; padding:8px 0; font-weight:600}
+#bgPanel a{color:#8fb7dd}
+#bgPanel p{margin:8px 0; line-height:1.5}
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent, #deviceContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(540px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2, #deviceContent h2{margin:0 0 8px; font-size:21px; color:var(--aegean)}
+#modalTextPrompt, #deviceCaption{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#121820; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+#deviceCanvas{
+  width:100%; height:auto; background:#121820;
+  border:1px solid var(--line); border-radius:8px; touch-action:none;
+}
+#deviceButtons{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
+#deviceButtons button{flex:1 1 auto}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--aegean)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--aegean); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#121820; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--aegean)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--aegean); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+@media (prefers-reduced-motion: reduce){ .overlay{transition:none} }
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>The Presocratic Philosophers</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>Before Socrates, thinkers in the Greek towns of Ionia and southern Italy asked what everything is made of, and whether anything truly changes. You are an Athenian citizen traveling in Ionia, enrolled for the coming year among your city's six thousand jurors, and due home before the courts convene. In this activity you walk a road through their world, test their answers with your own hands, and give an answer of your own at the start and again at the end. Follow the objective bar above the game window and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin the journey to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. Jump: up arrow. E engages with whatever is next to you: talk, or examine a marked spot. The bellows, the monochord, and the mixing basin each open a panel with buttons when you reach them, and pressing E beside a device reopens its panel. Dialogue replies: click them, or press 1, 2, or 3.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. Jump: up arrow. E engages with whatever is next to you. Dialogue replies: click them, or press 1, 2, or 3.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowUp" aria-label="Jump">&#8593;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+    <button data-k="r" aria-label="Open device">R</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Device panel: the bellows, the monochord, and the mixing basin -->
+<div id="deviceOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="deviceTitle">
+  <div id="deviceContent">
+    <h2 id="deviceTitle"></h2>
+    <p id="deviceCaption"></p>
+    <canvas id="deviceCanvas" width="460" height="250"></canvas>
+    <div id="deviceButtons"></div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p>The next stop on the map is The Ship of Theseus.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Two methods appeared on this road: careful observation of nature, as with the Milesians, and pure argument, as with Parmenides and Zeno. Which impressed you more, and why?</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. Heraclitus says everything flows. Parmenides says nothing truly changes. Describe one ordinary thing from your own life and say which account fits it better.</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. State one observation or argument that would count against the first principle you ended with.</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> For the first philosophers, an arche is</p>
+      <label><input type="radio" name="q1" value="A hymn recited before sacrifices"> a hymn recited before sacrifices</label>
+      <label><input type="radio" name="q1" value="The first principle or source of all things"> the first principle or source of all things</label>
+      <label><input type="radio" name="q1" value="The founding law of a city"> the founding law of a city</label>
+
+      <p><strong>2.</strong> Heraclitus and Parmenides disagree most sharply about</p>
+      <label><input type="radio" name="q2" value="Whether anything truly changes"> whether anything truly changes</label>
+      <label><input type="radio" name="q2" value="Whether water is wet"> whether water is wet</label>
+      <label><input type="radio" name="q2" value="Which city has the best temples"> which city has the best temples</label>
+
+      <p><strong>3.</strong> Zeno's halving argument is meant to show</p>
+      <label><input type="radio" name="q3" value="That everything is made of fire"> that everything is made of fire</label>
+      <label><input type="radio" name="q3" value="That the senses are the only source of knowledge"> that the senses are the only source of knowledge</label>
+      <label><input type="radio" name="q3" value="That motion leads to paradox if space divides without end"> that motion leads to paradox if space divides without end</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_presocratics";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: Your first principle",
+    text: "The first Greek philosophers asked one question before all others. What is everything made of? Before you meet them, give your own answer.",
+    mcq: ["Water", "Air", "Fire", "Number", "Tiny indivisible pieces", "Something else"],
+    requireText: true,
+    textHint: "Say why in a sentence or two."
+  },
+  milesians: {
+    title: "Stage 1: One material, many forms",
+    text: "Thales says water. Anaximenes says air, thinning into fire and thickening into wind, cloud, water, earth, and stone. You have worked the bellows and watched the forms change. Does one underlying material seem able to explain everything? Say what convinces you, or what is missing.",
+    mcq: null,
+    requireText: true,
+    textHint: "Write your answer here."
+  },
+  river: {
+    title: "Stage 2: The river",
+    text: "You stepped into the river twice. Was it the same river both times?",
+    mcq: ["Yes, the same river both times", "No, a different river each time", "The question cannot be answered until the word same is clarified"],
+    requireText: true,
+    textHint: "Defend your answer in a sentence or two."
+  },
+  gate: {
+    title: "Stage 3: The argument against motion",
+    text: "Zeno argued that you could never reach the gate, and yet here you are on the other side. State in your own words where his argument goes wrong. If you think it does not go wrong, say what that means about your senses.",
+    mcq: null,
+    requireText: true,
+    textHint: "Write your answer here."
+  },
+  revisited: {
+    title: "Stage 4: Your principle revisited",
+    text: "You began the road with an answer to the first question. You have now met the Milesians, Pythagoras, Heraclitus, Parmenides and Zeno, and the pluralists. State your principle again. You may keep your original answer or change it. Either choice can earn full credit. What matters is the defense.",
+    mcq: ["I keep my original answer", "I have changed my answer"],
+    requireText: true,
+    textHint: "State the principle and defend it."
+  }
+};
+
+const quizKeys = [
+  "The first principle or source of all things",
+  "Whether anything truly changes",
+  "That motion leads to paradox if space divides without end"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const deviceCanvas = document.getElementById("deviceCanvas");
+const dctx = deviceCanvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const deviceOverlay = document.getElementById("deviceOverlay");
+const deviceTitle = document.getElementById("deviceTitle");
+const deviceCaption = document.getElementById("deviceCaption");
+const deviceButtons = document.getElementById("deviceButtons");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* =========================================================
+   World definition
+   Stations along the road, left to right: olive grove and start,
+   the Milesian station (Thales, three examine spots, the bellows),
+   the monochord of Pythagoras, the river of Heraclitus, the
+   colonnade and gate of Zeno, Parmenides beyond the gate, then the
+   three answerers spaced along the stoa, and the road marker.
+   ========================================================= */
+const W = 900, H = 500;
+const WORLD_W = 3400;
+const GROUND = 430;
+const RIVER = { x0: 1500, x1: 1650, mid: 1575 };
+const GATE_X = 2306;
+const ZENO_START = 2050;
+const BELLOWS = { x: 1185 };
+const MONO = { x: 1425 };
+const BASIN = { x: 2520 };
+
+function groundY(x) {
+  if (x >= RIVER.x0 && x < RIVER.x1) return GROUND + 14;
+  return GROUND;
+}
+
+/* =========================================================
+   Game state
+   ========================================================= */
+const flags = {
+  started: false,
+  firstDone: false,
+  thalesMet: false,
+  anaximenesMet: false,
+  milesiansDone: false,
+  pythagorasMet: false,
+  heraclitusMet: false,
+  riverDone: false,
+  zenoIntroDone: false,
+  zenoTalked: false,
+  gateDone: false,
+  parmenidesMet: false,
+  empedoclesMet: false,
+  anaxagorasMet: false,
+  democritusMet: false,
+  markerMet: false,
+  finalDone: false
+};
+let paused = false;
+let startTimer = 0;
+let lastBump = -10;
+
+const player = {
+  x: 140, y: GROUND, vx: 0, vy: 0,
+  onGround: true, facing: 1, color: "#b5563c", canMove: false
+};
+
+const keys = {};
+
+const record = {
+  examined: new Set(),
+  bellowsStates: new Set(),
+  crossings: 0,
+  lastSide: "west",
+  pluckedPositions: new Set(),
+  loveUsed: false,
+  strifeUsed: false,
+  atomViewUsed: false,
+  zenoReply: null
+};
+
+const bellowsStates = ["stone", "earth", "water", "cloud", "wind", "air", "fire"];
+
+const spots = [
+  { id: "olive", x: 780,  label: "the olive tree" },
+  { id: "pot",   x: 1010, label: "the pot over the fire" },
+  { id: "jar",   x: 1080, label: "the jar of ice" }
+];
+
+const MONO_FRACS = [1, 0.75, 2 / 3, 0.5];
+const MONO_TEXT = [
+  "The whole string sounds. Ratio 1 to 1.",
+  "Three quarters of the string sounds. Ratio 4 to 3, the fourth.",
+  "Two thirds of the string sounds. Ratio 3 to 2, the fifth.",
+  "Half the string sounds. Ratio 2 to 1, the octave."
+];
+
+/* The device panel: one overlay reused by three machines. */
+const device = {
+  mode: null,            // "bellows" | "monochord" | "basin"
+  bIndex: 2, bFrom: 2, bMorph: 1, squeeze: 0, press: 0,
+  mIndex: 0, mPos: 1, pluck: 0,
+  mix: 0, mixTarget: 0
+};
+let deviceOpen = false;
+let closeBtn = null;
+
+// Democritus and the close look.
+let atomView = 0;
+
+// Zeno's corridor.
+const zeno = { active: false, remaining: 0, presses: 0 };
+
+// Figures on the road.
+const npcs = {
+  thales:      { x: 905,  color: "#7a6f9e" },
+  anaximenes:  { x: 1140, color: "#5f7a9e" },
+  pythagoras:  { x: 1385, color: "#9e7a5f" },
+  heraclitus:  { x: 1780, color: "#9e5f5f" },
+  zeno:        { x: 2085, color: "#6f6f6f" },
+  parmenides:  { x: 2360, color: "#8f8fa8" },
+  empedocles:  { x: 2480, color: "#7a9e5f" },
+  anaxagoras:  { x: 2660, color: "#5f9e8a" },
+  democritus:  { x: 2820, color: "#8a8a5f" }
+};
+
+// Slow clouds instead of a horizon strip.
+const clouds = [
+  { x: 150, y: 62, s: 1.0 }, { x: 560, y: 108, s: 0.8 }, { x: 980, y: 55, s: 1.2 },
+  { x: 1420, y: 95, s: 0.9 }, { x: 1860, y: 66, s: 1.1 }, { x: 2300, y: 110, s: 0.8 },
+  { x: 2740, y: 58, s: 1.0 }, { x: 3180, y: 92, s: 0.9 }
+];
+
+/* =========================================================
+   Narration
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  const u = new SpeechSynthesisUtterance(p.title + ". " + p.text);
+  speechSynthesis.speak(u);
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+/* =========================================================
+   Sound for the monochord
+   ========================================================= */
+let audioCtx = null;
+function playTone(freq) {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = "sine";
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(0.16, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    o.start();
+    o.stop(audioCtx.currentTime + 0.85);
+  } catch (err) { /* sound is optional */ }
+}
+
+/* =========================================================
+   Help panel
+   ========================================================= */
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.milesiansDone) return "Walk right to meet Thales and press E at his three marked spots. Anaximenes then opens his bench in a panel: the press thickens the material and the bellows thins it, and the panel asks you to move it through at least three forms.";
+  if (!flags.riverDone) return "Pythagoras will show you the monochord on the way, and its panel asks for two plucks at different bridge positions. Then wade across the river, wade back, and speak with Heraclitus on the far bank.";
+  if (!flags.gateDone) return "In the colonnade, each press of the right arrow covers half of the remaining distance to the gate. Keep pressing and see what happens.";
+  if (!flags.finalDone) return "Parmenides waits beyond the gate, then three answerers along the stoa. The basin opens a panel and asks you to use Love and Strife once each. Press E beside Democritus for the close look, then walk to the road marker.";
+  return "The journey is complete. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+/* =========================================================
+   Dialogue engine
+   ========================================================= */
+let dlg = null;
+let dialogueActive = false;
+
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  const replies = (typeof c.reply === "function" ? c.reply(dlg.tags) : c.reply).map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+
+
+/* =========================================================
+   Dialogue content
+   ========================================================= */
+function dlgThales() {
+  flags.thalesMet = true;
+  startDlg([
+    { say: "Thales of Miletus: Welcome, traveler. I say that everything is water." },
+    { say: "Thales: Before you laugh, look for yourself. Press E at the marked spots along this stretch of road. When you have seen them, my student's student Anaximenes will want a word with you." },
+    { say: "Thales: One more thing. Watch where you walk. I once studied the stars so closely that I walked straight into a well." }
+  ], () => {
+    setObjective("Press E at the three marked spots. Anaximenes waits beyond them.");
+  });
+}
+function dlgAnaximenes() {
+  flags.anaximenesMet = true;
+  startDlg([
+    { say: "Anaximenes of Miletus: So Thales showed you his water. I say the underlying material is air, and I say the only changes there are, are thickening and thinning." },
+    { say: "Anaximenes: Thinned, air kindles into fire. Thickened, it becomes wind, then cloud, then water, then earth, then stone at last. My bench will show you. Turn the press to thicken the material, or pump the bellows to thin it." }
+  ], () => openDevice("bellows"));
+}
+function dlgPythagoras() {
+  flags.pythagorasMet = true;
+  startDlg([
+    { say: "Pythagoras of Samos: Number is the principle of all things, traveler." },
+    { say: "Pythagoras: Words are cheap, so hear it instead. This is a monochord, a single string over a movable bridge. Come and try the ratios for yourself." }
+  ], () => openDevice("monochord"));
+}
+function dlgHeraclitus() {
+  flags.heraclitusMet = true;
+  startDlg([
+    { say: "Heraclitus of Ephesus: You have stepped into this river twice. Was it the same river both times?",
+      choices: [
+        { text: "Yes. The banks have not moved. It is the same river.",
+          tag: "same",
+          reply: ["Heraclitus: The banks are not the river. The water is, and that water has already gone down to the sea."] },
+        { text: "No. The water is different, so the river is different.",
+          tag: "different",
+          reply: ["Heraclitus: Then nothing you will ever touch is the same thing twice. Everything flows."] }
+      ] },
+    { say: "Heraclitus: The world is an ever living fire, kindling in measures and going out in measures. Strife between opposites keeps the balance. Now go and meet the men who think I am mad." }
+  ], () => openPrompt("river", afterRiver));
+}
+function dlgZenoIntro() {
+  flags.zenoIntroDone = true;
+  startDlg([
+    { say: "Zeno of Elea: The gate of my teacher stands ahead of you. Walk to it, if you can." }
+  ], () => {
+    setObjective("Walk toward the gate with the right arrow key and watch the distance that remains.");
+  });
+}
+function dlgZenoMain() {
+  flags.zenoTalked = true;
+  startDlg([
+    { say: "Zeno: You have noticed. Before you reach the gate you must reach the halfway point. Before that, halfway to it. The steps never end, so you never arrive." },
+    { say: "Zeno: My teacher Parmenides concludes that motion and change are appearances. What truly is, is one, whole, and unmoving. What do you say?",
+      choices: [
+        { text: "You are right. My senses must be deceiving me about motion.",
+          tag: "accept",
+          reply: ["Zeno: Then pass, walker who does not walk. Few accept the argument so calmly."] },
+        { text: "The steps are endless, but each takes less time than the last. Endless steps can still finish in a finite time.",
+          tag: "series",
+          reply: ["Zeno: A bold reply. Many centuries may pass before anyone can state it with full precision. Go through."] },
+        { text: "I refuse the argument. I walked here, and that is proof enough.",
+          tag: "walk",
+          reply: ["Zeno: One day a philosopher will answer me exactly that way, by standing up and walking. But walking past an argument leaves the argument standing. Go through."] }
+      ] }
+  ], tags => {
+    record.zenoReply = tags[0] ? tags[0].text : null;
+    openPrompt("gate", afterGate);
+  });
+}
+function dlgParmenides() {
+  flags.parmenidesMet = true;
+  startDlg([
+    { say: "Parmenides of Elea: So you have come through. My students are fierce, and they argue on my behalf." },
+    { say: "Parmenides: Hear the whole of it. What is, is. What is not, cannot be, and cannot even be thought. Nothing comes from nothing, so what truly is was never born and can never perish." },
+    { say: "Parmenides: Your senses report birth, death, and motion. Reason reports one whole, complete, and unmoving. When the two conflict, I follow reason. The thinkers ahead will try to save the appearances without contradicting me. Judge for yourself how they do." }
+  ], () => {
+    setObjective("Walk on along the stoa. Three thinkers there answer Parmenides in three different ways.");
+  });
+}
+function dlgEmpedocles() {
+  flags.empedoclesMet = true;
+  startDlg([
+    { say: "Empedocles of Acragas: Parmenides is half right. Nothing is truly born and nothing truly perishes." },
+    { say: "Empedocles: But there are four roots, earth, water, air, and fire, and two forces, Love and Strife. My basin will show you what birth and death really are." }
+  ], () => openDevice("basin"));
+}
+function dlgAnaxagoras() {
+  flags.anaxagorasMet = true;
+  startDlg([
+    { say: "Anaxagoras of Clazomenae: Four roots are too few. I say there is a portion of everything in everything. That is how bread can become bone and blood." },
+    { say: "Anaxagoras: And Mind, pure and unmixed, set the whole in order and keeps it turning. I also say the sun is a hot stone larger than the Peloponnese. Athens may prosecute me for it one day." }
+  ], () => {});
+}
+function dlgDemocritus() {
+  flags.democritusMet = true;
+  startDlg([
+    { say: "Democritus of Abdera: Atoms and void, friend. Unborn, imperishable little beings, just as Parmenides demands, but many of them, moving in emptiness." },
+    { say: "Democritus: Press E beside me whenever you want to look at the world closely. Then walk on. The road marker is just ahead." }
+  ], () => {
+    setObjective("Try the close look with E beside Democritus if you like, then walk right to the road marker.");
+  });
+}
+function dlgMarker() {
+  flags.markerMet = true;
+  startDlg([
+    { say: "A road marker points south. Carved into it: To Athens. Travelers say a stonemason's son there has begun stopping people in the market and asking them what they mean by their words." }
+  ], () => openPrompt("revisited", afterFinal));
+}
+
+
+/* =========================================================
+   Device panels: the bellows, the monochord, and the basin
+   ========================================================= */
+function openDevice(mode) {
+  device.mode = mode;
+  deviceOpen = true;
+  deviceButtons.innerHTML = "";
+  closeBtn = document.createElement("button");
+  closeBtn.textContent = "Close";
+  closeBtn.addEventListener("click", closeDevice);
+
+  if (mode === "bellows") {
+    deviceTitle.textContent = "The bellows of Anaximenes";
+    record.bellowsStates.add(bellowsStates[device.bIndex]);
+    const thick = document.createElement("button");
+    thick.textContent = "Turn the press to thicken it";
+    thick.addEventListener("click", () => bellowsStep(-1));
+    const thin = document.createElement("button");
+    thin.textContent = "Pump the bellows to thin it";
+    thin.addEventListener("click", () => bellowsStep(1));
+    deviceButtons.appendChild(thick);
+    deviceButtons.appendChild(thin);
+  } else if (mode === "monochord") {
+    deviceTitle.textContent = "The monochord of Pythagoras";
+    const longer = document.createElement("button");
+    longer.textContent = "Lengthen the string";
+    longer.addEventListener("click", () => monoStep(-1));
+    const shorter = document.createElement("button");
+    shorter.textContent = "Shorten the string";
+    shorter.addEventListener("click", () => monoStep(1));
+    const pluck = document.createElement("button");
+    pluck.className = "primary";
+    pluck.textContent = "Pluck";
+    pluck.addEventListener("click", doPluck);
+    deviceButtons.appendChild(longer);
+    deviceButtons.appendChild(shorter);
+    deviceButtons.appendChild(pluck);
+  } else if (mode === "basin") {
+    deviceTitle.textContent = "The mixing basin of Empedocles";
+    const love = document.createElement("button");
+    love.textContent = "Love, mix the roots";
+    love.addEventListener("click", () => {
+      device.mixTarget = 1;
+      record.loveUsed = true;
+      refreshDeviceUI();
+    });
+    const strife = document.createElement("button");
+    strife.textContent = "Strife, separate the roots";
+    strife.addEventListener("click", () => {
+      device.mixTarget = 0;
+      record.strifeUsed = true;
+      refreshDeviceUI();
+    });
+    deviceButtons.appendChild(love);
+    deviceButtons.appendChild(strife);
+  }
+  deviceButtons.appendChild(closeBtn);
+  refreshDeviceUI();
+  deviceOverlay.classList.add("open");
+}
+function deviceDoneRequirement() {
+  if (device.mode === "bellows") return record.bellowsStates.size >= 3;
+  if (device.mode === "monochord") return record.pluckedPositions.size >= 2;
+  if (device.mode === "basin") return record.loveUsed && record.strifeUsed;
+  return true;
+}
+function refreshDeviceUI() {
+  let cap = "";
+  if (device.mode === "bellows") {
+    cap = "One material runs the whole ladder, from stone up to fire. The press thickens it and the bellows thins it, and those are the only changes there are. The material is now " + bellowsStates[device.bIndex] + ".";
+    if (!deviceDoneRequirement()) cap += " Move it through at least three forms.";
+  } else if (device.mode === "monochord") {
+    cap = "One string over a movable bridge. Only the part between the peg and the bridge sounds. " + MONO_TEXT[device.mIndex];
+    if (!deviceDoneRequirement()) cap += " Pluck it at two or more bridge positions.";
+  } else if (device.mode === "basin") {
+    cap = "Four roots and two forces. What mortals call birth is mixing. What they call death is unmixing.";
+    if (!deviceDoneRequirement()) cap += " Use Love and Strife at least once each.";
+  }
+  deviceCaption.textContent = cap;
+  if (closeBtn) closeBtn.disabled = !deviceDoneRequirement();
+}
+function bellowsStep(dir) {
+  const next = device.bIndex + dir;
+  if (next < 0 || next >= bellowsStates.length) return;
+  device.bFrom = device.bIndex;
+  device.bIndex = next;
+  device.bMorph = 0;
+  if (dir > 0) device.squeeze = 1;
+  else device.press = 1;
+  record.bellowsStates.add(bellowsStates[device.bIndex]);
+  refreshDeviceUI();
+}
+function monoStep(dir) {
+  const next = device.mIndex + dir;
+  if (next < 0 || next >= MONO_FRACS.length) return;
+  device.mIndex = next;
+  refreshDeviceUI();
+}
+function doPluck() {
+  if (device.mode !== "monochord") return;
+  playTone(220 / MONO_FRACS[device.mIndex]);
+  device.pluck = 1;
+  record.pluckedPositions.add(device.mIndex);
+  refreshDeviceUI();
+}
+function closeDevice() {
+  if (!deviceDoneRequirement()) return;
+  deviceOverlay.classList.remove("open");
+  deviceOpen = false;
+  if (device.mode === "bellows") {
+    setStatus("The bellows worked one material through its forms. Thickening and thinning did all of it.");
+    checkMilesians();
+  } else if (device.mode === "monochord") {
+    setStatus("Halve the string and the note leaps an octave. The harmony followed the numbers.");
+  } else if (device.mode === "basin") {
+    setStatus("The roots joined and parted. Nothing was created and nothing was destroyed.");
+  }
+  device.mode = null;
+}
+canvas.addEventListener("pointerdown", () => {});
+deviceCanvas.addEventListener("pointerdown", ev => {
+  ev.preventDefault();
+  if (device.mode === "monochord") doPluck();
+});
+
+function updateDeviceAnim(dt) {
+  device.squeeze = Math.max(0, device.squeeze - dt * 2.4);
+  device.press = Math.max(0, device.press - dt * 2.2);
+  device.bMorph = Math.min(1, device.bMorph + dt * (REDUCED_MOTION ? 8 : 3));
+  const target = MONO_FRACS[device.mIndex];
+  device.mPos += (target - device.mPos) * Math.min(1, dt * (REDUCED_MOTION ? 12 : 6));
+  device.pluck = Math.max(0, device.pluck - dt * 1.4);
+  device.mix += (device.mixTarget - device.mix) * Math.min(1, dt * (REDUCED_MOTION ? 10 : 1.6));
+}
+
+/* Drawing inside the device panel. */
+function drawFormAt(c, x, y, form, alpha, scale, sy) {
+  c.save();
+  c.translate(x, y);
+  c.scale(scale, sy === undefined ? scale : sy);
+  c.globalAlpha = alpha;
+  if (form === "stone") { c.fillStyle = "#7d7d7d"; c.beginPath(); c.arc(0, 0, 26, 0, Math.PI * 2); c.fill(); c.fillStyle = "#8f8f8f"; c.beginPath(); c.arc(-8, -8, 9, 0, Math.PI * 2); c.fill(); }
+  if (form === "earth") { c.fillStyle = "#8a6a3f"; c.beginPath(); c.ellipse(0, 6, 32, 20, 0, 0, Math.PI * 2); c.fill(); c.fillStyle = "#9c7a4c"; c.beginPath(); c.ellipse(-6, 0, 14, 8, 0, 0, Math.PI * 2); c.fill(); }
+  if (form === "water") { c.fillStyle = "#5aa7d4"; c.beginPath(); c.ellipse(0, 8, 34, 18, 0, 0, Math.PI * 2); c.fill(); c.strokeStyle = "#9fd0ec"; c.lineWidth = 3; c.beginPath(); c.moveTo(-24, 0); c.quadraticCurveTo(-8, -8, 6, 0); c.quadraticCurveTo(18, 6, 26, 0); c.stroke(); }
+  if (form === "cloud") { c.fillStyle = "#d9dee4"; c.beginPath(); c.arc(-16, 2, 16, 0, Math.PI * 2); c.arc(8, -6, 20, 0, Math.PI * 2); c.arc(2, 10, 16, 0, Math.PI * 2); c.fill(); }
+  if (form === "wind") { c.strokeStyle = "#c6d3de"; c.lineWidth = 5; for (let i = 0; i < 3; i++) { c.beginPath(); c.moveTo(-34, -12 + i * 13); c.quadraticCurveTo(0, -22 + i * 13, 34, -12 + i * 13); c.stroke(); } }
+  if (form === "air") { c.strokeStyle = "rgba(198,211,222,0.7)"; c.lineWidth = 3; c.beginPath(); c.arc(0, 0, 26, 0, Math.PI * 2); c.stroke(); c.beginPath(); c.arc(0, 0, 14, 0, Math.PI * 2); c.stroke(); }
+  if (form === "fire") { c.fillStyle = "#ff9c3f"; c.beginPath(); c.moveTo(-22, 20); c.quadraticCurveTo(-14, -14, 0, -28); c.quadraticCurveTo(14, -14, 22, 20); c.closePath(); c.fill(); c.fillStyle = "#ffd27a"; c.beginPath(); c.moveTo(-11, 20); c.quadraticCurveTo(-5, -4, 0, -12); c.quadraticCurveTo(5, -4, 11, 20); c.closePath(); c.fill(); }
+  c.restore();
+}
+function drawDevicePanel() {
+  const c = dctx;
+  c.clearRect(0, 0, 460, 250);
+  c.fillStyle = "#121820";
+  c.fillRect(0, 0, 460, 250);
+
+  if (device.mode === "bellows") {
+    // The bellows at the left. Pumping it thins the material.
+    const sq = device.squeeze;
+    c.save();
+    c.translate(74, 152);
+    c.fillStyle = "#6a5b48";
+    c.save(); c.rotate(-0.25 + sq * 0.22); c.fillRect(-8, -8, 90, 14); c.restore();
+    c.save(); c.rotate(0.25 - sq * 0.22); c.fillRect(-8, -6, 90, 14); c.restore();
+    c.fillStyle = "#8a7a63";
+    c.save(); c.rotate(-0.25 + sq * 0.22); c.fillRect(76, -10, 8, 18); c.restore();
+    c.save(); c.rotate(0.25 - sq * 0.22); c.fillRect(76, -8, 8, 18); c.restore();
+    c.fillStyle = "#4d4336";
+    c.fillRect(-30, -6, 26, 12);
+    c.fillRect(-36, -4, 8, 8);
+    c.restore();
+    if (sq > 0.05) {
+      // Puffs of air travel from the nozzle toward the material.
+      c.fillStyle = "rgba(198,211,222," + (0.25 + sq * 0.55) + ")";
+      for (let i = 0; i < 3; i++) {
+        const prog = Math.min(1, (1 - sq) * 1.5 + i * 0.22);
+        const px = 118 + prog * 120;
+        const py = 150 - prog * 34 + Math.sin(prog * 9 + i) * 3;
+        c.beginPath();
+        c.arc(px, py, 3.5 + prog * 4, 0, Math.PI * 2);
+        c.fill();
+      }
+    }
+    // The screw press above the material. Turning it thickens.
+    const depth = Math.sin((1 - device.press) * Math.PI) * (device.press > 0 ? 1 : 0);
+    c.fillStyle = "#4d4336";
+    c.fillRect(252, 30, 10, 132);
+    c.fillRect(338, 30, 10, 132);
+    c.fillRect(246, 22, 108, 10);
+    c.fillStyle = "#8a7a63";
+    const plateY = 40 + depth * 40;
+    c.fillRect(295, 32, 10, plateY - 26);
+    c.save();
+    c.translate(300, 30);
+    c.rotate(depth * 2.2);
+    c.fillRect(-26, -4, 52, 6);
+    c.restore();
+    c.fillStyle = "#6a5b48";
+    c.fillRect(258, plateY, 84, 9);
+    // The material, crossfading between its previous and current
+    // form, squashed while the plate is down.
+    const p = device.bMorph;
+    const squash = 1 - depth * 0.22;
+    drawFormAt(c, 300, 112, bellowsStates[device.bFrom], 1 - p, 1 + 0.15 * (1 - p), (1 + 0.15 * (1 - p)) * squash);
+    drawFormAt(c, 300, 112, bellowsStates[device.bIndex], p, 0.85 + 0.15 * p, (0.85 + 0.15 * p) * squash);
+    // The ladder of forms along the bottom, current form marked.
+    c.font = "13px 'Segoe UI', sans-serif";
+    bellowsStates.forEach((s, i) => {
+      const x = 16 + i * 63;
+      if (i === device.bIndex) {
+        c.fillStyle = "#33769f";
+        c.fillRect(x - 5, 218, 60, 22);
+      }
+      c.fillStyle = i === device.bIndex ? "#eef2f6" : "#a7b4c2";
+      c.fillText(s, x, 233);
+    });
+    c.fillStyle = "#a7b4c2";
+    c.font = "12px 'Segoe UI', sans-serif";
+    c.fillText("thicker", 16, 210);
+    c.fillText("thinner", 402, 210);
+  }
+
+  if (device.mode === "monochord") {
+    // Sound box.
+    c.fillStyle = "#8a6a3f";
+    c.fillRect(40, 150, 380, 50);
+    c.fillStyle = "#6f5432";
+    c.fillRect(40, 150, 380, 8);
+    // Pegs.
+    c.fillStyle = "#4d4336";
+    c.fillRect(54, 118, 10, 36);
+    c.fillRect(414, 118, 10, 36);
+    const bx = 60 + device.mPos * 356;
+    // Full string, slack part beyond the bridge.
+    c.strokeStyle = "#7d7361";
+    c.lineWidth = 2;
+    c.beginPath(); c.moveTo(bx, 128); c.lineTo(418, 128); c.stroke();
+    // Sounding segment with the pluck wave.
+    c.strokeStyle = "#e8dcb8";
+    c.lineWidth = 3;
+    c.beginPath();
+    for (let x = 60; x <= bx; x += 4) {
+      const u = (x - 60) / Math.max(1, bx - 60);
+      const wob = REDUCED_MOTION ? 0 : Math.sin(t * 42) * 9 * device.pluck * Math.sin(Math.PI * u);
+      const y = 128 + wob;
+      if (x === 60) c.moveTo(x, y); else c.lineTo(x, y);
+    }
+    c.stroke();
+    // The movable bridge.
+    c.fillStyle = "#cfd6dd";
+    c.beginPath();
+    c.moveTo(bx - 9, 150); c.lineTo(bx + 9, 150); c.lineTo(bx, 126);
+    c.closePath(); c.fill();
+    // Ratio marks along the box.
+    c.font = "12px 'Segoe UI', sans-serif";
+    const markLabels = ["1", "3/4", "2/3", "1/2"];
+    MONO_FRACS.forEach((f, i) => {
+      const mx = 60 + f * 356;
+      c.strokeStyle = "#33405a";
+      c.lineWidth = 2;
+      c.beginPath(); c.moveTo(mx, 200); c.lineTo(mx, 210); c.stroke();
+      c.fillStyle = i === device.mIndex ? "#5aa7d4" : "#a7b4c2";
+      c.fillText(markLabels[i], mx - 8, 226);
+    });
+    c.fillStyle = "#a7b4c2";
+    c.fillText("Click the string to pluck it.", 60, 60);
+  }
+
+  if (device.mode === "basin") {
+    // The basin bowl.
+    c.fillStyle = "#9aa4af";
+    c.beginPath(); c.ellipse(230, 200, 180, 34, 0, 0, Math.PI * 2); c.fill();
+    c.fillStyle = "#7d8794";
+    c.beginPath(); c.ellipse(230, 194, 165, 26, 0, 0, Math.PI * 2); c.fill();
+    // Four roots, drifting between their corners and the center.
+    const roots = [
+      { name: "earth", color: "#8a6a3f", ax: 110, ay: 120 },
+      { name: "water", color: "#5aa7d4", ax: 350, ay: 120 },
+      { name: "air",   color: "#d9dee4", ax: 160, ay: 66 },
+      { name: "fire",  color: "#ff9c3f", ax: 300, ay: 66 }
+    ];
+    const mix = device.mix;
+    roots.forEach((r, ri) => {
+      const cx2 = r.ax + (230 - r.ax) * mix;
+      const cy2 = r.ay + (140 - r.ay) * mix;
+      c.fillStyle = r.color;
+      for (let i = 0; i < 6; i++) {
+        const ang = (i / 6) * Math.PI * 2 + ri;
+        const rad = 16 - 8 * mix;
+        const jx = REDUCED_MOTION ? 0 : Math.sin(t * 2.2 + i + ri) * 2;
+        c.beginPath();
+        c.arc(cx2 + Math.cos(ang) * rad + jx, cy2 + Math.sin(ang) * rad * 0.7, 5, 0, Math.PI * 2);
+        c.fill();
+      }
+      c.globalAlpha = Math.max(0, 1 - mix * 1.4);
+      c.fillStyle = "#a7b4c2";
+      c.font = "12px 'Segoe UI', sans-serif";
+      c.fillText(r.name, r.ax - 14, r.ay + 34);
+      c.globalAlpha = 1;
+    });
+    // When Love has done its work, a compound stands in the middle.
+    if (mix > 0.75) {
+      const a = (mix - 0.75) / 0.25;
+      c.globalAlpha = a;
+      c.strokeStyle = "#5f8a3d";
+      c.lineWidth = 4;
+      c.beginPath(); c.moveTo(230, 168); c.lineTo(230, 128); c.stroke();
+      c.fillStyle = "#5f8a3d";
+      c.beginPath(); c.ellipse(219, 148, 10, 5, -0.5, 0, Math.PI * 2); c.fill();
+      c.beginPath(); c.ellipse(241, 140, 10, 5, 0.5, 0, Math.PI * 2); c.fill();
+      c.fillStyle = "#e07a9e";
+      c.beginPath(); c.arc(230, 120, 9, 0, Math.PI * 2); c.fill();
+      c.fillStyle = "#ffd27a";
+      c.beginPath(); c.arc(230, 120, 3.5, 0, Math.PI * 2); c.fill();
+      c.globalAlpha = 1;
+    }
+  }
+}
+
+/* =========================================================
+   Reflection modal
+   ========================================================= */
+let activePrompt = null;
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+
+/* =========================================================
+   Stage flow
+   ========================================================= */
+function setObjective(t2) { objectiveEl.textContent = t2; }
+
+
+function afterFirst() {
+  flags.firstDone = true;
+  player.canMove = true;
+  setObjective("Walk right along the road. The first station belongs to the Milesians.");
+}
+function afterMilesians() {
+  flags.milesiansDone = true;
+  setObjective("Continue right. Pythagoras waits by the road with his monochord, and beyond him a river crosses your path.");
+}
+function afterRiver() {
+  flags.riverDone = true;
+  setObjective("Continue right into the marble colonnade.");
+}
+function afterGate() {
+  flags.gateDone = true;
+  setObjective("The gate stands open. Parmenides waits beyond it.");
+}
+function afterFinal() {
+  flags.finalDone = true;
+  endGame();
+}
+
+function checkMilesians() {
+  if (flags.milesiansDone || !flags.thalesMet) return;
+  if (record.examined.size >= 2 && record.bellowsStates.size >= 3) {
+    openPrompt("milesians", afterMilesians);
+  }
+}
+
+function tryInteract() {
+  if (paused || deviceOpen) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!player.canMove) return;
+
+  if (Math.abs(player.x - npcs.thales.x) < 60) {
+    if (!flags.thalesMet) { dlgThales(); }
+    else startDlg([{ say: "Thales: Look at the marked spots with E, then go and hear Anaximenes out. Water, I tell you. Water." }], () => {});
+    return;
+  }
+  if (Math.abs(player.x - npcs.anaximenes.x) < 50 && flags.anaximenesMet) {
+    startDlg([{ say: "Anaximenes: Air, thickening and thinning. Stand at the bench and press E to work it again if you doubt it." }], () => {});
+    return;
+  }
+  for (const s of spots) {
+    if (Math.abs(player.x - s.x) < 40) {
+      record.examined.add(s.id);
+      if (s.id === "olive") setStatus("The olive tree drinks water through its roots and swells with it. Cut a branch and sap runs out.");
+      if (s.id === "pot") setStatus("The water in the pot thins into mist and rises. Heat turns one form into another.");
+      if (s.id === "jar") setStatus("The water in the jar hardened overnight into ice. Cold turns one form into another.");
+      checkMilesians();
+      return;
+    }
+  }
+  if (Math.abs(player.x - BELLOWS.x) < 60) { openDevice("bellows"); return; }
+  if (Math.abs(player.x - MONO.x) < 60) { openDevice("monochord"); return; }
+  if (Math.abs(player.x - npcs.pythagoras.x) < 55) {
+    if (!flags.pythagorasMet) dlgPythagoras();
+    else startDlg([{ say: "Pythagoras: Halve the string and the note leaps an octave. Try the monochord again whenever you like." }], () => {});
+    return;
+  }
+  if (Math.abs(player.x - npcs.heraclitus.x) < 55 && !flags.heraclitusMet) {
+    if (record.crossings >= 2) { dlgHeraclitus(); }
+    else startDlg([{ say: "Heraclitus: Step into the river. Then step in again. Then we will talk." }], () => {});
+    return;
+  }
+  if (Math.abs(player.x - npcs.parmenides.x) < 55 && flags.parmenidesMet) {
+    startDlg([{ say: "Parmenides: Trust reason, traveler. The rest is mortal opinion." }], () => {});
+    return;
+  }
+  if (Math.abs(player.x - BASIN.x) < 60 && flags.empedoclesMet) { openDevice("basin"); return; }
+  if (Math.abs(player.x - npcs.anaxagoras.x) < 55 && flags.anaxagorasMet) {
+    startDlg([{ say: "Anaxagoras: A portion of everything is in everything. Think about your breakfast becoming you." }], () => {});
+    return;
+  }
+  if (Math.abs(player.x - npcs.democritus.x) < 55 && flags.democritusMet) {
+    record.atomViewUsed = true;
+    atomView = 4;
+    setStatus("Looked at closely enough, everything resolves into small indivisible pieces moving in emptiness.");
+    return;
+  }
+}
+
+function endGame() {
+  try { localStorage.setItem("phil_map_presocratics", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+/* =========================================================
+   Quiz and report
+   ========================================================= */
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "The Presocratic Philosophers, Journey Report\n";
+  text += "============================================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    text += "Response: " + r.response + "\n" + "-".repeat(50);
+  });
+  text += "\n\nActivity record:\n";
+  text += "Spots examined at the Thales station: " + record.examined.size + " of 3\n";
+  text += "Forms visited with the bellows: " + record.bellowsStates.size + " of 7\n";
+  text += "Bridge positions plucked on the monochord: " + record.pluckedPositions.size + " of 4\n";
+  text += "River crossings: " + record.crossings + "\n";
+  text += "Basin, mixed with Love: " + (record.loveUsed ? "yes" : "no") + "\n";
+  text += "Basin, separated with Strife: " + (record.strifeUsed ? "yes" : "no") + "\n";
+  text += "Close look with Democritus: " + (record.atomViewUsed ? "yes" : "no") + "\n";
+  if (record.zenoReply) text += "Reply chosen at the gate: " + record.zenoReply + "\n";
+  text += "\nDiscussion questions:\n";
+  text += "1. Observation or argument, which impressed you more?\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. One ordinary thing, read through Heraclitus and through Parmenides.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. One consideration that would count against your final principle.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Presocratics_Journey_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+function zenoPress() {
+  zeno.remaining /= 2;
+  zeno.presses++;
+  player.x = GATE_X - 24 - zeno.remaining;
+  setStatus("Each step covers half of what remains. " + (zeno.remaining / 16).toFixed(2) + " paces to the gate.");
+  if (zeno.presses >= 6) dlgZenoMain();
+}
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open") || deviceOpen) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k === "1" || k === "2" || k === "3") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright", "arrowup"].includes(k)) e.preventDefault();
+  if (k === "arrowright" && !e.repeat && zeno.active && !flags.zenoTalked) { zenoPress(); return; }
+  keys[k] = true;
+  if (k === "e") tryInteract();
+  if (k === "r") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (deviceOpen) return;
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    if (k === "arrowright" && zeno.active && !flags.zenoTalked) { zenoPress(); return; }
+    keys[k] = true;
+    if (k === "e" || k === "r") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  updateDeviceAnim(dt);
+  if (!flags.started || paused || deviceOpen) return;
+
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) openPrompt("first", afterFirst);
+  }
+
+  // Movement. Normal rightward walking is suspended inside Zeno's
+  // corridor, where only discrete halving presses move the player.
+  const speed = 220;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"] && !(zeno.active && !flags.zenoTalked)) { player.vx = speed; player.facing = 1; }
+    if (keys["arrowup"] && player.onGround) { player.vy = -420; player.onGround = false; }
+  }
+  player.vy += 1200 * dt;
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+  player.y += player.vy * dt;
+
+  if (player.x < 60) player.x = 60;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+
+  // Thales greets the traveler on approach.
+  if (flags.firstDone && !flags.thalesMet && !dialogueActive && player.x > 868) {
+    player.x = Math.min(player.x, 868);
+    dlgThales();
+  }
+  // Anaximenes stands between the marked spots and his bench. He
+  // will not let the traveler at the device until the spots have
+  // been seen, and he introduces his own view before it opens.
+  if (flags.thalesMet && !flags.anaximenesMet && player.x > 1122) {
+    player.x = 1122;
+    if (record.examined.size >= 2) {
+      if (!dialogueActive) dlgAnaximenes();
+    } else if (t - lastBump > 1.6) {
+      lastBump = t;
+      setStatus("Anaximenes: Thales spoke first. Look at his marked spots with E, then come and work my bench.");
+    }
+  }
+  // Pythagoras stops the traveler on the way to the river.
+  if (flags.milesiansDone && !flags.pythagorasMet && !dialogueActive && player.x > 1348) {
+    player.x = Math.min(player.x, 1348);
+    dlgPythagoras();
+  }
+  // Parmenides waits just beyond the gate.
+  if (flags.gateDone && !flags.parmenidesMet && !dialogueActive && player.x > 2332) {
+    player.x = Math.min(player.x, 2332);
+    dlgParmenides();
+  }
+  // The three answerers along the stoa, each in turn.
+  if (flags.parmenidesMet && !flags.empedoclesMet && !dialogueActive && player.x > 2445) {
+    player.x = Math.min(player.x, 2445);
+    dlgEmpedocles();
+  }
+  if (flags.empedoclesMet && !flags.anaxagorasMet && !dialogueActive && player.x > 2625) {
+    player.x = Math.min(player.x, 2625);
+    dlgAnaxagoras();
+  }
+  if (flags.anaxagorasMet && !flags.democritusMet && !dialogueActive && player.x > 2785) {
+    player.x = Math.min(player.x, 2785);
+    dlgDemocritus();
+  }
+  if (flags.democritusMet && !flags.markerMet && !dialogueActive && player.x > 3040) {
+    dlgMarker();
+  }
+
+  // Station gates, enforced by the resident thinker with a reminder.
+  if (!flags.milesiansDone && player.x > 1252) {
+    player.x = 1252;
+    if (t - lastBump > 1.6) {
+      lastBump = t;
+      setStatus("Anaximenes: Answer the question first. It should be on your mind by now.");
+    }
+  }
+  if (!flags.riverDone && player.x > 1895) {
+    player.x = 1895;
+    if (t - lastBump > 1.6) {
+      lastBump = t;
+      setStatus("Heraclitus: Step into the river, step in again, and speak with me before you go on.");
+    }
+  }
+  if (!flags.gateDone && player.x > GATE_X - 24) {
+    player.x = GATE_X - 24;
+  }
+
+  // Entering and leaving the corridor.
+  if (!flags.zenoTalked && flags.riverDone) {
+    if (!zeno.active && player.x > ZENO_START && player.x < GATE_X - 30) {
+      zeno.active = true;
+      zeno.remaining = GATE_X - 24 - player.x;
+      zeno.presses = 0;
+      if (!flags.zenoIntroDone && !dialogueActive) dlgZenoIntro();
+      setStatus("Each step covers half of what remains. " + (zeno.remaining / 16).toFixed(2) + " paces to the gate.");
+    }
+    if (zeno.active && player.x < ZENO_START - 10) {
+      zeno.active = false;
+      setStatus("");
+    }
+  }
+
+  // The river: count full crossings of the midline.
+  if (player.x > RIVER.x0 && player.x < RIVER.x1) {
+    const side = player.x < RIVER.mid ? "west" : "east";
+    if (record.lastSide && record.lastSide !== side) {
+      record.crossings++;
+      if (record.crossings === 1) setStatus("You wade through the river. The water hurries past your ankles.");
+      if (record.crossings === 2) setStatus("You wade through again. The water that touched you before is far downstream by now. Heraclitus is watching from the bank.");
+    }
+    record.lastSide = side;
+  } else if (player.x < RIVER.x0 - 5 || player.x > RIVER.x1 + 5) {
+    record.lastSide = player.x < RIVER.mid ? "west" : "east";
+  }
+
+  // Ground collision.
+  const gy = groundY(player.x);
+  if (player.y >= gy) { player.y = gy; player.vy = 0; player.onGround = true; }
+  else player.onGround = false;
+
+  atomView = Math.max(0, atomView - dt);
+
+  // Camera.
+  const camTarget = Math.min(Math.max(player.x - 420, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+  camX = Math.max(0, Math.min(camX, WORLD_W - W));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawRobed(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-7, -44); ctx.lineTo(7, -44); ctx.lineTo(14, 0); ctx.lineTo(-14, 0);
+  ctx.closePath(); ctx.fill();
+  ctx.fillRect(-13, -41, 6, 17);
+  ctx.fillRect(7, -41, 6, 17);
+  ctx.restore();
+}
+function drawPlayer(p) {
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.fillStyle = p.color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawOlive(x, gy) {
+  ctx.fillStyle = "#7a6248";
+  ctx.fillRect(x - 5, gy - 62, 10, 62);
+  ctx.fillStyle = "#7d975a";
+  ctx.beginPath(); ctx.arc(x - 16, gy - 74, 20, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 14, gy - 80, 22, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x - 2, gy - 92, 18, 0, Math.PI * 2); ctx.fill();
+}
+function drawColumn(x, gy, h) {
+  ctx.fillStyle = "#cfd6dd";
+  ctx.fillRect(x - 9, gy - h, 18, h);
+  ctx.fillStyle = "#b8c0c9";
+  ctx.fillRect(x - 12, gy - h - 8, 24, 8);
+  ctx.fillRect(x - 12, gy - 6, 24, 6);
+}
+function drawSpotMarker(x, gy) {
+  ctx.strokeStyle = "rgba(90,167,212,0.9)";
+  ctx.lineWidth = 2;
+  const bob = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.beginPath();
+  ctx.arc(x, gy - 86 + bob, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(90,167,212,0.9)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, gy - 82 + bob);
+}
+function drawBellowsWorld(x, gy) {
+  // A work bench with the bellows on top and the press frame beside it.
+  ctx.fillStyle = "#8a6a3f";
+  ctx.fillRect(x - 34, gy - 26, 68, 8);
+  ctx.fillRect(x - 30, gy - 18, 7, 18);
+  ctx.fillRect(x + 23, gy - 18, 7, 18);
+  // The bellows: two boards meeting at a nozzle, with handles.
+  ctx.fillStyle = "#6a5b48";
+  ctx.save();
+  ctx.translate(x - 24, gy - 30);
+  ctx.save(); ctx.rotate(-0.3); ctx.fillRect(0, -5, 38, 8); ctx.restore();
+  ctx.save(); ctx.rotate(0.3); ctx.fillRect(0, -3, 38, 8); ctx.restore();
+  ctx.fillStyle = "#4d4336";
+  ctx.fillRect(-10, -3, 10, 6);
+  ctx.restore();
+  // The press: two posts, a beam, and a plate over the anvil block.
+  ctx.fillStyle = "#4d4336";
+  ctx.fillRect(x + 6, gy - 62, 5, 36);
+  ctx.fillRect(x + 30, gy - 62, 5, 36);
+  ctx.fillRect(x + 3, gy - 66, 35, 5);
+  ctx.fillStyle = "#8a7a63";
+  ctx.fillRect(x + 9, gy - 52, 23, 4);
+  // The material in its current form, shown as itself above the bench.
+  drawFormAt(ctx, x - 12, gy - 48, bellowsStates[device.bIndex], 1, 0.45);
+}
+function drawMonoTable(x, gy) {
+  ctx.fillStyle = "#8a6a3f";
+  ctx.fillRect(x - 44, gy - 44, 88, 10);
+  ctx.fillRect(x - 38, gy - 34, 8, 34);
+  ctx.fillRect(x + 30, gy - 34, 8, 34);
+  ctx.strokeStyle = "#e8dcb8";
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x - 40, gy - 48); ctx.lineTo(x + 40, gy - 48); ctx.stroke();
+  ctx.fillStyle = "#cfd6dd";
+  ctx.beginPath();
+  ctx.moveTo(x + 4, gy - 44); ctx.lineTo(x + 16, gy - 44); ctx.lineTo(x + 10, gy - 50);
+  ctx.closePath(); ctx.fill();
+}
+function drawRiver(gy) {
+  const hues = ["#4d7fb5", "#4d9fb0", "#57b09a", "#4d8fb5"];
+  const c = hues[Math.min(record.crossings, hues.length - 1)];
+  ctx.fillStyle = c;
+  ctx.fillRect(RIVER.x0, gy + 6, RIVER.x1 - RIVER.x0, H - gy);
+  ctx.strokeStyle = "rgba(230,244,255,0.5)";
+  ctx.lineWidth = 1.5;
+  for (let r = 0; r < 3; r++) {
+    ctx.beginPath();
+    for (let x = RIVER.x0; x <= RIVER.x1; x += 10) {
+      const y = gy + 14 + r * 12 + Math.sin(t * (REDUCED_MOTION ? 0.5 : 2.2) + x * 0.09 + r * 2 + record.crossings) * 2;
+      if (x === RIVER.x0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+}
+function drawGateDoors(gy) {
+  drawColumn(GATE_X - 26, gy, 130);
+  drawColumn(GATE_X + 26, gy, 130);
+  ctx.fillStyle = "#cfd6dd";
+  ctx.fillRect(GATE_X - 40, gy - 146, 80, 12);
+  if (!flags.gateDone) {
+    ctx.fillStyle = "#5b4a36";
+    ctx.fillRect(GATE_X - 17, gy - 128, 16, 128);
+    ctx.fillRect(GATE_X + 1, gy - 128, 16, 128);
+    ctx.strokeStyle = "#8a7a63";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(GATE_X - 17, gy - 128, 16, 128);
+    ctx.strokeRect(GATE_X + 1, gy - 128, 16, 128);
+  } else {
+    ctx.save();
+    ctx.fillStyle = "#5b4a36";
+    ctx.translate(GATE_X - 17, gy);
+    ctx.rotate(0.5);
+    ctx.fillRect(-16, -128, 16, 128);
+    ctx.restore();
+    ctx.save();
+    ctx.fillStyle = "#5b4a36";
+    ctx.translate(GATE_X + 17, gy);
+    ctx.rotate(-0.5);
+    ctx.fillRect(0, -128, 16, 128);
+    ctx.restore();
+  }
+}
+function drawBasinWorld(x, gy) {
+  ctx.fillStyle = "#9aa4af";
+  ctx.beginPath();
+  ctx.ellipse(x, gy - 34, 34, 10, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#7d8794";
+  ctx.fillRect(x - 6, gy - 30, 12, 30);
+  const roots = ["#8a6a3f", "#5aa7d4", "#d9dee4", "#ff9c3f"];
+  const mix = device.mix;
+  for (let i = 0; i < 4; i++) {
+    ctx.fillStyle = roots[i];
+    const sep = 5 + 12 * (1 - mix), ang = (i / 4) * Math.PI * 2 + 0.6;
+    ctx.beginPath();
+    ctx.arc(x + Math.cos(ang) * sep, gy - 38 + Math.sin(ang) * 3, 5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+function drawMarkerBig(x, gy) {
+  ctx.fillStyle = "#cfd6dd";
+  ctx.fillRect(x - 9, gy - 92, 18, 92);
+  ctx.fillStyle = "#e8e4d0";
+  ctx.fillRect(x - 52, gy - 84, 104, 32);
+  ctx.strokeStyle = "#6a6a5a";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x - 52, gy - 84, 104, 32);
+  ctx.fillStyle = "#2b2b2b";
+  ctx.font = "bold 14px Georgia, serif";
+  ctx.textAlign = "center";
+  ctx.fillText("TO ATHENS", x, gy - 63);
+  ctx.textAlign = "left";
+}
+function drawCloud(sx, sy, s, alpha) {
+  ctx.fillStyle = "rgba(255,255,255," + alpha + ")";
+  ctx.beginPath();
+  ctx.arc(sx, sy, 18 * s, 0, Math.PI * 2);
+  ctx.arc(sx + 22 * s, sy - 6 * s, 15 * s, 0, Math.PI * 2);
+  ctx.arc(sx + 42 * s, sy + 2 * s, 13 * s, 0, Math.PI * 2);
+  ctx.arc(sx + 20 * s, sy + 8 * s, 14 * s, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // Sky.
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, "#8fc5e8");
+  sky.addColorStop(0.7, "#cfe7f5");
+  sky.addColorStop(1, "#e8e4c9");
+  ctx.fillStyle = sky;
+  ctx.fillRect(camX, 0, W, H);
+
+  // Sun.
+  ctx.fillStyle = "#fff3c9";
+  ctx.beginPath(); ctx.arc(camX + 780, 70, 30, 0, Math.PI * 2); ctx.fill();
+
+  // Clouds drifting slowly across the sky.
+  const drift = t * (REDUCED_MOTION ? 2 : 7);
+  clouds.forEach(c => {
+    const wx = ((c.x + drift) % (WORLD_W + 400)) - 200;
+    const sx = wx - camX * 0.45 + camX; // parallax against the camera
+    drawCloud(sx, c.y, c.s, 0.85);
+  });
+
+  // Ground.
+  ctx.fillStyle = "#c9b98a";
+  ctx.fillRect(0, GROUND, WORLD_W, H - GROUND);
+  ctx.fillStyle = "#a89a6e";
+  ctx.fillRect(0, GROUND, WORLD_W, 8);
+
+  drawRiver(GROUND);
+
+  // Olives and the Thales station.
+  drawOlive(220, GROUND);
+  drawOlive(520, GROUND);
+  drawOlive(780, GROUND);
+  // The well Thales fell into: stone courses, posts, a crossbar,
+  // and a bucket on a rope.
+  ctx.fillStyle = "#9aa4af";
+  ctx.fillRect(950 - 18, GROUND - 28, 36, 28);
+  ctx.fillStyle = "#0c1016";
+  ctx.fillRect(950 - 11, GROUND - 22, 22, 16);
+  ctx.strokeStyle = "#7c8792";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(950 - 18, GROUND - 14); ctx.lineTo(950 - 11, GROUND - 14);
+  ctx.moveTo(950 + 11, GROUND - 14); ctx.lineTo(950 + 18, GROUND - 14);
+  ctx.moveTo(950 - 18, GROUND - 7); ctx.lineTo(950 - 11, GROUND - 7);
+  ctx.moveTo(950 + 11, GROUND - 7); ctx.lineTo(950 + 18, GROUND - 7);
+  ctx.stroke();
+  ctx.fillStyle = "#6a5b48";
+  ctx.fillRect(950 - 20, GROUND - 58, 4, 30);
+  ctx.fillRect(950 + 16, GROUND - 58, 4, 30);
+  ctx.fillRect(950 - 22, GROUND - 60, 44, 4);
+  ctx.strokeStyle = "#c9b98a";
+  ctx.beginPath();
+  ctx.moveTo(950, GROUND - 56); ctx.lineTo(950, GROUND - 40);
+  ctx.stroke();
+  ctx.fillStyle = "#8a7a63";
+  ctx.fillRect(950 - 4, GROUND - 40, 8, 7);
+  // The cauldron: a bronze pot on three legs over a fire.
+  ctx.fillStyle = "#4a300f";
+  ctx.fillRect(1002, GROUND - 5, 18, 5);
+  ctx.fillStyle = "#ff9c3f";
+  ctx.beginPath();
+  ctx.moveTo(1004, GROUND - 4);
+  ctx.quadraticCurveTo(1008, GROUND - 18, 1011, GROUND - 22);
+  ctx.quadraticCurveTo(1014, GROUND - 18, 1018, GROUND - 4);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#ffd27a";
+  ctx.beginPath();
+  ctx.moveTo(1008, GROUND - 4);
+  ctx.quadraticCurveTo(1011, GROUND - 12, 1014, GROUND - 4);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = "#5c5346";
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(1004, GROUND); ctx.lineTo(1008, GROUND - 20);
+  ctx.moveTo(1018, GROUND); ctx.lineTo(1014, GROUND - 20);
+  ctx.moveTo(1011, GROUND); ctx.lineTo(1011, GROUND - 18);
+  ctx.stroke();
+  ctx.fillStyle = "#7a6a52";
+  ctx.beginPath();
+  ctx.moveTo(1000, GROUND - 24);
+  ctx.quadraticCurveTo(1011, GROUND - 40, 1022, GROUND - 24);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#8f7d61";
+  ctx.fillRect(998, GROUND - 30, 26, 4);
+  ctx.strokeStyle = "#8f7d61";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(997, GROUND - 27, 3, 0, Math.PI * 2);
+  ctx.arc(1025, GROUND - 27, 3, 0, Math.PI * 2);
+  ctx.stroke();
+  if (!REDUCED_MOTION) {
+    ctx.strokeStyle = "rgba(220,228,236,0.6)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(1011, GROUND - 36);
+    ctx.quadraticCurveTo(1017 + Math.sin(t * 2) * 4, GROUND - 52, 1011, GROUND - 66);
+    ctx.stroke();
+  }
+  // The jar of ice, frosted at the mouth.
+  ctx.fillStyle = "#c9803c";
+  ctx.beginPath(); ctx.ellipse(1080, GROUND - 14, 10, 14, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#d8ecf7";
+  ctx.fillRect(1073, GROUND - 26, 14, 6);
+  ctx.fillStyle = "rgba(238,248,255,0.9)";
+  ctx.beginPath();
+  ctx.arc(1075, GROUND - 27, 1.5, 0, Math.PI * 2);
+  ctx.arc(1081, GROUND - 29, 1.5, 0, Math.PI * 2);
+  ctx.arc(1086, GROUND - 26, 1.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  if (flags.firstDone && !flags.milesiansDone) {
+    spots.forEach(s => { if (!record.examined.has(s.id)) drawSpotMarker(s.x, GROUND); });
+  }
+
+  drawBellowsWorld(BELLOWS.x, GROUND);
+  drawMonoTable(MONO.x, GROUND);
+  drawGateDoors(GROUND);
+
+  for (let cx2 = ZENO_START + 20; cx2 < GATE_X - 60; cx2 += 70) drawColumn(cx2, GROUND, 110);
+
+  // The stoa, spread so each answerer has his own place.
+  for (let cx3 = 2440; cx3 <= 2900; cx3 += 92) drawColumn(cx3, GROUND, 120);
+  ctx.fillStyle = "#cfd6dd";
+  ctx.fillRect(2420, GROUND - 138, 500, 12);
+  drawBasinWorld(BASIN.x, GROUND);
+  drawMarkerBig(3080, GROUND);
+
+  drawRobed(npcs.thales.x, GROUND, npcs.thales.color, -1);
+  drawRobed(npcs.anaximenes.x, GROUND, npcs.anaximenes.color, -1);
+  drawRobed(npcs.pythagoras.x, GROUND, npcs.pythagoras.color, -1);
+  drawRobed(npcs.heraclitus.x, GROUND, npcs.heraclitus.color, -1);
+  drawRobed(npcs.zeno.x, GROUND, npcs.zeno.color, 1);
+  drawRobed(npcs.parmenides.x, GROUND, npcs.parmenides.color, 1);
+  drawRobed(npcs.empedocles.x, GROUND, npcs.empedocles.color, 1);
+  drawRobed(npcs.anaxagoras.x, GROUND, npcs.anaxagoras.color, -1);
+  drawRobed(npcs.democritus.x, GROUND, npcs.democritus.color, -1);
+
+  drawPlayer(player);
+
+  ctx.restore();
+
+  // The close look of Democritus.
+  if (atomView > 0) {
+    const a = Math.min(atomView, 1) * 0.85;
+    ctx.fillStyle = "rgba(10,12,16," + a + ")";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "rgba(238,242,246," + a + ")";
+    for (let gx = 15; gx < W; gx += 30) {
+      for (let gyy = 15; gyy < H; gyy += 30) {
+        const jx = REDUCED_MOTION ? 0 : Math.sin(t * 6 + gx * 0.7 + gyy) * 4;
+        const jy = REDUCED_MOTION ? 0 : Math.cos(t * 5 + gyy * 0.7) * 4;
+        ctx.beginPath();
+        ctx.arc(gx + jx, gyy + jy, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.font = "14px 'Segoe UI', sans-serif";
+    ctx.fillText("atoms and void", 20, H - 20);
+  }
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(12,16,22,0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#eef2f6";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("The Presocratic Philosophers", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#a7b4c2";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+
+  if (deviceOpen) drawDevicePanel();
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You stand on a road on the Ionian coast. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

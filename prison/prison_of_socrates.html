@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Prison of Socrates</title>
+<style>
+:root{
+  --page:#101318;
+  --panel:#181d25;
+  --panel-2:#222935;
+  --line:#38445a;
+  --text:#eef1f5;
+  --muted:#a5b0bf;
+  --slate:#9db4c9;
+  --slate-deep:#5f7690;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2b3444}
+button.primary{background:var(--slate); border-color:var(--slate-deep); color:#101820; font-weight:600}
+button.primary:hover{background:#b8cadb}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--slate); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0d1015; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--slate-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#1b2330; border-color:var(--slate)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--slate); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--slate)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--slate)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#0f1319; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--slate)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--slate); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#0f1319; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--slate)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--slate); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--slate)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>The Prison of Socrates</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>Athens, 399 BC, a month after the verdict. The execution has waited because the city's sacred ship was at sea on its mission to Delos, and no execution is allowed until it returns. Yesterday it came in. You cast a ballot at the trial, and today you go to the state prison, where the jailer admits the visitors. Inside, his friends want him to escape, and he answers them. Walk with the arrow keys, press E to talk and to take a place among the visitors, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you, and advances the day from your place among the visitors. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The next stop on the map is Aristotle at the Lyceum.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Compare Socrates' position, obey the law or persuade the city to change it, with a modern movement that broke laws openly and accepted arrest. Are these the same position or different ones? Say where they agree and where they part.</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. The Laws argue that by staying in Athens for seventy years, Socrates agreed to obey them. Does living somewhere amount to agreeing to its laws? What would real agreement require?</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. Our detailed account of this day comes from Plato, who records that he was not there. How should a careful reader weigh a source that is honest about its own distance from the events?</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> The execution was delayed for a month because</p>
+      <label><input type="radio" name="q1" value="The city's sacred ship was on its mission to Delos"> the city's sacred ship was on its mission to Delos</label>
+      <label><input type="radio" name="q1" value="The jury demanded a retrial"> the jury demanded a retrial</label>
+      <label><input type="radio" name="q1" value="Socrates was granted an appeal"> Socrates was granted an appeal</label>
+
+      <p><strong>2.</strong> In the prison, Crito urged Socrates to</p>
+      <label><input type="radio" name="q2" value="Escape, with money and a route already arranged"> escape, with money and a route already arranged</label>
+      <label><input type="radio" name="q2" value="Appeal to the Areopagus"> appeal to the Areopagus</label>
+      <label><input type="radio" name="q2" value="Beg the archons for mercy"> beg the archons for mercy</label>
+
+      <p><strong>3.</strong> Socrates' last recorded words concerned</p>
+      <label><input type="radio" name="q3" value="A debt of a rooster owed to Asclepius"> a debt of a rooster owed to Asclepius</label>
+      <label><input type="radio" name="q3" value="A message for the jury"> a message for the jury</label>
+      <label><input type="radio" name="q3" value="The location of his writings"> the location of his writings</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_phaedo";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: Before the door",
+    text: "You believe what you believe about the verdict. Today the sentence will be carried out. Should a citizen obey a verdict they believe is unjust?",
+    mcq: ["Yes: verdicts bind even when wrong, or the courts mean nothing", "No: an unjust verdict has no claim on anyone", "Obey it, while openly working to change the law", "It depends on how severe the injustice is"],
+    requireText: true
+  },
+  obey: {
+    title: "Stage 1: Persuade or obey",
+    text: "The Laws, as Socrates voices them, say a citizen who stays has two options: persuade the city that it is wrong, or obey it. Escape is neither. Is there a duty to obey laws you believe are wrong, if you freely chose to stay under them?",
+    mcq: ["Yes, and Socrates is right to stay", "No: an unjust sentence releases the citizen", "The duty is real but has limits, and death is past them", "Staying is not the same as agreeing, so the argument fails"],
+    requireText: true
+  },
+  sources: {
+    title: "Stage 2: The missing witness",
+    text: "The detailed account of this day comes from Plato's Phaedo, and in it Plato records that he himself was absent, sick that day. What does an author's admitted absence do to the account?",
+    mcq: ["It weakens it: the key scene is secondhand", "It supports trust: an inventor would have written himself in", "Both at once, and a reader has to weigh them"],
+    requireText: true
+  },
+  asclepius: {
+    title: "Stage 3: The last words",
+    text: "Asclepius was the god of healing, and Greeks who recovered from an illness owed him an offering, often a rooster. Socrates' last words were that he owed Asclepius a rooster. Readers have argued for centuries about what the debt was for. What is your reading?",
+    mcq: ["Death is the cure: life itself was the illness", "Thanks for dying well, without fear", "Thanks for the healing of his friends, or of Athens", "A plain debt from a real illness, and nothing more", "The words are open, and that is why they last"],
+    requireText: true
+  },
+  ballot: {
+    title: "Stage 4: Your ballot",
+    text: "You cast a ballot in this man's trial, and you watched the sentence carried out. Write what you would say now, to him or to the city.",
+    mcq: null,
+    requireText: true,
+    textHint: "A few honest sentences."
+  }
+};
+
+const quizKeys = [
+  "The city's sacred ship was on its mission to Delos",
+  "Escape, with money and a route already arranged",
+  "A debt of a rooster owed to Asclepius"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world: the street, the door, and the cell beyond it,
+   drawn with the wall cut away.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 1250;
+const DOOR_X = 560;
+const VISITOR_X = 960;   // the open place among the visitors
+
+const flags = {
+  started: false,
+  firstDone: false,    // stage 0
+  jailerMet: false,
+  tookPlace: false,
+  critoDone: false,
+  obeyDone: false,     // stage 1
+  sourcesDone: false,  // stage 2
+  cupDone: false,
+  asclepiusDone: false,// stage 3
+  finalDone: false
+};
+let paused = false;
+let startTimer = 0;
+let dayPhase = 0;      // 0 midday, 1 afternoon, 2 late, 3 sunset, 4 dusk
+let socState = "seated";  // seated | standing | lying
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  jailer: { x: 490, color: "#8f6a3b" },
+  crito:  { x: 860, color: "#7b6ea7" },
+  friend1:{ x: 1080, color: "#4f6b8f" },
+  friend2:{ x: 1130, color: "#4f6b5f" }
+};
+const keys = {};
+const record = { critoPress: null };
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration, help, dialogue, and the modal, in the shared
+   pattern of the other activities.
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  speechSynthesis.speak(new SpeechSynthesisUtterance(p.title + ". " + p.text));
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.jailerMet) return "Walk right to the prison. The jailer is at the door.";
+  if (!flags.tookPlace) return "Go inside and stand at the marked place among the visitors, then press E.";
+  if (!flags.finalDone) return "The day advances each time you press E from your place among the visitors, and the questions appear between the conversations.";
+  return "The day is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    if (dlg.steps[dlg.i].lie) socState = "lying";
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+function setObjective(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   The day's conversations
+   ========================================================= */
+function dlgJailer() {
+  flags.jailerMet = true;
+  startDlg([
+    { say: "Jailer: I remember you from the benches, juror. The ship from Delos came in yesterday evening, so today is the day. His friends have been inside since dawn. Go in. He turns no one away." },
+    { note: true, say: "The delay is a matter of law: the city holds no executions while its sacred ship is away on the annual mission to Delos, and the mission ship is the state vessel Athens preserves plank by plank, the same ship this journey crossed the Aegean aboard. Its return set today's date." }
+  ], () => {
+    setObjective("Go inside and stand at the open place among the visitors, marked with E.");
+  });
+}
+function dlgCrito() {
+  flags.critoDone = true;
+  dayPhase = 1;
+  startDlg([
+    { say: "Inside, the chains are off, and Socrates sits on the bench rubbing his leg. Crito is in the middle of an argument he has clearly been making all morning." },
+    { say: "Crito: The money is ready, and the guards can be paid. There are horses on the road and friends in Thessaly. One night, Socrates, and you are safe." },
+    { say: "Crito: Think what people will say of us, that his friends had the means and did not save him. And think of your sons, raised as orphans when their father might have lived.",
+      choices: [
+        { text: "Press Crito's point about the children.", tag: "children",
+          reply: ["Socrates: My friends will raise them, whether I go to Thessaly or somewhere further. And what would they learn from a father who taught justice in the marketplace and fled it in the dark?"] },
+        { text: "Press Crito's point about what people will say.", tag: "opinion",
+          reply: ["Socrates: Why should we care what the many say? When you trained, you listened to your trainer, not to the crowd. On questions of just and unjust, the opinion worth having is the one that understands, and the crowd does not."] }
+      ] },
+    { say: "Socrates: Now let me tell you what I keep hearing. Suppose, as I was slipping out tonight, the Laws of Athens stood in the doorway and asked: Socrates, what are you doing?" },
+    { say: "Under us you were born, raised, and married. In seventy years you never left this city, not even for a festival, though any dissatisfied man may pack his things and go." },
+    { say: "Socrates: A citizen who stays, the Laws say, has agreed to persuade us or obey us. Escape tonight and I do not injure the jurors who wronged me." },
+    { say: "I injure the Laws, and a man who destroys the laws of his city has done it a harm that outlasts him. I have never done injustice willingly, and I will not begin with my last act." }
+  ], tags => {
+    record.critoPress = tags.length ? tags[0].text : null;
+    openPrompt("obey", () => {
+      flags.obeyDone = true;
+      setObjective("Press E at your place. The afternoon passes in talk.");
+    });
+  });
+}
+function dlgSources() {
+  dayPhase = 2;
+  startDlg([
+    { say: "The afternoon fills with the old work: questions and answers about the soul, with Cebes and Simmias pressing the objections. Around the bench stand Crito, Phaedo, Apollodorus, who cannot stop weeping, and a dozen more of the circle." },
+    { say: "One name is missing from the room." },
+    { note: true, say: "The detailed account of this day is Plato's dialogue Phaedo, written as Phaedo of Elis telling the story to a friend afterward. In it, Plato sets down a plain sentence about himself: Plato, I believe, was ill. The author of the scene tells his readers he was not there to see it." }
+  ], () => {
+    openPrompt("sources", () => {
+      flags.sourcesDone = true;
+      setObjective("Press E at your place. The sun is getting low.");
+    });
+  });
+}
+function dlgCup() {
+  flags.cupDone = true;
+  dayPhase = 3;
+  socState = "standing";
+  startDlg([
+    { say: "Near sunset, the jailer comes in and stands a moment before speaking. Jailer: You will not curse me for this, as the others do." },
+    { say: "In all my time here you have been the most generous and gentlest man to enter this place. You know what I bring. Try to bear what must be borne. And he turns away in tears." },
+    { say: "Socrates: A courteous man. We will do as he says. The man with the cup explains the way of it: drink, walk until the legs grow heavy, then lie down. Socrates asks whether a libation to the gods may be poured from it." },
+    { say: "The man says he prepares only what is needed. Then a prayer will have to do, Socrates says, that the journey be fortunate. And he drinks it steadily, without a change of face." },
+    { say: "At that, the room breaks. Apollodorus' weeping sets off the others. Socrates: What a way to behave, friends. I sent the women away for this. A man should end in quiet. Bear up. And they hold their voices, ashamed." },
+    { lie: true, say: "He walks as instructed until his legs grow heavy, lies down, and draws the cover over his face. The room is quiet a long while. Then he uncovers it once more." },
+    { say: "Socrates: Crito, we owe a rooster to Asclepius. Pay the debt, and do not neglect it. Crito: It will be done. Is there anything else? There is no answer." },
+    { note: true, say: "The Phaedo closes over the scene with one sentence about the man, that of all whom his friends had known, he was the best, and the wisest, and the most just." }
+  ], () => {
+    openPrompt("asclepius", () => {
+      flags.asclepiusDone = true;
+      setObjective("Press E to step outside.");
+    });
+  });
+}
+function dlgAfter() {
+  dayPhase = 4;
+  startDlg([
+    { say: "The visitors file out into the evening. The jailer stands aside at the door and says nothing. Behind you the cell is dark, and ahead of you the city is lighting its lamps and talking about other things." }
+  ], () => {
+    openPrompt("ballot", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+function nextBeat() {
+  if (!flags.critoDone) { dlgCrito(); return; }
+  if (!flags.obeyDone) return;
+  if (!flags.sourcesDone) { dlgSources(); return; }
+  if (!flags.cupDone) { dlgCup(); return; }
+  if (!flags.finalDone) { dlgAfter(); return; }
+}
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.tookPlace) {
+    if (flags.jailerMet && Math.abs(player.x - VISITOR_X) < 30) {
+      flags.tookPlace = true;
+      setStatus("You take the place by the wall, among the visitors.");
+      setObjective("Press E to listen, and after each conversation press E again to continue the day.");
+      return;
+    }
+    if (Math.abs(player.x - npcs.jailer.x) < 50) {
+      if (!flags.jailerMet) { dlgJailer(); return; }
+      startDlg([{ say: "Jailer: Inside, juror. The place by the wall is open." }], () => {});
+      return;
+    }
+    return;
+  }
+  if (Math.abs(player.x - VISITOR_X) < 60) {
+    nextBeat();
+    return;
+  }
+  setStatus("The day continues from your place among the visitors, marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_phaedo", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    if (r.response) parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "The Prison of Socrates, Report\n";
+  text += "==============================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    if (r.response) text += "Response: " + r.response + "\n";
+    text += "-".repeat(50);
+  });
+  if (record.critoPress) text += "\n\nThe point pressed for Crito: " + record.critoPress + "\n";
+  text += "\nDiscussion questions:\n";
+  text += "1. Persuade or obey, beside modern movements.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Does staying amount to agreeing?\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. Weighing a source that admits its absence.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Prison_of_Socrates_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!flags.started || paused) return;
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right to the state prison. The jailer is at the door.");
+      });
+    }
+  }
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+  if (flags.tookPlace) player.x = VISITOR_X;
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+  // The door waits for the jailer.
+  if (!flags.jailerMet && player.x > DOOR_X - 60) player.x = DOOR_X - 60;
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+const PHASE_SKY = [
+  ["#a8cbe0", "#e2d9c2"], ["#a0c2da", "#e6d5b4"], ["#8fb0cc", "#e0c49c"],
+  ["#6d84a8", "#d99a6a"], ["#3a4a66", "#5a5a72"]
+];
+const PHASE_SHAFT = ["rgba(255,250,230,0.35)", "rgba(255,244,214,0.32)", "rgba(255,230,190,0.3)", "rgba(255,190,130,0.34)", "rgba(0,0,0,0)"];
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawRobed(x, y, color, outline) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-7, -44); ctx.lineTo(7, -44); ctx.lineTo(14, 0); ctx.lineTo(-14, 0);
+  ctx.closePath(); ctx.fill();
+  ctx.fillRect(-13, -41, 6, 17);
+  ctx.fillRect(7, -41, 6, 17);
+  if (outline) {
+    ctx.strokeStyle = "rgba(40,48,60,0.9)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-7, -44); ctx.lineTo(7, -44); ctx.lineTo(14, 0); ctx.lineTo(-14, 0);
+    ctx.closePath(); ctx.stroke();
+  }
+  ctx.restore();
+}
+function drawSocrates() {
+  const c = "#d8d2c2";
+  if (socState === "seated") {
+    ctx.fillStyle = c;
+    ctx.beginPath(); ctx.arc(920, GROUND - 58, 9, 0, Math.PI * 2); ctx.fill();
+    ctx.fillRect(912, GROUND - 50, 16, 22);
+    ctx.fillRect(912, GROUND - 28, 18, 6);
+    ctx.strokeStyle = "rgba(40,48,60,0.9)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(920, GROUND - 58, 9, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeRect(912, GROUND - 50, 16, 22);
+  } else if (socState === "standing") {
+    drawRobed(920, GROUND, c, true);
+  } else {
+    ctx.fillStyle = c;
+    ctx.fillRect(880, GROUND - 12, 56, 12);
+    ctx.strokeStyle = "rgba(40,48,60,0.9)";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(880, GROUND - 12, 56, 12);
+  }
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(157,180,201,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 66 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(157,180,201,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 62 + lift);
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // Sky by phase.
+  const ph = PHASE_SKY[dayPhase];
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, ph[0]);
+  sky.addColorStop(1, ph[1]);
+  ctx.fillStyle = sky;
+  ctx.fillRect(camX, 0, W, H);
+  ctx.fillStyle = dayPhase >= 4 ? "#3a3a44" : "#b0a184";
+  ctx.fillRect(camX, GROUND, W, H - GROUND);
+
+  // The street: houses behind, and the Acropolis in the distance.
+  ctx.fillStyle = "rgba(120,110,96,0.5)";
+  ctx.beginPath();
+  ctx.moveTo(-40, 300);
+  ctx.lineTo(30, 236);
+  ctx.lineTo(230, 232);
+  ctx.lineTo(290, 300);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "rgba(214,208,190,0.4)";
+  ctx.fillRect(96, 214, 76, 5);
+  for (let i = 0; i < 5; i++) ctx.fillRect(102 + i * 14, 219, 5, 13);
+  ctx.fillStyle = "rgba(196,186,166,0.7)";
+  ctx.fillRect(120, 340, 90, 90);
+  ctx.fillRect(260, 356, 110, 74);
+  ctx.fillStyle = "rgba(120,80,60,0.7)";
+  ctx.fillRect(150, 372, 24, 58);
+
+  // The prison, drawn with the near wall cut away from the door on.
+  ctx.fillStyle = "#7d7466";
+  ctx.fillRect(DOOR_X - 60, 220, 60, GROUND - 220);   // street-side wall
+  ctx.fillStyle = "#8d8471";
+  ctx.fillRect(DOOR_X - 60, 206, WORLD_W - DOOR_X - 20, 18);  // the long roof
+  ctx.fillStyle = "#57503f";
+  ctx.fillRect(DOOR_X - 6, 258, 44, GROUND - 258);    // the door
+  // The cell interior.
+  ctx.fillStyle = "#6a6254";
+  ctx.fillRect(DOOR_X + 40, 224, WORLD_W - DOOR_X - 80, GROUND - 224);
+  ctx.fillStyle = "#5c554a";
+  for (let bx = DOOR_X + 52; bx < WORLD_W - 60; bx += 64) {
+    ctx.fillRect(bx, 238, 50, 3);
+    ctx.fillRect(bx + 26, 288, 50, 3);
+    ctx.fillRect(bx, 338, 50, 3);
+  }
+  // The window, high in the back wall, and its shaft of light.
+  ctx.fillStyle = "#2a2f3a";
+  ctx.fillRect(900, 240, 44, 34);
+  ctx.fillStyle = PHASE_SKY[dayPhase][0];
+  ctx.fillRect(904, 244, 36, 26);
+  ctx.fillStyle = "#2a2f3a";
+  ctx.fillRect(920, 240, 4, 34);
+  if (dayPhase < 4) {
+    ctx.fillStyle = PHASE_SHAFT[dayPhase];
+    const slant = 30 + dayPhase * 34;
+    ctx.beginPath();
+    ctx.moveTo(904, 244);
+    ctx.lineTo(940, 244);
+    ctx.lineTo(940 + slant, GROUND);
+    ctx.lineTo(904 + slant - 24, GROUND);
+    ctx.closePath(); ctx.fill();
+  }
+  // The bench.
+  ctx.fillStyle = "#57503f";
+  ctx.fillRect(880, GROUND - 22, 90, 8);
+  ctx.fillRect(890, GROUND - 14, 8, 14);
+  ctx.fillRect(952, GROUND - 14, 8, 14);
+  // The cup, once it has been brought.
+  if (dayPhase >= 3) {
+    ctx.fillStyle = "#3a2f24";
+    ctx.fillRect(1004, GROUND - 30, 34, 5);
+    ctx.fillRect(1018, GROUND - 25, 6, 25);
+    ctx.fillStyle = "#8a5a33";
+    ctx.beginPath();
+    ctx.ellipse(1021, GROUND - 36, 9, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // People. Outside: the jailer. Inside: the circle.
+  drawPerson(npcs.jailer.x, GROUND, npcs.jailer.color, 1);
+  drawRobed(npcs.crito.x, GROUND, npcs.crito.color);
+  drawRobed(npcs.friend1.x, GROUND, npcs.friend1.color);
+  drawRobed(npcs.friend2.x, GROUND, npcs.friend2.color);
+  drawSocrates();
+  if (flags.jailerMet && !flags.tookPlace) drawMarker(VISITOR_X, GROUND);
+  if (flags.tookPlace) drawMarker(VISITOR_X, GROUND);
+  drawPerson(player.x, GROUND, player.color, player.facing);
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(13,16,21,0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#eef1f5";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("The Prison of Socrates", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#a5b0bf";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("A month has passed since the verdict. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Ship of Theseus</title>
+<style>
+:root{
+  --page:#0d1420;
+  --panel:#16202e;
+  --panel-2:#1f2c3e;
+  --line:#31445c;
+  --text:#eef2f6;
+  --muted:#a7b4c2;
+  --sea:#5aa7d4;
+  --sea-deep:#33769f;
+  --wood-new:#c9a86b;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#28374e}
+button.primary{background:var(--sea); border-color:var(--sea-deep); color:#0c1622; font-weight:600}
+button.primary:hover{background:#7cbde2}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--sea); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0a111c; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--sea-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#182335; border-color:var(--sea)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--sea); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--sea)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--sea)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#101724; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--sea)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--sea); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#101724; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--sea)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--sea); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>The Ship of Theseus</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>Your travels in Ionia are over, and your jury year in Athens is about to begin. To pay for the passage home, you have taken a job as ship's carpenter aboard the Theseus, an old wooden merchant ship crossing the Aegean from Miletus to Athens. Wooden ships rot and break, and your work is to replace what fails, port by port. As the original timbers pile up on the docks behind you, everyone aboard has the same question: is this still the same ship? Walk the deck with the arrow keys, press E to talk and to repair, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whatever is next to you: talk to someone, or repair a damaged part. Damaged parts are marked and darkened, and one press of E replaces each. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whatever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p>The next stop on the map is The Clouds of Aristophanes.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Apply the puzzle to something that is not a ship: a band that has replaced every member, a rebuilt team, a website whose code has all been rewritten. Is it the same one? Say why.</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. Most of the cells in your body have been replaced since childhood. Are you the person who started your first year of school? What makes the answer yes or no?</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. Suppose a court must decide which vessel owes the harbor fees, and a museum must decide which one to display. Could they reasonably give different answers? What would that show about the question?</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> The original ship of Theseus puzzle comes from Plutarch, who reports that the Athenians</p>
+      <label><input type="radio" name="q1" value="Burned the ship after every voyage"> burned the ship after every voyage</label>
+      <label><input type="radio" name="q1" value="Preserved the ship by replacing its planks as they decayed"> preserved the ship by replacing its planks as they decayed</label>
+      <label><input type="radio" name="q1" value="Sank the ship to honor Poseidon"> sank the ship to honor Poseidon</label>
+
+      <p><strong>2.</strong> Hobbes sharpened the puzzle by imagining that</p>
+      <label><input type="radio" name="q2" value="The discarded original planks are reassembled into a second ship"> the discarded original planks are reassembled into a second ship</label>
+      <label><input type="radio" name="q2" value="The ship is renamed halfway through the voyage"> the ship is renamed halfway through the voyage</label>
+      <label><input type="radio" name="q2" value="The crew is replaced instead of the planks"> the crew is replaced instead of the planks</label>
+
+      <p><strong>3.</strong> The ship of Theseus is a puzzle about</p>
+      <label><input type="radio" name="q3" value="The ethics of shipbuilding"> the ethics of shipbuilding</label>
+      <label><input type="radio" name="q3" value="Identity over time: what makes a thing the same thing through change"> identity over time: what makes a thing the same thing through change</label>
+      <label><input type="radio" name="q3" value="How knowledge differs from opinion"> how knowledge differs from opinion</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_ship";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: Signing on",
+    text: "Before you board: what makes this ship this ship? What would have to change before you would call it a different ship?",
+    mcq: ["Its planks and timbers, the material itself", "Its shape and structure, however the material changes", "Its name and its history", "Its crew and its work", "Something else"],
+    requireText: true,
+    textHint: "Say why in a sentence or two."
+  },
+  fewPlanks: {
+    title: "Stage 1: A few planks",
+    text: "You replaced three deck planks out of the ship's seventeen timbers. Is it still the same ship that left Miletus?",
+    mcq: ["Yes, obviously", "No, it changed the moment any part changed", "It is a matter of degree"],
+    requireText: true,
+    textHint: "Give your reason."
+  },
+  threshold: {
+    title: "Stage 2: The threshold",
+    text: "After the storm, most of the ship is new wood. If replacement ever makes it a different ship, when does that happen?",
+    mcq: ["Never, as long as the changes are gradual", "When more than half of it has been replaced", "Only when the last original part is gone", "It became a different ship at the very first plank", "There is no exact point, and that is the lesson"],
+    requireText: true,
+    textHint: "Defend the line you drew, or the refusal to draw one."
+  },
+  twoShips: {
+    title: "Stage 3: Two ships",
+    text: "The collector has rebuilt the discarded original timbers into a second ship on the dock. One ship has the original material, the other has the continuous history of sailing and repair. Which one is the Ship of Theseus?",
+    mcq: ["The repaired ship that kept sailing", "The reassembled ship of original timbers", "Both of them", "Neither of them", "It depends on what we care about when we ask"],
+    requireText: true,
+    textHint: "Give your reason. This is the hard version of the puzzle."
+  },
+  revisited: {
+    title: "Stage 4: Signing off",
+    text: "At the start you said what makes this ship this ship. The captain has pointed out that your own body has replaced most of its material since childhood. State your answer again, for ships and for yourself. You may keep your original answer or change it. Either choice can earn full credit. What matters is the defense.",
+    mcq: ["I keep my original answer", "I have changed my answer"],
+    requireText: true,
+    textHint: "State the answer and defend it."
+  }
+};
+
+const quizKeys = [
+  "Preserved the ship by replacing its planks as they decayed",
+  "The discarded original planks are reassembled into a second ship",
+  "Identity over time: what makes a thing the same thing through change"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The ship and the voyage
+   The world is the ship itself. The deck runs from the bow to
+   the stern, and when the ship is docked a pier extends to the
+   right of the gangway.
+   ========================================================= */
+const DECK_Y = 330;          // where feet stand on deck
+const SHIP_X0 = 80;          // bow
+const SHIP_X1 = 780;         // stern
+const PIER_X0 = 780;         // the pier begins at the gangway
+const PIER_X1 = 1180;
+const WORLD_W = 1220;
+
+/* Seventeen named parts. Each is drawn from its own geometry, and
+   each remembers whether it is original or replaced. The hull has
+   two visible strakes of planks, plus keel, mast, yard, rudder,
+   tiller, and bow post. */
+const PARTS = [
+  { id: "keel",    name: "the keel" },
+  { id: "bowpost", name: "the bow post" },
+  { id: "rudder",  name: "the rudder" },
+  { id: "tiller",  name: "the tiller" },
+  { id: "mast",    name: "the mast" },
+  { id: "yard",    name: "the yard" },
+  { id: "hullA1",  name: "a lower hull plank" },
+  { id: "hullA2",  name: "a lower hull plank" },
+  { id: "hullA3",  name: "a lower hull plank" },
+  { id: "hullA4",  name: "a lower hull plank" },
+  { id: "hullB1",  name: "an upper hull plank" },
+  { id: "hullB2",  name: "an upper hull plank" },
+  { id: "hullB3",  name: "an upper hull plank" },
+  { id: "hullB4",  name: "an upper hull plank" },
+  { id: "deck1",   name: "a deck plank" },
+  { id: "deck2",   name: "a deck plank" },
+  { id: "deck3",   name: "a deck plank" }
+];
+const partState = {};   // id -> "original" | "damaged" | "replaced"
+PARTS.forEach(p => { partState[p.id] = "original"; });
+
+/* Where each part sits for interaction, as an x position on deck. */
+const PART_X = {
+  keel: 430, bowpost: 105, rudder: 745, tiller: 700,
+  mast: 430, yard: 430,
+  hullA1: 200, hullA2: 340, hullA3: 500, hullA4: 640,
+  hullB1: 180, hullB2: 330, hullB3: 490, hullB4: 630,
+  deck1: 250, deck2: 420, deck3: 590
+};
+
+/* The voyage: legs between ports, each with its own damage list. */
+const LEGS = [
+  { from: "Miletus", to: "Samos",  damage: ["deck1", "deck2", "deck3"] },
+  { from: "Samos",   to: "Delos",  damage: ["mast", "yard", "hullA1", "hullA2", "hullB1", "hullB2"] },
+  { from: "Delos",   to: "Aegina", damage: ["rudder", "tiller", "hullA3", "hullA4", "hullB3"] },
+  { from: "Aegina",  to: "Athens", damage: ["bowpost", "hullB4", "keel"] }
+];
+
+function originalCount() {
+  return PARTS.filter(p => partState[p.id] === "original").length;
+}
+function damagedCount() {
+  return PARTS.filter(p => partState[p.id] === "damaged").length;
+}
+function discardedCount() {
+  return PARTS.filter(p => partState[p.id] === "replaced").length;
+}
+
+/* =========================================================
+   Game state
+   ========================================================= */
+const flags = {
+  started: false,
+  firstDone: false,     // stage 0
+  captainMet: false,
+  fewPlanksDone: false, // stage 1
+  stormTold: false,
+  plutarchTold: false,
+  thresholdDone: false, // stage 2
+  collectorMet: false,
+  twoShipsDone: false,  // stage 3
+  keelChoiceMade: false,
+  finalDone: false
+};
+let leg = 0;                  // index into LEGS while sailing toward LEGS[leg].to
+let phase = "port";           // "port" | "sailing"
+let sailT = 0;                // time spent in the current sail
+const SAIL_TIME = 9;
+let paused = false;
+let startTimer = 0;
+let lastBump = -10;
+let keelKept = null;          // true if the last original timber was kept
+
+const player = {
+  x: 860, y: DECK_Y, vx: 0,
+  facing: -1, color: "#b5702e", canMove: false
+};
+const npcs = {
+  captain:   { x: 690, color: "#4f7fb0" },
+  passenger: { x: 240, color: "#7b6ea7" },
+  collector: { x: 1000, color: "#5f8f5a" }   // appears on the Delos pier
+};
+const keys = {};
+
+const record = {
+  replaced: [],        // part names in order of replacement
+  passengerReply: null,
+  collectorReply: null,
+  keelChoice: null
+};
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  const u = new SpeechSynthesisUtterance(p.title + ". " + p.text);
+  speechSynthesis.speak(u);
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+/* =========================================================
+   Help panel
+   ========================================================= */
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (damagedCount() > 0) return "Damaged parts are darkened and marked. Stand at one and press E to replace it. The ledger in the corner counts the original timbers that remain.";
+  if (phase === "sailing") return "The ship is under way. Walk the deck, and the next port will arrive on its own.";
+  if (!flags.finalDone) return "Someone aboard or on the pier has something to say. Walk to them, and press E to talk.";
+  return "The voyage is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+/* =========================================================
+   Dialogue engine
+   ========================================================= */
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+/* =========================================================
+   The voyage machinery
+   ========================================================= */
+let currentPort = "Miletus";
+let stormNow = false;
+
+function applyDamage(ids) {
+  ids.forEach(id => { partState[id] = "damaged"; });
+}
+function legRepairsDone(ids) {
+  return ids.every(id => partState[id] !== "damaged");
+}
+function setSail() {
+  phase = "sailing";
+  sailT = 0;
+  stormNow = false;
+  setObjective("Under way for " + LEGS[leg].to + ". Walk the deck while she runs.");
+}
+function arrive() {
+  currentPort = LEGS[leg].to;
+  phase = "port";
+  stormNow = false;
+  onArrival(currentPort);
+}
+
+function onArrival(port) {
+  if (port === "Samos") {
+    startDlg([
+      { say: "Captain: Samos. We load figs and wine and leave at dusk. Stretch your legs, carpenter. The next crossing is the long one." }
+    ], () => { leg = 1; setSail(); });
+  } else if (port === "Delos") {
+    applyDamage(["mast", "yard", "hullA1", "hullA2", "hullB1", "hullB2"]);
+    startDlg([
+      { say: "Captain: Delos, and we are lucky to see it. That storm cracked the mast and the yard and sprang four hull planks. Replace what broke. The chandler here sells sound timber." },
+      { note: true, say: "The ship you are rebuilding is the oldest puzzle about identity. Plutarch reports that the Athenians preserved the actual ship of Theseus for centuries, replacing each plank as it decayed, and that philosophers already argued over whether the preserved ship was still the ship. Your ledger is the modern version of their argument." }
+    ], () => {
+      setObjective("Replace the storm damage: the mast, the yard, and four hull planks. Stand at a marked part and press E.");
+    });
+  } else if (port === "Aegina") {
+    applyDamage(["rudder", "tiller", "hullA3", "hullA4", "hullB3"]);
+    startDlg([
+      { say: "Captain: Aegina. The steering went stiff on the crossing, and I heard two more planks working. Rudder, tiller, and three planks, carpenter. Then it is a short run home to Athens." }
+    ], () => {
+      setObjective("Replace the rudder, the tiller, and three hull planks. Stand at a marked part and press E.");
+    });
+  } else if (port === "Athens") {
+    applyDamage(["bowpost", "hullB4", "keel"]);
+    startDlg([
+      { say: "Captain: Piraeus, the harbor of Athens. Before the surveyor boards: the bow post is split and one last plank has sprung. And look hard at the keel. It is the last of her original wood, and the worm has found it." }
+    ], () => {
+      setObjective("Replace the bow post and the last hull plank, then decide about the keel. Stand at a marked part and press E.");
+    });
+  }
+}
+
+function checkRepairs() {
+  if (currentPort === "Miletus" && !flags.fewPlanksDone &&
+      legRepairsDone(["deck1", "deck2", "deck3"]) && !dialogueActive) {
+    dlgPassenger();
+  } else if (currentPort === "Delos" && !flags.thresholdDone &&
+      legRepairsDone(["mast", "yard", "hullA1", "hullA2", "hullB1", "hullB2"]) && !dialogueActive) {
+    openPrompt("threshold", () => {
+      flags.thresholdDone = true;
+      setObjective("A man on the pier has been buying your discarded timbers. Walk out and speak with him.");
+    });
+  } else if (currentPort === "Aegina" && flags.twoShipsDone && phase === "port" &&
+      legRepairsDone(["rudder", "tiller", "hullA3", "hullA4", "hullB3"]) && !dialogueActive && !flags.aeginaLeft) {
+    flags.aeginaLeft = true;
+    startDlg([
+      { say: "Captain: Sound work. Short run home now. Athens by evening." }
+    ], () => { leg = 3; setSail(); });
+  } else if (currentPort === "Athens" && flags.keelChoiceMade && !flags.finalDone &&
+      legRepairsDone(["bowpost", "hullB4"]) && !dialogueActive && !flags.closeStarted) {
+    flags.closeStarted = true;
+    dlgClose();
+  }
+}
+
+/* =========================================================
+   Dialogue content
+   ========================================================= */
+function dlgCaptain() {
+  flags.captainMet = true;
+  startDlg([
+    { say: "Captain: You are the new carpenter? The Athenian, working his way home for the jury year. Good." },
+    { say: "She is called the Theseus, out of Athens, and she is older than both of us. Wooden ships stay afloat one way: you replace what fails, the day it fails." },
+    { say: "Captain: Three deck planks have gone soft. Fit new ones, and mind the ledger. The owners like to know how much of her is original wood. Then we sail for Samos." }
+  ], () => {
+    setObjective("Replace the three damaged deck planks. Stand at a marked part and press E.");
+  });
+}
+function dlgPassenger() {
+  startDlg([
+    { say: "Passenger: New planks already, and we have barely left Miletus. Tell me, carpenter. Is she still the same ship that took my fare?",
+      choices: [
+        { text: "Of course she is. Three planks change nothing.", tag: "same",
+          reply: ["Passenger: Three today. And tomorrow? I will keep count with you."] },
+        { text: "Strictly speaking, she is already a little different.", tag: "different",
+          reply: ["Passenger: A little different. So sameness comes in amounts now? You are an interesting carpenter."] },
+        { text: "Ask me again in Athens.", tag: "wait",
+          reply: ["Passenger: I will. Every port, in fact. Consider it part of your wages."] }
+      ] }
+  ], tags => {
+    record.passengerReply = tags.length ? tags[0].text : null;
+    openPrompt("fewPlanks", () => {
+      flags.fewPlanksDone = true;
+      leg = 0;
+      setSail();
+    });
+  });
+}
+function dlgCollector() {
+  flags.collectorMet = true;
+  startDlg([
+    { say: "Collector: Carpenter! Over here. I bought your discards at Samos, and again this morning. Old wood from a famous hull is worth something. And then I thought, why sell planks when I can sell a ship?" },
+    { say: "Collector: There she is. Every timber your hands pried out, joined back in its old order. Now answer me honestly, because a buyer will ask. Which of these two is the Ship of Theseus?",
+      choices: [
+        { text: "The one that kept sailing. History matters more than material.", tag: "continuity",
+          reply: ["Collector: Then I am selling a pile of famous firewood. I hope you are wrong."] },
+        { text: "Yours. It is the original wood in the original arrangement.", tag: "material",
+          reply: ["Collector: My thinking exactly. And yet yours is the one the harbor master registers. Strange business, identity."] },
+        { text: "Both of them, or neither. The question is broken.", tag: "neither",
+          reply: ["Collector: Both cannot owe one set of harbor fees, friend. Somebody will have to decide."] }
+      ] },
+    { note: true, say: "This is the sharpened version of the puzzle, put by Thomas Hobbes in the seventeenth century: if the removed planks are kept and reassembled, two ships each have a claim, one through continuous history and one through original material. Whatever principle of identity you choose, it must handle both claimants." }
+  ], tags => {
+    record.collectorReply = tags.length ? tags[0].text : null;
+    openPrompt("twoShips", () => {
+      flags.twoShipsDone = true;
+      setObjective("Return aboard and speak with the captain to sail for Aegina.");
+    });
+  });
+}
+function dlgLeaveDelos() {
+  flags.delosLeft = true;
+  startDlg([
+    { say: "Captain: Done gawking at your ghost ship? Cast off. Aegina next." }
+  ], () => { leg = 2; setSail(); });
+}
+function dlgKeel() {
+  startDlg([
+    { say: "Captain: That keel is the last of her original wood. Worm in it, but she would float a season yet. It is your call, carpenter. Replace it, or keep it?",
+      choices: [
+        { text: "Replace it. A sound ship matters more than a souvenir.", tag: "replace",
+          reply: ["Captain: Then not one splinter of the ship that left Athens years ago remains. And still I will sign tonight that the Theseus came home."] },
+        { text: "Keep it. Something original should reach Athens.", tag: "keep",
+          reply: ["Captain: Sentimental carpentry. Very well. One original timber out of seventeen remains, and everyone will still call her the Theseus."] }
+      ] }
+  ], tags => {
+    const choice = tags.length ? tags[0].tag : "replace";
+    record.keelChoice = tags.length ? tags[0].text : null;
+    if (choice === "replace") {
+      partState.keel = "replaced";
+      record.replaced.push("the keel");
+      keelKept = false;
+    } else {
+      partState.keel = "kept";
+      keelKept = true;
+    }
+    flags.keelChoiceMade = true;
+    checkRepairs();
+  });
+}
+function dlgClose() {
+  startDlg([
+    { say: "Captain: Voyage over, carpenter. Before you go ashore, one more thing. The physicians say a body replaces most of its material over the years, cell by cell, like planks." },
+    { say: "Captain: The carpenter who signed on at Miletus and the one standing here share a history, not their matter. So when I pay you, whom am I paying?" },
+    { say: "Captain: Go ashore, juror. The courts will send for you soon enough." },
+    { note: true, say: "The ship's question is everyone's question. What makes a person the same person over a life is one of the oldest problems in metaphysics, and later stops on this journey, from Locke's memory theory onward, take it up directly." }
+  ], () => openPrompt("revisited", () => {
+    flags.finalDone = true;
+    endGame();
+  }));
+}
+
+/* =========================================================
+   Reflection modal
+   ========================================================= */
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+
+function setObjective(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function nearestDamagedPart() {
+  let best = null, bestD = 42;
+  PARTS.forEach(p => {
+    if (partState[p.id] !== "damaged") return;
+    const d = Math.abs(player.x - PART_X[p.id]);
+    if (d < bestD) { best = p; bestD = d; }
+  });
+  return best;
+}
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+
+  // Repairing comes first, so a damaged part near a person stays
+  // reachable. The keel opens its own conversation.
+  const part = nearestDamagedPart();
+  if (part) {
+    if (part.id === "keel") {
+      if (!flags.keelChoiceMade) dlgKeel();
+      return;
+    }
+    partState[part.id] = "replaced";
+    record.replaced.push(part.name);
+    setStatus("You pried out " + part.name + " and fitted new timber. The old piece joins the pile on the dock.");
+    checkRepairs();
+    return;
+  }
+
+  if (Math.abs(player.x - npcs.captain.x) < 50 && phase === "port") {
+    if (currentPort === "Delos" && flags.twoShipsDone && !flags.delosLeft) { dlgLeaveDelos(); return; }
+    if (!flags.captainMet) { dlgCaptain(); return; }
+    startDlg([{ say: "Captain: The ledger does not lie, carpenter. Back to it." }], () => {});
+    return;
+  }
+  if (Math.abs(player.x - npcs.passenger.x) < 45) {
+    startDlg([{ say: "Passenger: Original timbers, " + originalCount() + " of " + PARTS.length + ". I told you I would keep count." }], () => {});
+    return;
+  }
+  if (currentPort === "Delos" && phase === "port" && flags.thresholdDone &&
+      Math.abs(player.x - npcs.collector.x) < 55) {
+    if (!flags.collectorMet) { dlgCollector(); return; }
+    startDlg([{ say: "Collector: Both of them have a claim to the name. Somebody will pay well to settle it." }], () => {});
+    return;
+  }
+
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_ship", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "The Ship of Theseus, Voyage Report\n";
+  text += "==================================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    text += "Response: " + r.response + "\n" + "-".repeat(50);
+  });
+  text += "\n\nCarpenter's ledger:\n";
+  text += "Parts replaced, in order: " + (record.replaced.join(", ") || "(none)") + "\n";
+  text += "Original timbers remaining at the end: " + originalCount() + " of " + PARTS.length +
+          (keelKept === true ? " (the keel was kept)" : keelKept === false ? " (the keel was replaced too)" : "") + "\n";
+  if (record.passengerReply) text += "Answer to the passenger at Miletus: " + record.passengerReply + "\n";
+  if (record.collectorReply) text += "Answer to the collector at Delos: " + record.collectorReply + "\n";
+  if (record.keelChoice) text += "The keel decision: " + record.keelChoice + "\n";
+  text += "\nDiscussion questions:\n";
+  text += "1. The puzzle applied beyond ships.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Your own body's replacement.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. The court and the museum.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Ship_of_Theseus_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "3") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!flags.started || paused) return;
+
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Board the Theseus on your left and speak with the captain at the helm.");
+      });
+    }
+  }
+
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+
+  // Where walking is allowed.
+  const minX = SHIP_X0 + 20;
+  const maxX = phase === "port" ? PIER_X1 - 30 : SHIP_X1 - 14;
+  if (player.x < minX) player.x = minX;
+  if (player.x > maxX) {
+    player.x = maxX;
+    if (phase === "sailing" && t - lastBump > 1.6) {
+      lastBump = t;
+      setStatus("Open water. The pier will be back at " + LEGS[leg].to + ".");
+    }
+  }
+
+  // The captain greets the new carpenter aboard at Miletus.
+  if (flags.firstDone && !flags.captainMet && !dialogueActive && player.x < 745) {
+    player.x = Math.max(player.x, 745);
+    dlgCaptain();
+  }
+  // The collector calls out on the Delos pier.
+  if (currentPort === "Delos" && phase === "port" && flags.thresholdDone &&
+      !flags.collectorMet && !dialogueActive && player.x > 935) {
+    player.x = Math.min(player.x, 935);
+    dlgCollector();
+  }
+
+  // Sailing runs on its own clock, with the storm on the Delos leg.
+  if (phase === "sailing") {
+    sailT += dt;
+    stormNow = leg === 1 && sailT > SAIL_TIME * 0.35 && sailT < SAIL_TIME * 0.9;
+    if (sailT >= SAIL_TIME) arrive();
+  }
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function woodColor(id) {
+  const st = partState[id];
+  if (st === "replaced") return "#c9a86b";
+  if (st === "damaged") return "#3d3122";
+  if (st === "kept") return "#584327";
+  return "#6a4f33";
+}
+function bob() {
+  if (REDUCED_MOTION) return 0;
+  const amp = phase === "sailing" ? (stormNow ? 7 : 3.5) : 1.2;
+  return Math.sin(t * (stormNow ? 3.2 : 1.6)) * amp;
+}
+function drawPersonAt(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(90,167,212,0.9)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 62 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(90,167,212,0.9)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 58 + lift);
+}
+function drawShip(b) {
+  const dy = b;
+  // Keel.
+  ctx.fillStyle = woodColor("keel");
+  ctx.fillRect(SHIP_X0 + 24, 396 + dy, SHIP_X1 - SHIP_X0 - 40, 9);
+  // Hull strakes: lower and upper, four planks each.
+  const hx0 = SHIP_X0 + 28, hx1 = SHIP_X1 - 18;
+  const seg = (hx1 - hx0) / 4;
+  ["hullA1", "hullA2", "hullA3", "hullA4"].forEach((id, i) => {
+    ctx.fillStyle = woodColor(id);
+    ctx.fillRect(hx0 + i * seg, 372 + dy, seg - 2, 24);
+  });
+  ["hullB1", "hullB2", "hullB3", "hullB4"].forEach((id, i) => {
+    ctx.fillStyle = woodColor(id);
+    ctx.fillRect(hx0 + i * seg - 6, 348 + dy, seg - 2, 24);
+  });
+  // Deck planks, walked on.
+  const dseg = (SHIP_X1 - SHIP_X0 - 40) / 3;
+  ["deck1", "deck2", "deck3"].forEach((id, i) => {
+    ctx.fillStyle = woodColor(id);
+    ctx.fillRect(SHIP_X0 + 20 + i * dseg, 330 + dy, dseg - 3, 10);
+  });
+  // Gunwale.
+  ctx.fillStyle = "#584327";
+  ctx.fillRect(SHIP_X0 + 16, 340 + dy, SHIP_X1 - SHIP_X0 - 28, 8);
+  // Bow post.
+  ctx.fillStyle = woodColor("bowpost");
+  ctx.save();
+  ctx.translate(SHIP_X0 + 22, 396 + dy);
+  ctx.rotate(-0.35);
+  ctx.fillRect(-8, -104, 14, 106);
+  ctx.restore();
+  // Rudder and tiller at the stern.
+  ctx.fillStyle = woodColor("rudder");
+  ctx.fillRect(SHIP_X1 - 30, 352 + dy, 12, 54);
+  ctx.fillStyle = woodColor("tiller");
+  ctx.save();
+  ctx.translate(SHIP_X1 - 24, 352 + dy);
+  ctx.rotate(-0.5);
+  ctx.fillRect(-58, -5, 58, 8);
+  ctx.restore();
+  // Mast, yard, and the sail.
+  ctx.fillStyle = woodColor("mast");
+  ctx.fillRect(427, 128 + dy, 10, 202 + 2);
+  ctx.fillStyle = woodColor("yard");
+  ctx.fillRect(322, 146 + dy, 220, 8);
+  if (phase === "sailing") {
+    const belly = REDUCED_MOTION ? 10 : 12 + Math.sin(t * 2) * 5 + (stormNow ? 10 : 0);
+    ctx.fillStyle = "#e8e2d2";
+    ctx.beginPath();
+    ctx.moveTo(330, 156 + dy);
+    ctx.lineTo(534, 156 + dy);
+    ctx.quadraticCurveTo(534 + belly, 226 + dy, 512, 296 + dy);
+    ctx.lineTo(352, 296 + dy);
+    ctx.quadraticCurveTo(330 - belly, 226 + dy, 330, 156 + dy);
+    ctx.closePath(); ctx.fill();
+  } else {
+    ctx.fillStyle = "#d8d2c2";
+    ctx.fillRect(330, 150 + dy, 204, 14);
+  }
+  // Rigging.
+  ctx.strokeStyle = "rgba(200,185,150,0.6)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(432, 132 + dy); ctx.lineTo(SHIP_X0 + 34, 344 + dy);
+  ctx.moveTo(432, 132 + dy); ctx.lineTo(SHIP_X1 - 34, 344 + dy);
+  ctx.stroke();
+  // Markers over anything damaged.
+  PARTS.forEach(p => {
+    if (partState[p.id] === "damaged") drawMarker(PART_X[p.id], DECK_Y + dy);
+  });
+}
+function drawSecondShip(x, y) {
+  // The collector's reassembly: the old timbers, slightly askew.
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = "#6a4f33";
+  ctx.fillRect(-92, -8, 184, 7);
+  ctx.fillRect(-86, -30, 176, 18);
+  ctx.save(); ctx.rotate(0.03); ctx.fillRect(-90, -48, 178, 16); ctx.restore();
+  ctx.fillRect(-4, -128, 8, 100);
+  ctx.save(); ctx.rotate(-0.05); ctx.fillRect(-58, -116, 116, 6); ctx.restore();
+  ctx.save();
+  ctx.translate(-84, -8);
+  ctx.rotate(-0.4);
+  ctx.fillRect(-5, -62, 10, 64);
+  ctx.restore();
+  ctx.restore();
+}
+function drawPort(name) {
+  // The pier.
+  ctx.fillStyle = "#7a6248";
+  ctx.fillRect(PIER_X0, 336, PIER_X1 - PIER_X0, 12);
+  for (let px = PIER_X0 + 20; px < PIER_X1; px += 60) {
+    ctx.fillRect(px, 348, 8, 60);
+  }
+  // The town behind the pier.
+  ctx.fillStyle = "rgba(160,160,150,0.5)";
+  ctx.beginPath();
+  ctx.moveTo(PIER_X0 - 40, 336);
+  ctx.quadraticCurveTo(PIER_X0 + 190, 190, PIER_X1 + 60, 336);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "rgba(226,226,214,0.8)";
+  for (let i = 0; i < 5; i++) {
+    ctx.fillRect(PIER_X0 + 60 + i * 66, 288 - (i % 2) * 16, 30, 24);
+  }
+  // The port sign.
+  ctx.fillStyle = "#16202e";
+  ctx.fillRect(PIER_X0 + 34, 268, 130, 26);
+  ctx.fillStyle = "#eef2f6";
+  ctx.font = "15px Georgia, serif";
+  ctx.fillText(name.toUpperCase(), PIER_X0 + 46, 286);
+  // The discard pile, before the collector claims it at Delos.
+  const pile = discardedCount();
+  if (pile > 0 && !flags.collectorMet) {
+    ctx.fillStyle = "#6a4f33";
+    for (let i = 0; i < Math.min(pile, 10); i++) {
+      ctx.fillRect(PIER_X0 + 40 + (i % 5) * 26, 328 - Math.floor(i / 5) * 8, 24, 6);
+    }
+  }
+  if (currentPort === "Delos" && flags.collectorMet) {
+    drawSecondShip(1075, 336);
+  }
+}
+function drawSea() {
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  if (stormNow) {
+    sky.addColorStop(0, "#2a3442");
+    sky.addColorStop(1, "#3d4a5c");
+  } else {
+    sky.addColorStop(0, "#8fc0e2");
+    sky.addColorStop(0.7, "#cfe6f2");
+    sky.addColorStop(1, "#a8d0e8");
+  }
+  ctx.fillStyle = sky;
+  ctx.fillRect(camX, 0, W, H);
+  if (!stormNow) {
+    ctx.fillStyle = "#fff3c9";
+    ctx.beginPath(); ctx.arc(camX + 110, 70, 26, 0, Math.PI * 2); ctx.fill();
+  } else if (!REDUCED_MOTION) {
+    ctx.strokeStyle = "rgba(220,232,240,0.35)";
+    ctx.lineWidth = 1.5;
+    for (let i = 0; i < 40; i++) {
+      const rx = camX + ((i * 61 + t * 320) % (W + 40)) - 20;
+      const ry = (i * 37) % 300;
+      ctx.beginPath();
+      ctx.moveTo(rx, ry); ctx.lineTo(rx - 6, ry + 16);
+      ctx.stroke();
+    }
+  }
+  // Islands drifting by while sailing.
+  if (phase === "sailing") {
+    ctx.fillStyle = "rgba(120,140,120,0.55)";
+    const drift = t * (REDUCED_MOTION ? 12 : 40);
+    for (let i = 0; i < 3; i++) {
+      const ix = camX + W - ((drift + i * 460) % (W + 500)) + 120;
+      ctx.beginPath();
+      ctx.moveTo(ix - 90, 336);
+      ctx.quadraticCurveTo(ix, 270 + i * 16, ix + 90, 336);
+      ctx.closePath(); ctx.fill();
+    }
+  }
+  // The water.
+  ctx.fillStyle = stormNow ? "#2c5570" : "#3d7ba6";
+  ctx.fillRect(camX, 336, W, H - 336);
+  ctx.strokeStyle = "rgba(220,236,247,0.5)";
+  ctx.lineWidth = 2;
+  const flow = phase === "sailing" ? t * (REDUCED_MOTION ? 20 : 90) : t * 8;
+  for (let i = 0; i < 8; i++) {
+    const wx = camX + ((i * 140 - flow) % (W + 140) + (W + 140)) % (W + 140) - 70;
+    const wy = 356 + (i % 4) * 32;
+    ctx.beginPath();
+    ctx.moveTo(wx, wy);
+    ctx.quadraticCurveTo(wx + 18, wy - 5, wx + 36, wy);
+    ctx.stroke();
+  }
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  drawSea();
+  if (phase === "port") drawPort(currentPort);
+  const b = bob();
+  drawShip(b);
+
+  // People. The captain and passenger ride the ship's bob.
+  drawPersonAt(npcs.captain.x, DECK_Y + b, npcs.captain.color, -1);
+  drawPersonAt(npcs.passenger.x, DECK_Y + b, npcs.passenger.color, 1);
+  if (currentPort === "Delos" && phase === "port" && flags.thresholdDone) {
+    drawPersonAt(npcs.collector.x, DECK_Y + 6, npcs.collector.color, -1);
+  }
+  const onDeck = player.x < PIER_X0;
+  drawPersonAt(player.x, DECK_Y + (onDeck ? b : 6), player.color, player.facing);
+
+  ctx.restore();
+
+  // The carpenter's ledger.
+  if (flags.started) {
+    ctx.fillStyle = "rgba(13,20,32,0.75)";
+    ctx.fillRect(12, 12, 216, 30);
+    ctx.fillStyle = "#eef2f6";
+    ctx.font = "14px 'Segoe UI', sans-serif";
+    ctx.fillText("Original timbers: " + originalCount() + " of " + PARTS.length, 22, 32);
+  }
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(10,17,28,0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#eef2f6";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("The Ship of Theseus", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#a7b4c2";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  applyDamage(["deck1", "deck2", "deck3"]);
+  setObjective("You stand on the pier at Miletus. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

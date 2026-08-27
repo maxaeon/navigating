@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Descartes and the Stove-Heated Room</title>
+<style>
+:root{
+  --page:#12141d;
+  --panel:#1a1e2b;
+  --panel-2:#242a3c;
+  --line:#39415e;
+  --text:#f0f2f7;
+  --muted:#a9b1c4;
+  --candle:#e6c073;
+  --candle-deep:#a8862f;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2d3449}
+button.primary{background:var(--candle); border-color:var(--candle-deep); color:#221a08; font-weight:600}
+button.primary:hover{background:#f0d18e}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--candle); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0e1017; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--candle-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#1e2334; border-color:var(--candle)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--candle); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--candle)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--candle)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#10131c; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--candle)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--candle); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#10131c; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--candle)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--candle); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--candle)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>Descartes and the Stove-Heated Room</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>A new region, and a new question. The Monastery asked what can be proved about God. This region asks where knowledge comes from at all. It is winter 1619, and a young French soldier named Rene Descartes is shut in a warm room with a stove, working out a plan to rebuild everything he believes from the ground up. You will walk that plan with him, one doubt at a time. He will show you a stick that bends in water, ask you to watch a piece of wax change into something unrecognizable, and then push the doubt as far as it will go. Walk with the arrow keys, press E at each marked spot, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you, and advances the evening at each marked spot. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The next stop in the region is Berkeley and the Tree in the Quad.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Descartes rebuilds knowledge from one certainty he cannot doubt. Pick a belief you hold that matters to you, and try his method on it. What survives the doubt, and what does that tell you about the method?</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. The wax argument claims the mind, not the senses, grasps what a thing is. Take an ordinary object that changes over time, a tree, a river, a friendship, and ask what makes it the same thing throughout. Does your answer support Descartes or work against him?</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. The rationalists start from ideas the mind supplies, and the empiricists start from what the senses deliver. Describe one thing you know, and trace where the knowledge came from. Does your case fit one road better than the other?</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> Descartes doubts the senses because</p>
+      <label><input type="radio" name="q1" value="They have deceived him before, so they are not fully trustworthy"> they have deceived him before, so they are not fully trustworthy</label>
+      <label><input type="radio" name="q1" value="They tell him nothing at all"> they tell him nothing at all</label>
+      <label><input type="radio" name="q1" value="Other people disagree with him"> other people disagree with him</label>
+
+      <p><strong>2.</strong> The one thing that survives the doubt is that</p>
+      <label><input type="radio" name="q2" value="While he is thinking, he exists"> while he is thinking, he exists</label>
+      <label><input type="radio" name="q2" value="The outside world is real"> the outside world is real</label>
+      <label><input type="radio" name="q2" value="Mathematics is certain"> mathematics is certain</label>
+
+      <p><strong>3.</strong> The point of the piece of wax is that we grasp what the wax is</p>
+      <label><input type="radio" name="q3" value="By the mind, not by the senses"> by the mind, not by the senses</label>
+      <label><input type="radio" name="q3" value="By smell, which lasts through the change"> by smell, which lasts through the change</label>
+      <label><input type="radio" name="q3" value="By weighing it before and after"> by weighing it before and after</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_descartes";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: Before the doubt",
+    text: "Descartes plans to set aside every belief he cannot be certain of, and keep only what survives. Before he starts: is that a good way to find truth?",
+    mcq: ["Yes, certainty is the only safe foundation", "No, we would lose almost everything worth knowing", "It works in mathematics and nowhere else", "I am not sure yet"],
+    requireText: true
+  },
+  senses: {
+    title: "Stage 1: Things far off",
+    text: "The first doubt is narrow. Towers and the sun are reported wrongly at a distance, so reports about distant things are not to be trusted completely. How much does this doubt actually reach?",
+    mcq: ["Only distant things, which is a small loss", "More than it looks, since most of what I believe came in at a distance", "Nothing, because we already correct for distance", "It is a first step and it is meant to be small"],
+    requireText: true
+  },
+  stick: {
+    title: "Stage 2: The stick in the water",
+    text: "The stick looks broken at the surface and feels straight under your hand. What is the right thing to say about this case?",
+    mcq: ["Sight is simply wrong here, and touch corrects it", "Neither sense is wrong, and the mistake is in the judgment I add", "It shows every sense needs checking against the others", "It shows we need a rule the senses cannot give us"],
+    requireText: true
+  },
+  dream: {
+    title: "Stage 3: The things right in front of me",
+    text: "Descartes grants that doubting his own hands would be madness. Then he notices he has dreamed of sitting exactly here, with these hands, and that no mark inside a dream tells you it is one. Does the dream argument work?",
+    mcq: ["Yes, if I cannot tell dreaming from waking, no report of the senses is safe", "No, waking life is coherent in a way dreams are not", "It works only while you are actually asking, not in ordinary life", "It shows I could be wrong, not that I should stop believing"],
+    requireText: true
+  },
+  simples: {
+    title: "Stage 4: What a dream cannot touch",
+    text: "Descartes notices that even inside a dream, two and three still make five, and a square still has four sides. Painters invent creatures, but not the colours and shapes they are made from. So some things seem to survive the dream. Do they?",
+    mcq: ["Yes, arithmetic and shape hold whether I am dreaming or awake", "They feel certain, and feeling certain is not the same as being right", "They survive the dream and could still fail for some other reason", "Nothing survives, since a dream could scramble arithmetic too"],
+    requireText: true
+  },
+  cogito: {
+    title: "Stage 5: The deceiver, and what is left",
+    text: "Descartes now supposes a deceiver powerful enough to make him err even in arithmetic. Everything goes: the world, his body, and mathematics. Then he says one thing holds, because being deceived is still thinking, and thinking requires a thinker. Does it hold?",
+    mcq: ["Yes, doubting is thinking, and thinking needs a thinker", "It shows thinking is happening, not that there is a self doing it", "It is true but nearly empty, since it proves so little", "Not sure, and the deceiver could reach even this"],
+    requireText: true
+  },
+  wax: {
+    title: "Stage 6: The piece of wax",
+    text: "Near the fire the wax loses its scent, colour, shape, hardness, and sound. Every quality the senses reported is gone, and you still call it the same wax. How do you know it is?",
+    mcq: ["By seeing it the whole time, so sight tracks it through the change", "By judging with the mind, since no sense reported anything that lasted", "By memory, which stitches the two states together", "Perhaps it is not the same wax at all"],
+    requireText: true
+  },
+  roads: {
+    title: "Stage 7: Where knowledge comes from",
+    text: "This region runs on one question. Descartes says reason, working from ideas the mind already has, can reach real truths about the world. The other road says every material of knowledge comes in through the senses. Say which road you find more convincing and why, and name one thing you know that is hard for your chosen road to explain.",
+    mcq: null,
+    requireText: true,
+    textHint: "Your road, your reason, and one hard case for it."
+  }
+};
+
+const quizKeys = [
+  "They have deceived him before, so they are not fully trustworthy",
+  "While he is thinking, he exists",
+  "By the mind, not by the senses"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world: the stove-heated room, with marked spots along
+   it, and the desk where the letters are read.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 2000;
+
+const STATIONS = [
+  { x: 360,  name: "the window" },
+  { x: 600,  name: "the basin" },
+  { x: 840,  name: "the fire and your own hands" },
+  { x: 1080, name: "the slate" },
+  { x: 1320, name: "the dark corner" },
+  { x: 1560, name: "the piece of wax" },
+  { x: 1800, name: "the writing desk" }
+];
+
+const flags = {
+  started: false,
+  firstDone: false,
+  friarMet: false,
+  beat1Done: false,     // distant things
+  sensesDone: false,    // stage 1
+  beat2Done: false,     // the bent stick
+  stickDone: false,     // stage 2
+  beat3Done: false,     // near things, madness, and the dream
+  dreamDone: false,     // stage 3
+  beat4Done: false,     // what survives the dream
+  simplesDone: false,   // stage 4
+  beat5Done: false,     // the deceiver, then the cogito
+  cogitoDone: false,    // stage 5
+  beat6Done: false,     // the wax
+  waxDone: false,       // stage 6
+  finalDone: false
+};
+let closeView = null;    // "stick" or "wax" fills the view
+let waxMelt = 0;         // 0 solid, 1 fully melted
+let slateStage = 0;      // what is chalked on the slate
+let paused = false;
+let startTimer = 0;
+let candleLit = true;
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  descartes: { x: 300, color: "#2f2f38" }
+};
+const keys = {};
+const record = { verdicts: [] };
+
+/* Snow at the window. */
+const flakes = [];
+for (let i = 0; i < 50; i++) {
+  flakes.push({ x: (i * 137.3) % 1500, y: (i * 91.7) % 500, s: 0.5 + (i % 3) * 0.4, w: (i % 5) - 2 });
+}
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration, help, dialogue, and the modal
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  speechSynthesis.speak(new SpeechSynthesisUtterance(p.title + ". " + p.text));
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.friarMet) return "Walk right into the room. Descartes looks up when you reach the table.";
+  if (!flags.finalDone) return "Walk to the next marked spot and press E there. The questions appear between the spots.";
+  return "The walk is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.close !== undefined) closeView = step.close === false ? null : step.close;
+  if (step.melt) waxMelt = 1;
+  if (step.diagram !== undefined) slateStage = step.diagram;
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  if (c.tag) record.verdicts.push(c.text);
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+function setObjective(txt) { setObjectiveText(txt); }
+function setObjectiveText(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   The evening in the stove-heated room. The doubts run in the
+   order Descartes gives them in the First Meditation, from
+   distant things to the deceiver, and then the cogito.
+   ========================================================= */
+function dlgFriar() {
+  flags.friarMet = true;
+  startDlg([
+    { say: "A young man in a soldier's coat looks up from a table pushed close to the stove. Descartes: Come in and shut the door. I am quartered here for the winter and the campaign is frozen, so I have time for the only project that interests me." },
+    { say: "Descartes: I have noticed something troubling. A great deal of what I was taught turns out to be false, and I built later beliefs on top of it." },
+    { say: "Descartes: So I am going to work through what I believe and set aside anything I can find the least reason to doubt. Not most of it. Anything." },
+    { say: "Descartes: And I will do it in order, because there is too much to take one belief at a time. If I can undermine the foundations, everything resting on them comes down together." },
+    { note: true, say: "Rene Descartes, 1596 to 1650, spent the winter of 1619 quartered in Germany and later described shutting himself in a stove-heated room to begin this work. The order of doubt you are about to walk appears in the First Meditation of the Meditations on First Philosophy, published in 1641." }
+  ], () => {
+    setObjective("Walk right to the first marked spot, the window, and press E.");
+  });
+}
+function dlgBeat1() {
+  flags.beat1Done = true;
+  startDlg([
+    { say: "At the window the glass is cold and the snow is coming down over the rooftops. Descartes: The first foundation is the senses, since almost everything I claim to know arrived through them." },
+    { say: "Descartes: Look at that tower on the far side of the square. From here it looks round. Walk to it and it is square. The sun looks about the width of a coin, and the astronomers tell me it is enormous." },
+    { say: "Descartes: So my first doubt is a narrow one. Things far off, and things too small to make out, are sometimes reported wrongly, and I will not fully trust a report of that kind again." },
+    { say: "Descartes: Notice how modest that is. I have not said the senses always lie. I have said only that they have failed at a distance, and that is enough to withdraw my full trust." }
+  ], () => {
+    openPrompt("senses", () => {
+      flags.sensesDone = true;
+      setObjective("Walk to the basin, marked with E.");
+    });
+  });
+}
+function dlgBeat2() {
+  flags.beat2Done = true;
+  startDlg([
+    { say: "A shallow basin of water stands on a side table, with a straight stick beside it. Descartes: Before I go further, here is the same failure close enough to touch." },
+    { close: "stick",
+      say: "The stick is half in the water now, and where it crosses the surface it appears to break and angle upward. Descartes: Look at it. It is bent." },
+    { close: "stick",
+      say: "Descartes: Now put your hand in and run it down the length. Nothing bends under your fingers.",
+      choices: [
+        { tag: "sight", text: "Then sight is lying and touch is telling the truth.",
+          reply: ["Descartes: The quick answer, and hold it loosely. Consider what sight actually delivered. Light reaching your eye from a stick standing in water. That is exactly what it delivered, and it misreported nothing."] },
+        { tag: "judgment", text: "Neither is lying. The error is in what I concluded.",
+          reply: ["Descartes: That is the better answer, and it is mine. Sight delivered light from a stick standing in water, which is precisely what was there. The judgment that the stick is bent was added by me."] }
+      ] },
+    { close: "stick",
+      say: "Descartes: Which is worse for my purposes, not better. If the senses were plain liars I could correct for them. Instead the mistake enters in the judging, I do the judging, and I do it without noticing." },
+    { close: false,
+      say: "He lifts the stick out and dries it on his sleeve." }
+  ], () => {
+    openPrompt("stick", () => {
+      flags.stickDone = true;
+      setObjective("Walk to the fire, marked with E.");
+    });
+  });
+}
+function dlgBeat3() {
+  flags.beat3Done = true;
+  startDlg([
+    { say: "At the fireside Descartes holds his hands out to the heat. Descartes: Now the obvious reply, which I will make on your behalf. Distant towers are one thing. But that I am sitting here, by this fire, in a winter coat, holding out these hands, how could I doubt that?" },
+    { say: "Descartes: People who doubt such things are ill. They believe they are kings when they are paupers, or that their bodies are made of glass. If I took them as my model I would be as mad as they are." },
+    { say: "Descartes: So I will not doubt my hands on those grounds. I will doubt them on better ones." },
+    { say: "Descartes: I am a man who sleeps at night, and in sleep I have dreamed exactly this. This room, this fire, this coat, these hands held out to the heat. And while it was happening I did not doubt any of it." },
+    { say: "Descartes: Now think carefully. Is there any mark, any sign at all, that separates being awake from dreaming? I have looked for one for years and I cannot find it.",
+      choices: [
+        { tag: "nomark", text: "I cannot name one either.",
+          reply: ["Descartes: Then the hands go the way of the tower. Not because they are far away, but because I cannot establish that I am awake to see them."] },
+        { tag: "coherence", text: "Waking life hangs together, and dreams do not.",
+          reply: ["Descartes: Said in my own words, that would take years to make good, and later I do attempt it. But I cannot use it tonight, because I only notice the incoherence of a dream after I wake, and I cannot check whether I have woken."] }
+      ] }
+  ], () => {
+    openPrompt("dream", () => {
+      flags.dreamDone = true;
+      setObjective("Walk to the slate, marked with E.");
+    });
+  });
+}
+function dlgBeat4() {
+  flags.beat4Done = true;
+  startDlg([
+    { diagram: 1,
+      say: "On a slate by the table Descartes has chalked a square, a triangle, and a short sum. Descartes: Do not think the doubt has taken everything. Look at what a dream cannot reach." },
+    { diagram: 1,
+      say: "Descartes: A painter inventing a creature no one has seen still paints it out of real colours and real shapes. Even the wildest invention borrows its parts from somewhere." },
+    { diagram: 2,
+      say: "Descartes: So the simplest things may survive. Extension, shape, quantity, place, time. And the sciences built only from those, arithmetic and geometry, seem untouched. Whether I sleep or wake, two and three make five, and a square has four sides." },
+    { diagram: 2,
+      say: "Descartes: This is the point where an honest person might stop and be satisfied. Physics and astronomy are doubtful, since they depend on what is out there. Arithmetic does not." }
+  ], () => {
+    openPrompt("simples", () => {
+      flags.simplesDone = true;
+      setObjective("Walk to the dark corner, marked with E.");
+    });
+  });
+}
+function dlgBeat5() {
+  flags.beat5Done = true;
+  startDlg([
+    { say: "The corner beyond the candlelight is nearly black. Descartes stands at the edge of it. Descartes: I do not stop there, and here is why." },
+    { say: "Descartes: I have long believed there is a God who can do all things and who made me as I am. How do I know he has not arranged it so that there is no earth, no sky, and no shape at all, and yet all of these seem to me to exist exactly as they do?" },
+    { say: "Descartes: Or that I go wrong every time I add two and three? A being with that power could allow it. And if you would rather deny there is such a God, that is no comfort either, since the less powerful my origin, the more likely I am a botched instrument that errs continually." },
+    { diagram: 3,
+      say: "Descartes: So I will suppose the worst case, and hold it deliberately. Not a good God, but some malicious spirit of the greatest power, who has bent every effort to deceiving me. The sky, the air, this room, these hands, all of it a trap laid for my belief." },
+    { diagram: 3,
+      say: "Descartes: Now everything is gone. The world, my body, arithmetic. I have nothing. And here I sit in the dark with it, because this is where the exercise actually bites." },
+    { say: "Descartes: And then something holds. He deceives me, so there is something being deceived. He fills my head with falsehoods, and false or not, the thinking is going on. Tell me what you conclude.",
+      choices: [
+        { tag: "exists", text: "If there is thinking, there is a thinker, and that is you.",
+          reply: ["Descartes: That is my conclusion. Let him deceive me as much as he can, he will never bring it about that I am nothing while I think that I am something. This proposition, I am, I exist, is necessarily true every time I state it or conceive it in my mind."] },
+        { tag: "thinking", text: "There is thinking, but that does not prove a self behind it.",
+          reply: ["Descartes: Sharper than most objections I have had, and it will be pressed against me for centuries. I say the thinking cannot be free-floating. My critics say I have smuggled the thinker in through the grammar. Hold on to that objection."] }
+      ] },
+    { say: "Descartes: Notice how little I have won, and how much it matters. I do not yet know what I am, only that I am, and only while I am thinking it. That is the whole of my foundation, and everything else has to be rebuilt on top of it." },
+    { note: true, say: "The order you have just walked is the order of the First Meditation: distant things, then near things met by the dream argument, then the simple natures and arithmetic, then the deceiver, who is introduced precisely because arithmetic survived everything before him. The cogito arrives at the start of the Second Meditation. The objection that thinking does not by itself establish a thinking self was pressed later by Lichtenberg and by Hume." }
+  ], () => {
+    openPrompt("cogito", () => {
+      flags.cogitoDone = true;
+      setObjective("Walk to the piece of wax, marked with E.");
+    });
+  });
+}
+function dlgBeat6() {
+  flags.beat6Done = true;
+  startDlg([
+    { say: "On a dish near the stove sits a fresh piece of wax from the hive. Descartes: One more, now that I have something to stand on. I know that I am. I do not yet know what kind of thing knows best, the senses or the mind. This settles it." },
+    { close: "wax",
+      say: "Descartes: Take it in your hand. It still tastes of honey and smells of the flowers it was gathered from. Its colour, shape, and size are plain. It is hard, it is cold, and struck with a knuckle it makes a sound." },
+    { close: "wax",
+      say: "Descartes: Everything I have just listed came through a sense. Now watch what the fire does to it." },
+    { close: "wax", melt: true,
+      say: "The wax slumps, spreads, and runs on the dish. Descartes: The taste is gone. The scent is gone. The colour has changed, the shape is destroyed, the size is greater. It is liquid, it is hot, and struck now it makes no sound at all." },
+    { close: "wax",
+      say: "Descartes: Not one of the qualities the senses reported has survived. And yet you would say, would you not, that the same wax remains.",
+      choices: [
+        { tag: "same", text: "Yes, it is obviously the same wax.",
+          reply: ["Descartes: Then tell me what you are tracking. Not the taste, scent, colour, shape, size, hardness, or sound, because every one of those is gone. Whatever makes it the same wax was never one of the things a sense reported."] },
+        { tag: "unsure", text: "I want to say yes, but I am no longer sure why.",
+          reply: ["Descartes: Good, be unsure. Whatever makes it the same wax was never one of the things a sense reported, because every one of those is gone and the wax is not."] }
+      ] },
+    { close: false,
+      say: "Descartes: So what I grasp when I grasp the wax is something extended, flexible, and changeable, and I do not see that or touch it or smell it. I judge it, by the mind alone. Even in a lump of beeswax, the part I know best is the part no sense gave me." },
+    { note: true, say: "The wax argument comes from the Second Meditation. Descartes uses it to argue that perception of a body is an inspection by the mind rather than by sight or touch, and that the mind is therefore better known than the body. Empiricist readers have contested every step, and that argument continues through Locke, Berkeley, and Hume." }
+  ], () => {
+    openPrompt("wax", () => {
+      flags.waxDone = true;
+      setObjective("Walk to the writing desk, marked with E, for the last of the evening.");
+    });
+  });
+}
+function dlgClose() {
+  startDlg([
+    { say: "At the desk the paper is stacked and the ink is out. Descartes: I began by trusting nothing the senses handed me, and I reached one certainty by reasoning alone, and I intend to rebuild the world from it." },
+    { say: "Descartes: There are able people who say I have it backward, that the senses are where every material of knowledge starts, and that my wax proves only that I am clever with a candle." },
+    { say: "Descartes: I expect to be argued with for the rest of my life, and I would rather be argued with than agreed with carelessly. You have heard both sides named. Decide where you stand." }
+  ], () => {
+    openPrompt("roads", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+function nextStationIndex() {
+  if (!flags.beat1Done) return 0;
+  if (!flags.sensesDone) return -1;
+  if (!flags.beat2Done) return 1;
+  if (!flags.stickDone) return -1;
+  if (!flags.beat3Done) return 2;
+  if (!flags.dreamDone) return -1;
+  if (!flags.beat4Done) return 3;
+  if (!flags.simplesDone) return -1;
+  if (!flags.beat5Done) return 4;
+  if (!flags.cogitoDone) return -1;
+  if (!flags.beat6Done) return 5;
+  if (!flags.waxDone) return -1;
+  if (!flags.finalDone) return 6;
+  return -1;
+}
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.friarMet) return;
+  const idx = nextStationIndex();
+  if (idx < 0) return;
+  const st = STATIONS[idx];
+  if (Math.abs(player.x - st.x) < 45) {
+    const beats = [dlgBeat1, dlgBeat2, dlgBeat3, dlgBeat4, dlgBeat5, dlgBeat6, dlgClose];
+    beats[idx]();
+    return;
+  }
+  setStatus("The next spot, " + st.name + ", is marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_descartes", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    if (r.response) parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "Descartes and the Stove-Heated Room, Report\n";
+  text += "===========================================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    if (r.response) text += "Response: " + r.response + "\n";
+    text += "-".repeat(50);
+  });
+  text += "\n\nDiscussion questions:\n";
+  text += "1. The whole-series objection.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Modern cosmology and the first cause.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. The gap between a first cause and the God of worship.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Descartes_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!REDUCED_MOTION) {
+    flakes.forEach(f => {
+      f.y += (14 + f.s * 16) * dt;
+      f.x += f.w * 6 * dt;
+      if (f.y > 500) { f.y = -4; f.x = (f.x + 137) % 1700; }
+    });
+  }
+  if (!flags.started || paused) return;
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right, in through the door of the warm room.");
+      });
+    }
+  }
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+  if (!flags.friarMet && !dialogueActive && player.x > 240) {
+    player.x = Math.min(player.x, 240);
+    dlgFriar();
+  }
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawDescartes(x, y) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = "#2f2f38";
+  ctx.beginPath(); ctx.arc(0, -50, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-8, -43); ctx.lineTo(8, -43); ctx.lineTo(14, 0); ctx.lineTo(-14, 0);
+  ctx.closePath(); ctx.fill();
+  // The long hair and the white collar of the period.
+  ctx.fillStyle = "#23232a";
+  ctx.beginPath();
+  ctx.moveTo(-10, -54); ctx.lineTo(10, -54); ctx.lineTo(12, -38); ctx.lineTo(-12, -38);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#e6e3d6";
+  ctx.fillRect(-7, -42, 14, 4);
+  ctx.strokeStyle = "rgba(230,227,214,0.85)";
+  ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.arc(0, -50, 9, 0, Math.PI * 2); ctx.stroke();
+  ctx.restore();
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(230,192,115,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 76 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(230,192,115,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 72 + lift);
+}
+
+/* =========================================================
+   Close views. The stick in water and the wax fill the frame
+   while the conversation is looking at them.
+   ========================================================= */
+
+/* A close view is a zoom, not the scene at scale, so it is drawn
+   inside a frame that says as much. */
+function drawCloseFrame(caption) {
+  const pad = 26;
+  ctx.save();
+  ctx.strokeStyle = "rgba(230,221,194,0.55)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(pad, pad, W - pad * 2, H - pad * 2);
+  ctx.fillStyle = "rgba(230,221,194,0.9)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.letterSpacing = "1px";
+  const label = "A CLOSER LOOK";
+  const lw = ctx.measureText(label).width;
+  ctx.fillStyle = "rgba(20,22,31,0.95)";
+  ctx.fillRect(pad + 16, pad - 9, lw + 16, 18);
+  ctx.fillStyle = "rgba(230,221,194,0.9)";
+  ctx.fillText(label, pad + 24, pad + 4);
+  ctx.letterSpacing = "0px";
+  if (caption) {
+    ctx.fillStyle = "#e6ddc2";
+    ctx.font = "15px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText(caption, W / 2, H - pad - 14);
+    ctx.textAlign = "left";
+  }
+  ctx.restore();
+}
+
+function drawStickClose() {
+  const cx = W / 2, surf = 286, depth = 148;
+  ctx.fillStyle = "#12161f";
+  ctx.fillRect(0, 0, W, H);
+  // The basin, then the water inside it.
+  ctx.fillStyle = "#3a3428";
+  ctx.fillRect(cx - 272, surf - 16, 544, 14);
+  ctx.fillRect(cx - 272, surf + depth, 544, 20);
+  ctx.fillRect(cx - 272, surf - 2, 16, depth + 2);
+  ctx.fillRect(cx + 256, surf - 2, 16, depth + 2);
+  ctx.fillStyle = "#2b5f7a";
+  ctx.fillRect(cx - 256, surf - 2, 512, depth + 2);
+  ctx.fillStyle = "rgba(150,210,235,0.28)";
+  ctx.fillRect(cx - 256, surf - 2, 512, 10);
+
+  const ex = cx - 46;              // where the stick meets the surface
+  ctx.lineCap = "round";
+  // Above the water, the one piece everyone agrees on.
+  ctx.strokeStyle = "#a8792f";
+  ctx.lineWidth = 16;
+  ctx.beginPath();
+  ctx.moveTo(ex - 156, surf - 190);
+  ctx.lineTo(ex, surf - 2);
+  ctx.stroke();
+
+  // Where the stick actually continues, straight on.
+  ctx.strokeStyle = "rgba(168,121,47,0.32)";
+  ctx.beginPath();
+  ctx.moveTo(ex, surf);
+  ctx.lineTo(ex + 96, surf + 116);
+  ctx.stroke();
+  ctx.setLineDash([6, 7]);
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "rgba(238,242,246,0.5)";
+  ctx.beginPath();
+  ctx.moveTo(ex, surf);
+  ctx.lineTo(ex + 96, surf + 116);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // What the eye reports: the submerged part appears to rise
+  // toward the surface, so it lies at a shallower angle.
+  ctx.strokeStyle = "#c08c34";
+  ctx.lineWidth = 16;
+  ctx.beginPath();
+  ctx.moveTo(ex, surf);
+  ctx.lineTo(ex + 190, surf + 74);
+  ctx.stroke();
+  ctx.lineCap = "butt";
+
+  // The kink is at the surface, so mark it.
+  ctx.strokeStyle = "rgba(255,255,255,0.5)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(cx - 256, surf); ctx.lineTo(cx + 256, surf);
+  ctx.stroke();
+
+  ctx.font = "13px 'Segoe UI', sans-serif";
+  ctx.fillStyle = "#f0c98a";
+  ctx.fillText("what the eye reports", ex + 96, surf + 108);
+  ctx.fillStyle = "rgba(238,242,246,0.75)";
+  ctx.fillText("where the stick actually is", ex + 4, surf + 142);
+  ctx.fillStyle = "rgba(238,242,246,0.6)";
+  ctx.fillText("the surface of the water", cx + 96, surf - 12);
+
+  drawCloseFrame("The stick in the water, seen up close");
+}
+function drawWaxClose() {
+  const cx = W / 2, cy = 268;
+  ctx.fillStyle = "#141118";
+  ctx.fillRect(0, 0, W, H);
+  // The dish.
+  ctx.fillStyle = "#6a6270";
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + 96, 210, 40, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#514a58";
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + 90, 196, 34, 0, 0, Math.PI * 2);
+  ctx.fill();
+  const m = waxMelt;
+  // The wax, solid at first and spreading as it melts.
+  const wWide = 92 + m * 118;
+  const wTall = 86 - m * 62;
+  ctx.fillStyle = m < 0.5 ? "#e8d489" : "#f0e2a6";
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + 76 - wTall * 0.1, wWide, wTall * 0.42, 0, 0, Math.PI * 2);
+  ctx.fill();
+  if (m < 0.9) {
+    ctx.fillStyle = "#e8d489";
+    ctx.beginPath();
+    ctx.moveTo(cx - 62, cy + 76);
+    ctx.lineTo(cx - 48, cy + 76 - wTall);
+    ctx.lineTo(cx + 48, cy + 76 - wTall);
+    ctx.lineTo(cx + 62, cy + 76);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "#f2e3a8";
+    ctx.fillRect(cx - 48, cy + 76 - wTall, 96, 8);
+  }
+  if (m > 0.2) {
+    // A shine on the melted surface.
+    ctx.fillStyle = "rgba(255,255,255,0.28)";
+    ctx.beginPath();
+    ctx.ellipse(cx - wWide * 0.3, cy + 66, wWide * 0.22, 7, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // Heat rising from the right, where the stove is.
+  const t2 = REDUCED_MOTION ? 0 : t;
+  ctx.strokeStyle = "rgba(240,160,90,0.35)";
+  ctx.lineWidth = 3;
+  for (let i = 0; i < 3; i++) {
+    const bx = cx + 210 + i * 34;
+    ctx.beginPath();
+    for (let yy = 0; yy < 150; yy += 10) {
+      const px2 = bx + Math.sin((yy + t2 * 60 + i * 40) / 26) * 9;
+      if (yy === 0) ctx.moveTo(px2, cy + 110 - yy);
+      else ctx.lineTo(px2, cy + 110 - yy);
+    }
+    ctx.stroke();
+  }
+  ctx.fillStyle = "rgba(238,242,246,0.75)";
+  ctx.font = "13px 'Segoe UI', sans-serif";
+  const labels = m < 0.5
+    ? ["scent", "colour", "shape", "hardness", "sound when struck"]
+    : ["scent gone", "colour changed", "shape destroyed", "now liquid", "no sound at all"];
+  labels.forEach((s, i) => ctx.fillText(s, 92, 150 + i * 26));
+  drawCloseFrame(m < 0.5 ? "The wax, fresh from the hive" : "The same wax, after the fire");
+}
+
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  if (closeView === "stick") { drawStickClose(); return; }
+  if (closeView === "wax") { drawWaxClose(); return; }
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // Night outside, lamplight inside.
+  ctx.fillStyle = "#161a26";
+  ctx.fillRect(camX, 0, W, H);
+
+  // The room: plaster wall, beams, and a plank floor.
+  ctx.fillStyle = "#4a4034";
+  ctx.fillRect(200, 120, WORLD_W - 300, 22);
+  ctx.fillStyle = "#5c5142";
+  ctx.fillRect(200, 142, WORLD_W - 300, GROUND - 142);
+  ctx.fillStyle = "#3d3428";
+  for (let bx = 260; bx < WORLD_W - 140; bx += 180) ctx.fillRect(bx, 142, 14, GROUND - 142);
+  ctx.fillStyle = "#6b5b46";
+  ctx.fillRect(200, GROUND, WORLD_W - 300, H - GROUND);
+  ctx.fillStyle = "#5a4c3a";
+  for (let fx = 200; fx < WORLD_W - 100; fx += 46) ctx.fillRect(fx, GROUND, 3, H - GROUND);
+  // The doorway at the left.
+  ctx.fillStyle = "#191d29";
+  ctx.fillRect(214, 250, 54, GROUND - 250);
+
+  // The window at the first spot, with snow beyond.
+  ctx.fillStyle = "#3a3428";
+  ctx.fillRect(STATIONS[0].x - 40, 190, 80, 110);
+  ctx.fillStyle = "#1b2233";
+  ctx.fillRect(STATIONS[0].x - 33, 197, 66, 96);
+  ctx.strokeStyle = "#3a3428";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(STATIONS[0].x, 197); ctx.lineTo(STATIONS[0].x, 293);
+  ctx.moveTo(STATIONS[0].x - 33, 245); ctx.lineTo(STATIONS[0].x + 33, 245);
+  ctx.stroke();
+
+  // The stove at the second spot, the source of the room's name.
+  const gx = STATIONS[2].x;
+  ctx.fillStyle = "#2e2b2b";
+  ctx.fillRect(gx - 40, GROUND - 130, 80, 130);
+  ctx.fillStyle = "#26232a";
+  ctx.fillRect(gx - 12, GROUND - 190, 24, 60);
+  const fl = REDUCED_MOTION ? 0 : Math.sin(t * 8) * 3;
+  ctx.fillStyle = "#1a1414";
+  ctx.fillRect(gx - 22, GROUND - 86, 44, 40);
+  ctx.fillStyle = "#e08a3c";
+  ctx.beginPath();
+  ctx.ellipse(gx, GROUND - 60, 15, 18 + fl, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#f4c26a";
+  ctx.beginPath();
+  ctx.ellipse(gx, GROUND - 54, 8, 10 + fl * 0.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(244,194,106,0.09)";
+  ctx.beginPath();
+  ctx.arc(gx, GROUND - 70, 150, 0, Math.PI * 2);
+  ctx.fill();
+
+  // The basin at the second spot.
+  const bx2 = STATIONS[1].x;
+  ctx.fillStyle = "#57503f";
+  ctx.fillRect(bx2 - 44, GROUND - 46, 88, 10);
+  ctx.fillRect(bx2 - 38, GROUND - 36, 8, 36);
+  ctx.fillRect(bx2 + 30, GROUND - 36, 8, 36);
+  ctx.fillStyle = "#6a6270";
+  ctx.beginPath(); ctx.ellipse(bx2, GROUND - 52, 34, 11, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#2b5f7a";
+  ctx.beginPath(); ctx.ellipse(bx2, GROUND - 53, 28, 8, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = "#a8792f";
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(bx2 - 16, GROUND - 92); ctx.lineTo(bx2 + 6, GROUND - 52);
+  ctx.stroke();
+
+  // The slate at the fourth spot, chalked as the talk goes on.
+  const sx2 = STATIONS[3].x;
+  ctx.fillStyle = "#57503f";
+  ctx.fillRect(sx2 - 52, 214, 104, 84);
+  ctx.fillStyle = "#2a2f2c";
+  ctx.fillRect(sx2 - 45, 221, 90, 70);
+  if (slateStage >= 1) {
+    ctx.strokeStyle = "#e6e3d6";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(sx2 - 34, 232, 26, 26);
+    ctx.beginPath();
+    ctx.moveTo(sx2 + 6, 258); ctx.lineTo(sx2 + 20, 232); ctx.lineTo(sx2 + 34, 258);
+    ctx.closePath(); ctx.stroke();
+  }
+  if (slateStage >= 2) {
+    ctx.fillStyle = "#e6e3d6";
+    ctx.font = "15px Georgia, serif";
+    ctx.fillText("2 + 3 = 5", sx2 - 32, 282);
+  }
+  ctx.fillStyle = "#57503f";
+  ctx.fillRect(sx2 - 6, 298, 12, GROUND - 298);
+
+  // The wax on its dish at the sixth spot.
+  const wx2 = STATIONS[5].x;
+  ctx.fillStyle = "#57503f";
+  ctx.fillRect(wx2 - 38, GROUND - 44, 76, 10);
+  ctx.fillRect(wx2 - 32, GROUND - 34, 8, 34);
+  ctx.fillRect(wx2 + 24, GROUND - 34, 8, 34);
+  ctx.fillStyle = "#6a6270";
+  ctx.beginPath(); ctx.ellipse(wx2, GROUND - 50, 26, 9, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#e8d489";
+  if (waxMelt > 0.5) {
+    ctx.beginPath(); ctx.ellipse(wx2, GROUND - 52, 22, 6, 0, 0, Math.PI * 2); ctx.fill();
+  } else {
+    ctx.fillRect(wx2 - 12, GROUND - 70, 24, 20);
+  }
+
+  // The fireside chair at the third spot.
+  const cx2 = STATIONS[2].x + 70;
+  ctx.fillStyle = "#4a3c30";
+  ctx.fillRect(cx2 - 30, GROUND - 40, 60, 12);
+  ctx.fillRect(cx2 - 30, GROUND - 96, 12, 60);
+  ctx.fillRect(cx2 + 18, GROUND - 96, 12, 60);
+  ctx.fillStyle = "#7a4a3a";
+  ctx.fillRect(cx2 - 24, GROUND - 92, 48, 54);
+  ctx.fillStyle = "#4a3c30";
+  ctx.fillRect(cx2 - 26, GROUND - 28, 8, 28);
+  ctx.fillRect(cx2 + 18, GROUND - 28, 8, 28);
+
+  // The writing desk at the fourth, with paper, ink, and a candle.
+  const dx = STATIONS[6].x;
+  ctx.fillStyle = "#57503f";
+  ctx.fillRect(dx - 60, GROUND - 54, 120, 12);
+  ctx.fillRect(dx - 54, GROUND - 42, 10, 42);
+  ctx.fillRect(dx + 44, GROUND - 42, 10, 42);
+  ctx.fillStyle = "#e6e3d6";
+  ctx.fillRect(dx - 34, GROUND - 62, 34, 10);
+  ctx.fillRect(dx - 6, GROUND - 60, 30, 8);
+  ctx.fillStyle = "#23232a";
+  ctx.fillRect(dx + 30, GROUND - 62, 10, 10);
+  if (candleLit) {
+    ctx.fillStyle = "#d8d2c2";
+    ctx.fillRect(dx - 52, GROUND - 78, 6, 24);
+    const cfl = REDUCED_MOTION ? 0 : Math.sin(t * 7) * 1.5;
+    ctx.fillStyle = "#ffb84d";
+    ctx.beginPath();
+    ctx.ellipse(dx - 49, GROUND - 84 + cfl * 0.4, 3, 6 + cfl, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "rgba(255,184,77,0.10)";
+    ctx.beginPath();
+    ctx.arc(dx - 49, GROUND - 80, 70, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // The dark corner at the fifth spot, where the deceiver is raised.
+  const kx = STATIONS[4].x;
+  const dark = ctx.createLinearGradient(kx - 150, 0, kx + 130, 0);
+  dark.addColorStop(0, "rgba(10,10,16,0)");
+  dark.addColorStop(0.55, "rgba(10,10,16,0.72)");
+  dark.addColorStop(1, "rgba(10,10,16,0.86)");
+  ctx.fillStyle = dark;
+  ctx.fillRect(kx - 150, 130, 300, H - 130);
+
+  // Snow, visible only through the window.
+  ctx.fillStyle = "rgba(226,235,247,0.9)";
+  flakes.forEach(f => {
+    const inWin = f.x > STATIONS[0].x - 32 && f.x < STATIONS[0].x + 32 && f.y > 198 && f.y < 292;
+    if (!inWin) return;
+    ctx.beginPath();
+    ctx.arc(f.x, f.y, f.s + 0.5, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  const idx = nextStationIndex();
+  const dX = !flags.friarMet ? npcs.descartes.x
+    : idx >= 0 ? STATIONS[idx].x - 64
+    : STATIONS[6].x - 64;
+  drawDescartes(dX, GROUND);
+  if (flags.friarMet && idx >= 0) drawMarker(STATIONS[idx].x, GROUND);
+  drawPerson(player.x, GROUND, player.color, player.facing);
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(14,16,23,0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f0f2f7";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Descartes and the Stove-Heated Room", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#a9b1c4";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You are in the passage outside a warm room. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

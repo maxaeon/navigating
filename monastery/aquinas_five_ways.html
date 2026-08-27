@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Five Ways</title>
+<style>
+:root{
+  --page:#12141d;
+  --panel:#1a1e2b;
+  --panel-2:#242a3c;
+  --line:#39415e;
+  --text:#f0f2f7;
+  --muted:#a9b1c4;
+  --candle:#e6c073;
+  --candle-deep:#a8862f;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2d3449}
+button.primary{background:var(--candle); border-color:var(--candle-deep); color:#221a08; font-weight:600}
+button.primary:hover{background:#f0d18e}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--candle); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0e1017; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--candle-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#1e2334; border-color:var(--candle)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--candle); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--candle)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--candle)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#10131c; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--candle)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--candle); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#10131c; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--candle)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--candle); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--candle)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>The Five Ways</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>The unit's road jumps two centuries, as this region does on purpose: it is now around 1270, and in the abbey church a visiting Dominican master named Thomas Aquinas is walking the aisles before vespers. Where the prior of Bec argued from a definition alone, Aquinas argues from things you can point at, and the church is full of them. You will walk the church with him, station to station: the bell rope, the candles, a memorial slab, the light in the windows, and the swallows under the eaves, and each one becomes one of his five arguments. Walk with the arrow keys, press E at each marked station, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you, and advances the walk at each marked station. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The next stop in the region is The Problem of Evil, in the infirmary.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. A standing objection, pressed later by Hume and Russell: if every member of a series has a cause, why does the whole series need one more? Explain the objection in your own words, and say what Aquinas would need to show to answer it.</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. Modern cosmology gives the universe a history and possibly a beginning. Does that help the first cause argument, hurt it, or change the subject? Say why.</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. Each Way ends with a phrase like "and this all understand to be God." Describe the gap between a first mover or first cause and the God people actually worship, and what further argument would be needed to cross it.</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> The Five Ways argue from</p>
+      <label><input type="radio" name="q1" value="Observed features of the world, such as motion and causes"> observed features of the world, such as motion and causes</label>
+      <label><input type="radio" name="q1" value="The definition of God alone"> the definition of God alone</label>
+      <label><input type="radio" name="q1" value="The authority of scripture"> the authority of scripture</label>
+
+      <p><strong>2.</strong> Aquinas's response to Anselm's style of proof was to</p>
+      <label><input type="radio" name="q2" value="Reject it: a proof for us must start from effects we can observe"> reject it: a proof for us must start from effects we can observe</label>
+      <label><input type="radio" name="q2" value="Accept it and add five more like it"> accept it and add five more like it</label>
+      <label><input type="radio" name="q2" value="Ignore it entirely"> ignore it entirely</label>
+
+      <p><strong>3.</strong> The fifth way argues from</p>
+      <label><input type="radio" name="q3" value="Things without knowledge acting toward ends"> things without knowledge acting toward ends</label>
+      <label><input type="radio" name="q3" value="The existence of miracles"> the existence of miracles</label>
+      <label><input type="radio" name="q3" value="The degrees of goodness in things"> the degrees of goodness in things</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_aquinas";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: At the church door",
+    text: "The friar inside claims that ordinary features of the world, that things move, that flames light other flames, that swallows build nests, can prove something beyond the world. Before you hear him: can they?",
+    mcq: ["Yes, the world's features need an explanation the world cannot give itself", "No, the world's features only ever point to more of the world", "They can suggest, but never prove", "I am not sure yet"],
+    requireText: true
+  },
+  regress: {
+    title: "Stage 1: The regress",
+    text: "The first two Ways both turn on the same hinge: a chain of movers, or of causes, cannot run back forever, so there must be a first. Is an infinite regress of causes actually impossible?",
+    mcq: ["Yes, without a first nothing later could ever happen", "No, every member can have a cause without the series having a first", "It is impossible for some kinds of chains and fine for others", "Nobody knows, and the argument leans on that gap"],
+    requireText: true
+  },
+  degrees: {
+    title: "Stage 2: Degrees",
+    text: "The fourth Way moves from more and less, things are more and less good, more and less noble, to a maximum that causes the rest. Does more and less imply a most?",
+    mcq: ["Yes, comparisons need a standard, and a standard needs a bearer", "No, things can be warmer and cooler without a hottest thing existing", "It works for some qualities and fails for others", "The step from a maximum to a cause of the rest is the weak point"],
+    requireText: true
+  },
+  gap: {
+    title: "Stage 3: The last phrase",
+    text: "Each Way ends with a phrase like: and this all understand to be God. Suppose every Way succeeds. Has anything been proved about the God of prayer and worship, or only about a first mover, a first cause, a necessary being, a maximum, and a director of ends?",
+    mcq: ["The Ways reach the God of religion, since the roles fit no one else", "They reach five abstract conclusions, and the last phrase smuggles in the rest", "They reach one being with five descriptions, which is real progress but not yet religion", "They fail earlier, so the question does not arise"],
+    requireText: true
+  },
+  verdict: {
+    title: "Stage 4: The strongest and the weakest",
+    text: "You walked all five Ways at their stations. Name the Way you find strongest and the Way you find weakest, and give a reason for each.",
+    mcq: null,
+    requireText: true,
+    textHint: "One strongest, one weakest, one reason each."
+  }
+};
+
+const quizKeys = [
+  "Observed features of the world, such as motion and causes",
+  "Reject it: a proof for us must start from effects we can observe",
+  "Things without knowledge acting toward ends"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world: the nave of the abbey church, entered from the
+   west door, with five stations along it.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 1700;
+
+const STATIONS = [
+  { x: 420,  name: "the bell rope" },
+  { x: 660,  name: "the candles" },
+  { x: 920,  name: "the memorial slab" },
+  { x: 1180, name: "the windows" },
+  { x: 1480, name: "the garth door" }
+];
+
+const flags = {
+  started: false,
+  firstDone: false,     // stage 0
+  friarMet: false,
+  way1Done: false,
+  way2Done: false,
+  regressDone: false,   // stage 1
+  way3Done: false,
+  way4Done: false,
+  degreesDone: false,   // stage 2
+  way5Done: false,
+  gapDone: false,       // stage 3
+  finalDone: false
+};
+let paused = false;
+let startTimer = 0;
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  aquinas: { x: 320, color: "#e8e4d8" }
+};
+const keys = {};
+const record = { verdicts: [] };
+
+/* The snow, seen through the windows. */
+const flakes = [];
+for (let i = 0; i < 60; i++) {
+  flakes.push({ x: (i * 137.3) % 1700, y: (i * 91.7) % 500, s: 0.5 + (i % 3) * 0.4, w: (i % 5) - 2 });
+}
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration, help, dialogue, and the modal
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  speechSynthesis.speak(new SpeechSynthesisUtterance(p.title + ". " + p.text));
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.friarMet) return "Walk right into the church. The friar meets you inside the door.";
+  if (!flags.finalDone) return "Walk to the next glowing station and press E there. The questions appear between the stations.";
+  return "The walk is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  if (c.tag) record.verdicts.push(c.text);
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+function setObjective(txt) { setObjectiveText(txt); }
+function setObjectiveText(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   The five stations
+   ========================================================= */
+function dlgFriar() {
+  flags.friarMet = true;
+  startDlg([
+    { say: "A very large friar in the white tunic and black cloak of the Dominicans stands inside the door, watching the snow through it. Aquinas: Come in out of the weather." },
+    { say: "You have picked a good hour. The church is empty, and I think best while walking it. Walk with me, and I will show you five arguments." },
+    { say: "Aquinas: I should tell you where I stand first. Two centuries ago the prior of this house argued for God from a definition alone, and I honor him, and I do not follow him." },
+    { say: "We do not know God's essence, so no definition of ours can carry that weight. A proof for creatures like us must start lower down, from effects we can point at. So we will point at things as we go." },
+    { note: true, say: "The unit's road has jumped two centuries: Thomas Aquinas taught in Paris and Italy around 1270, and his Five Ways open the Summa Theologiae. He explicitly rejected Anselm's style of proof: for Aquinas, God's existence is not self-evident to us, and must be argued from the observed world." }
+  ], () => {
+    setObjective("Walk right to the first glowing station, " + STATIONS[0].name + ", and press E.");
+  });
+}
+function dlgWay1() {
+  flags.way1Done = true;
+  startDlg([
+    { say: "Aquinas takes the bell rope and pulls, and far above, the bell answers. Aquinas: The first way, from motion." },
+    { say: "The bell moves because the rope moves, the rope because my hand moves, my hand because my arm does. Nothing moves itself: whatever is moved is moved by another." },
+    { say: "Aquinas: Follow the chain back. If it runs back without end, there is no first mover, and with no first mover nothing after it moves, and the bell up there hangs silent. But you heard it. So the chain has a first mover, itself unmoved.",
+      choices: [
+        { tag: "w1", text: "The bell rang, so the chain ended somewhere.",
+          reply: ["Aquinas: Hold that thought at the next station, and see whether it survives a harder look."] },
+        { tag: "w1", text: "Perhaps the chain runs back forever anyway.",
+          reply: ["Aquinas: Then you will enjoy the next station, where the same hinge carries more weight."] }
+      ] }
+  ], () => {
+    setObjective("Walk to the next station, " + STATIONS[1].name + ", and press E.");
+  });
+}
+function dlgWay2() {
+  flags.way2Done = true;
+  startDlg([
+    { say: "At the candle stand, Aquinas lights a fresh candle from a burning one. Aquinas: The second way, from efficient causes." },
+    { say: "This flame exists because that flame lit it, and that one was lit by another before it. Nothing causes itself, since it would have to exist before it existed." },
+    { say: "Aquinas: Run the chain of causes back without a first cause, and there is nothing to hand the fire down, and this church stands dark." },
+    { say: "But it is lit. So there is a first efficient cause. And notice that I have not said one word yet about who or what it is." }
+  ], () => {
+    openPrompt("regress", () => {
+      flags.regressDone = true;
+      setObjective("Walk to the next station, " + STATIONS[2].name + ", and press E.");
+    });
+  });
+}
+function dlgWay3() {
+  flags.way3Done = true;
+  startDlg([
+    { say: "Aquinas stops at a worn slab in the floor, cut with a name and two dates. Aquinas: The third way, from contingency. The brother under this stone once was not, then was, and now is not." },
+    { say: "You and I are the same kind of thing: possible, not necessary. What can fail to exist, at some time does not exist." },
+    { say: "Aquinas: Suppose everything were like that, able not to be. Then given endless time, at some point everything would have been absent at once." },
+    { say: "And nothing comes from nothing, so there would be nothing now. But the church is here, and so are you. So not everything is contingent. Something exists that cannot fail to exist, a necessary being." },
+    { note: true, say: "Anselm's reply to Gaunilo turned on the same idea from the other direction: a being whose nonexistence cannot be thought. Aquinas reaches necessity by observation and elimination, Anselm by definition. The two activities of this region so far are the same destination approached by opposite roads." }
+  ], () => {
+    setObjective("Walk to the next station, " + STATIONS[3].name + ", and press E.");
+  });
+}
+function dlgWay4() {
+  flags.way4Done = true;
+  startDlg([
+    { say: "Under the windows, the light comes in stronger through one and weaker through the next. Aquinas: The fourth way, from degrees." },
+    { say: "We say one thing is better than another, one truer, one nobler, and more and less are said by distance from a most. These panes are brighter and dimmer by their distance from the one sun." },
+    { say: "Aquinas: So there is something maximally good and true and noble, and what is maximal in a kind is the cause of that kind in the rest, as fire, the hottest, is the cause of heat in hot things. I will tell you honestly: of my five, this is the one my students fight hardest." }
+  ], () => {
+    openPrompt("degrees", () => {
+      flags.degreesDone = true;
+      setObjective("Walk to the last station, " + STATIONS[4].name + ", and press E.");
+    });
+  });
+}
+function dlgWay5() {
+  flags.way5Done = true;
+  startDlg([
+    { say: "At the door to the garth, Aquinas points up under the eaves, where mud nests cling to the stone. Aquinas: The fifth way, from the governance of things." },
+    { say: "The swallows build the same nest every spring, and the bees their combs, and the vine climbs toward the light. Things with no knowledge act, and act for ends, and hit them, not by luck but always or for the most part." },
+    { say: "Aquinas: What lacks knowledge does not aim itself, as the arrow does not aim itself but is aimed by the archer. So some intelligence directs natural things to their ends. And each of my five ways I close with the same phrase: and this all understand to be God." }
+  ], () => {
+    openPrompt("gap", () => {
+      flags.gapDone = true;
+      setObjective("Press E once more by the garth door for the friar's last word.");
+    });
+  });
+}
+function dlgClose() {
+  startDlg([
+    { say: "Aquinas: You have walked all five, and you have seen what they are and what they are not. They begin from the world, because that is where we begin. Reason walks this far on its own legs, to a first mover, a first cause, a necessary being, a maximum, a director of ends." },
+    { say: "Aquinas: Whether that first cause has a face, whether it hears, whether it loves, reason alone does not deliver, and I never claimed it did. But the distance reason does cover is real, and the man who has walked it knows something about the world that he did not know this morning." }
+  ], () => {
+    openPrompt("verdict", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+function nextStationIndex() {
+  if (!flags.way1Done) return 0;
+  if (!flags.way2Done) return 1;
+  if (!flags.regressDone) return -1;
+  if (!flags.way3Done) return 2;
+  if (!flags.way4Done) return 3;
+  if (!flags.degreesDone) return -1;
+  if (!flags.way5Done) return 4;
+  if (!flags.gapDone) return -1;
+  if (!flags.finalDone) return 4;
+  return -1;
+}
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.friarMet) return;
+  const idx = nextStationIndex();
+  if (idx < 0) return;
+  const st = STATIONS[idx];
+  if (Math.abs(player.x - st.x) < 45) {
+    if (!flags.way1Done) { dlgWay1(); return; }
+    if (!flags.way2Done && idx === 1) { dlgWay2(); return; }
+    if (!flags.way3Done && idx === 2) { dlgWay3(); return; }
+    if (!flags.way4Done && idx === 3) { dlgWay4(); return; }
+    if (!flags.way5Done && idx === 4) { dlgWay5(); return; }
+    if (flags.way5Done && !flags.finalDone && idx === 4) { dlgClose(); return; }
+    return;
+  }
+  setStatus("The next station, " + st.name + ", is marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_aquinas", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    if (r.response) parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "The Five Ways, Report\n";
+  text += "=====================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    if (r.response) text += "Response: " + r.response + "\n";
+    text += "-".repeat(50);
+  });
+  text += "\n\nDiscussion questions:\n";
+  text += "1. The whole-series objection.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Modern cosmology and the first cause.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. The gap between a first cause and the God of worship.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Five_Ways_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!REDUCED_MOTION) {
+    flakes.forEach(f => {
+      f.y += (14 + f.s * 16) * dt;
+      f.x += f.w * 6 * dt;
+      if (f.y > 500) { f.y = -4; f.x = (f.x + 137) % 1700; }
+    });
+  }
+  if (!flags.started || paused) return;
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right, in through the west door of the church.");
+      });
+    }
+  }
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+  if (!flags.friarMet && !dialogueActive && player.x > 250) {
+    player.x = Math.min(player.x, 250);
+    dlgFriar();
+  }
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawFriar(x, y) {
+  ctx.save();
+  ctx.translate(x, y);
+  // The white tunic.
+  ctx.fillStyle = "#e8e4d8";
+  ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-8, -44); ctx.lineTo(8, -44); ctx.lineTo(15, 0); ctx.lineTo(-15, 0);
+  ctx.closePath(); ctx.fill();
+  // The black cloak over the shoulders.
+  ctx.fillStyle = "#2c2c33";
+  ctx.beginPath();
+  ctx.moveTo(-8, -44); ctx.lineTo(8, -44); ctx.lineTo(12, -14); ctx.lineTo(-12, -14);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = "rgba(40,40,50,0.9)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.stroke();
+  ctx.restore();
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(230,192,115,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 76 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(230,192,115,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 72 + lift);
+}
+function drawCandle(x, y) {
+  const fl = REDUCED_MOTION ? 0 : Math.sin(t * 7 + x) * 1.5;
+  ctx.fillStyle = "#d8d2c2";
+  ctx.fillRect(x - 3, y - 16, 6, 16);
+  ctx.fillStyle = "#ffb84d";
+  ctx.beginPath();
+  ctx.ellipse(x, y - 21 + fl * 0.4, 3, 6 + fl, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(255,184,77,0.12)";
+  ctx.beginPath();
+  ctx.arc(x, y - 18, 30, 0, Math.PI * 2);
+  ctx.fill();
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // The winter dusk outside, seen at the left edge and the garth.
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, "#2c3450");
+  sky.addColorStop(0.7, "#4a5570");
+  sky.addColorStop(1, "#6a7488");
+  ctx.fillStyle = sky;
+  ctx.fillRect(camX, 0, W, H);
+  ctx.fillStyle = "#dfe5ec";
+  ctx.fillRect(camX, GROUND, W, H - GROUND);
+
+  // The church interior, from the west door to the east end, with
+  // the near wall cut away.
+  ctx.fillStyle = "#565d6e";
+  ctx.fillRect(180, 96, WORLD_W - 260, 22);        // the roofline
+  ctx.fillStyle = "#454b5a";
+  ctx.fillRect(180, 118, WORLD_W - 260, GROUND - 118);
+  ctx.fillStyle = "#8b93a4";
+  ctx.fillRect(180, GROUND, WORLD_W - 260, 8);     // the floor line
+  // The stone floor inside.
+  ctx.fillStyle = "#7d8494";
+  ctx.fillRect(180, GROUND, WORLD_W - 260, H - GROUND);
+  // The west door, open to the snow.
+  ctx.fillStyle = "#2c3450";
+  ctx.fillRect(200, 260, 56, GROUND - 260);
+  // Columns down the nave.
+  ctx.fillStyle = "#6a7182";
+  for (let cx0 = 340; cx0 < WORLD_W - 160; cx0 += 260) {
+    ctx.fillRect(cx0 - 9, 150, 18, GROUND - 150);
+    ctx.fillRect(cx0 - 14, 144, 28, 8);
+  }
+  // The windows, each admitting a different strength of light.
+  const panes = [
+    { x: 520,  glow: 0.10 }, { x: 780, glow: 0.16 },
+    { x: 1040, glow: 0.30 }, { x: 1180, glow: 0.44 },
+    { x: 1320, glow: 0.22 }
+  ];
+  panes.forEach(p => {
+    ctx.fillStyle = "#2a2f3a";
+    ctx.fillRect(p.x - 22, 160, 44, 90);
+    ctx.fillStyle = "#8fb0cc";
+    ctx.beginPath();
+    ctx.moveTo(p.x - 16, 200);
+    ctx.lineTo(p.x + 16, 200);
+    ctx.lineTo(p.x + 16, 244);
+    ctx.lineTo(p.x - 16, 244);
+    ctx.closePath(); ctx.fill();
+    ctx.beginPath();
+    ctx.arc(p.x, 200, 16, Math.PI, 0);
+    ctx.fill();
+    // The shaft of light, stronger and weaker pane by pane.
+    ctx.fillStyle = "rgba(255,244,214," + p.glow + ")";
+    ctx.beginPath();
+    ctx.moveTo(p.x - 16, 190);
+    ctx.lineTo(p.x + 16, 190);
+    ctx.lineTo(p.x + 78, GROUND);
+    ctx.lineTo(p.x + 26, GROUND);
+    ctx.closePath(); ctx.fill();
+  });
+
+  // Station 1: the bell rope, hanging from the roof through a ring.
+  ctx.strokeStyle = "#c9b98a";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(STATIONS[0].x, 118);
+  ctx.lineTo(STATIONS[0].x, GROUND - 60);
+  ctx.stroke();
+  ctx.fillStyle = "#8a5a33";
+  ctx.fillRect(STATIONS[0].x - 6, GROUND - 66, 12, 22);
+  // Station 2: the candle stand.
+  ctx.fillStyle = "#3a3a45";
+  ctx.fillRect(STATIONS[1].x - 34, GROUND - 34, 68, 8);
+  ctx.fillRect(STATIONS[1].x - 4, GROUND - 26, 8, 26);
+  drawCandle(STATIONS[1].x - 22, GROUND - 34);
+  drawCandle(STATIONS[1].x, GROUND - 34);
+  drawCandle(STATIONS[1].x + 22, GROUND - 34);
+  // Station 3: the memorial slab in the floor.
+  ctx.fillStyle = "#6a7182";
+  ctx.fillRect(STATIONS[2].x - 44, GROUND + 10, 88, 26);
+  ctx.strokeStyle = "#4a505e";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(STATIONS[2].x - 44, GROUND + 10, 88, 26);
+  ctx.fillStyle = "#4a505e";
+  ctx.fillRect(STATIONS[2].x - 30, GROUND + 20, 60, 3);
+  // Station 4 is the windows themselves; its marker floats there.
+  // Station 5: the door to the garth, snow beyond, nests above.
+  ctx.fillStyle = "#57503f";
+  ctx.fillRect(STATIONS[4].x - 24, 272, 48, GROUND - 272);
+  ctx.fillStyle = "#dfe5ec";
+  ctx.fillRect(STATIONS[4].x - 18, 300, 36, GROUND - 300);
+  ctx.fillStyle = "#6a5a44";
+  [[-40, 150], [-6, 142], [30, 152]].forEach(np => {
+    ctx.beginPath();
+    ctx.arc(STATIONS[4].x + np[0], np[1], 8, 0, Math.PI);
+    ctx.fill();
+  });
+
+  // The altar at the east end, with two candles.
+  ctx.fillStyle = "#8d8471";
+  ctx.fillRect(WORLD_W - 200, GROUND - 40, 90, 40);
+  drawCandle(WORLD_W - 186, GROUND - 40);
+  drawCandle(WORLD_W - 124, GROUND - 40);
+
+  // Snow through the open doors.
+  ctx.fillStyle = "rgba(240,244,250,0.85)";
+  flakes.forEach(f => {
+    const inWestDoor = f.x > 196 && f.x < 260 && f.y > 256;
+    const inGarthDoor = f.x > STATIONS[4].x - 20 && f.x < STATIONS[4].x + 20 && f.y > 296;
+    const outside = f.x < 180;
+    if (!(inWestDoor || inGarthDoor || outside)) return;
+    ctx.beginPath();
+    ctx.arc(f.x, f.y, f.s + 0.6, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // The friar, standing at the active station, and the marker.
+  const idx = nextStationIndex();
+  const friarX = !flags.friarMet ? npcs.aquinas.x
+    : idx >= 0 ? STATIONS[idx].x - 60
+    : STATIONS[4].x - 60;
+  drawFriar(friarX, GROUND);
+  if (flags.friarMet && idx >= 0) drawMarker(STATIONS[idx].x, GROUND);
+
+  drawPerson(player.x, GROUND, player.color, player.facing);
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(14,16,23,0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f0f2f7";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("The Five Ways", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#a9b1c4";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You stand in the snow outside the west door. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

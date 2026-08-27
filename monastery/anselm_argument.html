@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anselm's Argument</title>
+<style>
+:root{
+  --page:#12141d;
+  --panel:#1a1e2b;
+  --panel-2:#242a3c;
+  --line:#39415e;
+  --text:#f0f2f7;
+  --muted:#a9b1c4;
+  --candle:#e6c073;
+  --candle-deep:#a8862f;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2d3449}
+button.primary{background:var(--candle); border-color:var(--candle-deep); color:#221a08; font-weight:600}
+button.primary:hover{background:#f0d18e}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--candle); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0e1017; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--candle-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#1e2334; border-color:var(--candle)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--candle); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--candle)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--candle)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#10131c; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--candle)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--candle); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#10131c; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--candle)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--candle); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--candle)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>Anselm's Argument</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>Normandy, 1078, deep winter. The journey has left Greece far behind, and you arrive at the abbey of Bec at dusk, seeking shelter. The prior, a monk named Anselm, has just finished a small book called the Proslogion, and in it is an argument that has been making believers and doubters argue ever since: a proof of God from a definition alone, with no observation of the world required. He will walk you through it step by step, you will grant or resist each step, and a letter from a monk named Gaunilo waits in the day's mail. Walk with the arrow keys, press E to talk, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you, and advances the evening from your seat in the scriptorium. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The next stop in the region is The Five Ways, in the abbey church.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Centuries later, Kant objected that existence is not a property a thing can have or lack the way it has a color or a size, so adding existence cannot make a concept greater. Explain the objection in your own words, and say whether you find it convincing.</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. Has an argument ever changed what you believe about something important, as opposed to how you talk about it? What did the change require besides the argument?</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. Anselm and Gaunilo were both believing monks, and their exchange is sharp but respectful. What does their debate suggest about the difference between defending a belief and testing one?</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> Anselm's definition at the base of the argument is that God is</p>
+      <label><input type="radio" name="q1" value="That than which nothing greater can be thought"> that than which nothing greater can be thought</label>
+      <label><input type="radio" name="q1" value="The first cause of the universe"> the first cause of the universe</label>
+      <label><input type="radio" name="q1" value="The designer of living things"> the designer of living things</label>
+
+      <p><strong>2.</strong> Gaunilo's reply asked readers to run the same argument on</p>
+      <label><input type="radio" name="q2" value="A perfect island"> a perfect island</label>
+      <label><input type="radio" name="q2" value="A perfect number"> a perfect number</label>
+      <label><input type="radio" name="q2" value="A perfect city"> a perfect city</label>
+
+      <p><strong>3.</strong> The argument is called a priori because it</p>
+      <label><input type="radio" name="q3" value="Reasons from concepts alone, without observing the world"> reasons from concepts alone, without observing the world</label>
+      <label><input type="radio" name="q3" value="Came before all other arguments historically"> came before all other arguments historically</label>
+      <label><input type="radio" name="q3" value="Relies on the testimony of scripture"> relies on the testimony of scripture</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_anselm";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: At the gate",
+    text: "Inside, a monk claims he can prove the existence of God by thinking carefully about a definition, without observing anything. Before you hear it: can the existence of anything be settled by thought alone?",
+    mcq: ["Yes, for some things: mathematics seems to work this way", "No: existence is always settled by looking, never by defining", "Only God could be a special case, if anything is", "I am not sure yet"],
+    requireText: true
+  },
+  steps: {
+    title: "Stage 1: The steps",
+    text: "You walked the argument step by step. If you had to resist it somewhere, where would you push?",
+    mcq: ["The definition itself: the phrase may not pick out anything coherent", "Existence in the understanding: understanding a phrase is not having a thing in mind", "That existing in reality is greater than existing in the understanding alone", "Nowhere: the argument holds", "Everywhere at once: something is wrong even if no single step looks bad"],
+    requireText: true
+  },
+  island: {
+    title: "Stage 2: The island",
+    text: "Gaunilo's island runs the same steps on the most excellent island thinkable and concludes the island must exist, which is absurd. Does the parody break Anselm's argument?",
+    mcq: ["Yes: an argument that proves a perfect island proves too much", "No: islands are the kind of thing that can fail to exist, so the parody does not carry over", "It shifts the burden: Anselm must now show why God is different, and that is real progress", "Both arguments fail together"],
+    requireText: true
+  },
+  necessary: {
+    title: "Stage 3: A necessary being",
+    text: "Anselm's reply is that the argument works only for a being whose nonexistence cannot even be thought, a necessary being, and no island is like that. Does the idea of a being that cannot fail to exist make sense to you?",
+    mcq: ["Yes, and it is exactly what the word God should mean", "It makes sense as a definition, but definitions cannot force reality", "No: for anything at all, I can think of it as not existing", "I can follow the words without being sure they describe a possibility"],
+    requireText: true
+  },
+  faith: {
+    title: "Stage 4: Faith seeking understanding",
+    text: "Anselm called his project faith seeking understanding: he believed first and built the argument after. What role should arguments like this play in religious belief, for people who believe and for people who do not?",
+    mcq: null,
+    requireText: true,
+    textHint: "Answer for both audiences."
+  }
+};
+
+const quizKeys = [
+  "That than which nothing greater can be thought",
+  "A perfect island",
+  "Reasons from concepts alone, without observing the world"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world: the snowy road, the gate, the cloister walk,
+   and the scriptorium with the wall cut away.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 1500;
+const GATE_X = 480;
+const SEAT_X = 1200;    // the stool by Anselm's desk
+
+const flags = {
+  started: false,
+  firstDone: false,     // stage 0
+  porterMet: false,
+  tookSeat: false,
+  argDone: false,
+  stepsDone: false,     // stage 1
+  letterDone: false,
+  islandDone: false,    // stage 2
+  replyDone: false,
+  necessaryDone: false, // stage 3
+  finalDone: false
+};
+let paused = false;
+let startTimer = 0;
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  porter: { x: 420, color: "#4a4a55" },
+  anselm: { x: 1120, color: "#33333d" },
+  courier:{ x: 1300, color: "#4a4a55" }
+};
+const keys = {};
+const record = { granted: [], resisted: [] };
+
+/* The snow. */
+const flakes = [];
+for (let i = 0; i < 80; i++) {
+  flakes.push({ x: (i * 137.3) % 1500, y: (i * 91.7) % 500, s: 0.5 + (i % 3) * 0.4, w: (i % 5) - 2 });
+}
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration, help, dialogue, and the modal
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  speechSynthesis.speak(new SpeechSynthesisUtterance(p.title + ". " + p.text));
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.porterMet) return "Walk right to the gate. The porter will let you in.";
+  if (!flags.tookSeat) return "Walk through the cloister to the scriptorium, and press E at the stool by the prior's desk.";
+  if (!flags.finalDone) return "The evening advances each time you press E from your stool, and each step of the argument is granted or resisted with the numbered replies.";
+  return "The evening is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  if (c.grant) record.granted.push(c.grant);
+  if (c.resist) record.resisted.push(c.resist);
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+function setObjective(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   The evening's conversations
+   ========================================================= */
+function grantResist(grantTag, resistTag, resistReply) {
+  return [
+    { text: "Grant it.", grant: grantTag,
+      reply: ["Anselm: Good. Then we continue."] },
+    { text: "Resist it.", resist: resistTag,
+      reply: [resistReply, "Anselm: Hold your doubt, then, and let the argument finish. A chain is tested whole."] }
+  ];
+}
+function dlgPorter() {
+  flags.porterMet = true;
+  startDlg([
+    { say: "The porter swings the gate open before you knock twice. Porter: In, traveler, before the light goes." },
+    { say: "There is bread, and there is a fire in the scriptorium. Our prior is at his book again, and he likes a fresh listener better than either." },
+    { note: true, say: "The abbey of Bec, in Normandy, was one of the great schools of eleventh century Europe, and its prior Anselm had just finished the Proslogion, a short book containing the argument now called the ontological argument. He framed the whole work as faith seeking understanding: he believed first, and wrote to understand what he believed." }
+  ], () => {
+    setObjective("Walk right, through the cloister, to the scriptorium, and press E at the stool by the prior's desk.");
+  });
+}
+function dlgArgument() {
+  flags.argDone = true;
+  startDlg([
+    { say: "The prior looks up from a manuscript full of corrections and waves you onto the stool. Anselm: Sit. I have written a short proof. Walk it with me, step by step, and grant each step or push back. Either answer helps me.",
+      choices: grantResist("the definition", "the definition",
+        "Anselm: You doubt the phrase names anything coherent. Fair. Carry the doubt with you: for now it is only a definition, and definitions cost nothing.") },
+    { say: "Anselm: Second step. Even the fool in the Psalms, the one who says there is no God, understands the phrase when he hears it. Whatever is understood exists in the mind. So this being exists at least in the mind, the way a painting exists in the painter before any paint is mixed.",
+      choices: grantResist("existence in the understanding", "existence in the understanding",
+        "Anselm: You think understanding words is not the same as having a thing in the mind. That objection has teeth, and a monk named Gaunilo will bare them shortly.") },
+    { say: "Anselm: Third step. Suppose it exists in the understanding alone, and not in reality.",
+      choices: grantResist("the supposition", "the supposition",
+        "Anselm: It is only a supposition, made to be destroyed. Grant it the way you grant an opponent the first move.") },
+    { say: "Anselm: Fourth step. To exist in reality as well as in the understanding is greater than to exist in the understanding alone. The painted painting is greater than the merely imagined one.",
+      choices: grantResist("that real existence is greater", "that real existence is greater",
+        "Anselm: You doubt that existence adds greatness. Centuries from now, someone will make that doubt famous. Hold it, and watch what it must deny.") },
+    { say: "Anselm: Then see where we stand. Suppose this being exists only in your mind. Then I can think of something greater, the same being existing in reality as well." },
+    { say: "So the greatest thing you can think of would not be the greatest thing you can think of. That is a contradiction, and any supposition that ends in one is false." },
+    { say: "Anselm: So that than which nothing greater can be thought exists not only in the understanding but in reality. That is the whole proof. No stars consulted, no miracles cited. Definition, understanding, and a contradiction, nothing else." },
+    { note: true, say: "This is the argument of Proslogion chapters 2 and 3, in adapted wording. Arguments of this family are called a priori: they reason from concepts alone, before and without observation. Nearly every major philosopher since has taken a turn attacking or repairing this one, which is a strange kind of tribute." }
+  ], () => {
+    openPrompt("steps", () => {
+      flags.stepsDone = true;
+      setObjective("Press E at your stool. A courier has come in from the road.");
+    });
+  });
+}
+function dlgLetter() {
+  flags.letterDone = true;
+  startDlg([
+    { say: "A brother comes in stamping snow off his boots and hands the prior a packet. Anselm reads, and begins to smile. Anselm: From Gaunilo, a monk of Marmoutier, and God bless him, he has answered on behalf of the fool. Listen." },
+    { say: "Anselm: Somewhere in the ocean, he writes, is an island more excellent than all lands, and since you understand this phrase, the island exists in your understanding. But it is greater to exist in reality than in the understanding alone." },
+    { say: "Therefore the most excellent island must exist. Gaunilo says: if a man offered me this proof, I should think him joking. And if your proof works, Anselm, so does this one." },
+    { note: true, say: "This exchange is historical. Gaunilo's reply, On Behalf of the Fool, and Anselm's answer to it were copied together with the Proslogion at Anselm's own request, so that readers would always meet the argument alongside its best early objection." }
+  ], () => {
+    openPrompt("island", () => {
+      flags.islandDone = true;
+      setObjective("Press E at your stool to hear the prior's answer.");
+    });
+  });
+}
+function dlgReply() {
+  flags.replyDone = true;
+  startDlg([
+    { say: "Anselm: Now my answer. The proof does not work for islands, or for anything whose nonexistence can be thought." },
+    { say: "However excellent the island, I can think of it as not existing, and no contradiction follows: islands are the kind of thing that can fail to be. The argument bites on one subject only: a being whose nonexistence cannot be thought at all." },
+    { say: "Anselm: The greatest thing you can think of has to be necessary, with no beginning, no end, and no dependence on anything. Otherwise something greater could be thought. Islands have shores, and shores are limits, and anything with limits can be imagined away. Let Gaunilo find me an island that could not have failed to exist, and I will grant him his island gladly." }
+  ], () => {
+    openPrompt("necessary", () => {
+      flags.necessaryDone = true;
+      setObjective("Press E at your stool for the last word of the evening.");
+    });
+  });
+}
+function dlgClose() {
+  startDlg([
+    { say: "The candles are burning low, and the prior closes the manuscript. Anselm: I will tell you the order in which it actually happened. I did not reason my way to belief." },
+    { say: "I believed, and the belief kept asking to be understood, and this argument is what the asking produced. I wrote it so that what I hold by faith could also be seen by the mind." },
+    { say: "Anselm: Whether it moves you is between you and the argument. It is copied fair, together with Gaunilo's letter and my answer, and you may carry the question out the gate in the morning. That is what questions are for." }
+  ], () => {
+    openPrompt("faith", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+function nextBeat() {
+  if (!flags.argDone) { dlgArgument(); return; }
+  if (!flags.stepsDone) return;
+  if (!flags.letterDone) { dlgLetter(); return; }
+  if (!flags.islandDone) return;
+  if (!flags.replyDone) { dlgReply(); return; }
+  if (!flags.necessaryDone) return;
+  if (!flags.finalDone) { dlgClose(); return; }
+}
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.tookSeat) {
+    if (flags.porterMet && Math.abs(player.x - SEAT_X) < 30) {
+      flags.tookSeat = true;
+      setStatus("You take the stool by the prior's desk.");
+      setObjective("Press E to begin, and after each conversation press E again to continue the evening.");
+      return;
+    }
+    if (Math.abs(player.x - npcs.porter.x) < 50) {
+      if (!flags.porterMet) { dlgPorter(); return; }
+      startDlg([{ say: "Porter: Straight on through the cloister. The warm room at the end is the scriptorium." }], () => {});
+      return;
+    }
+    return;
+  }
+  if (Math.abs(player.x - SEAT_X) < 60) {
+    nextBeat();
+    return;
+  }
+  setStatus("The evening continues from your stool, marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_anselm", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    if (r.response) parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "Anselm's Argument, Report\n";
+  text += "=========================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    if (r.response) text += "Response: " + r.response + "\n";
+    text += "-".repeat(50);
+  });
+  text += "\n\nThe walk through the steps:\n";
+  text += "Granted: " + (record.granted.length ? record.granted.join("; ") : "(none)") + "\n";
+  text += "Resisted: " + (record.resisted.length ? record.resisted.join("; ") : "(none)") + "\n";
+  text += "\nDiscussion questions:\n";
+  text += "1. Kant's objection, in your own words.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Has an argument ever changed a belief.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. Defending a belief and testing one.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Anselm_Argument_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!REDUCED_MOTION) {
+    flakes.forEach(f => {
+      f.y += (14 + f.s * 16) * dt;
+      f.x += f.w * 6 * dt;
+      if (f.y > 500) { f.y = -4; f.x = (f.x + 137) % 1500; }
+    });
+  }
+  if (!flags.started || paused) return;
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right to the abbey gate. The porter is waiting out of the wind.");
+      });
+    }
+  }
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+  if (flags.tookSeat) player.x = SEAT_X;
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+  if (!flags.porterMet && player.x > GATE_X - 60) player.x = GATE_X - 60;
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawMonk(x, y, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -50, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-8, -43); ctx.lineTo(8, -43); ctx.lineTo(13, 0); ctx.lineTo(-13, 0);
+  ctx.closePath(); ctx.fill();
+  // The cowl.
+  ctx.beginPath();
+  ctx.arc(0, -52, 11, Math.PI * 0.95, Math.PI * 2.05);
+  ctx.fill();
+  ctx.restore();
+}
+function drawSeatedMonk(x, y, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(x, y - 44, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(x - 8, y - 37, 16, 24);
+  ctx.fillRect(x - 8, y - 13, 17, 5);
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(230,192,115,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 66 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(230,192,115,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 62 + lift);
+}
+function drawCandle(x, y) {
+  const fl = REDUCED_MOTION ? 0 : Math.sin(t * 7 + x) * 1.5;
+  ctx.fillStyle = "#d8d2c2";
+  ctx.fillRect(x - 3, y - 16, 6, 16);
+  ctx.fillStyle = "#ffb84d";
+  ctx.beginPath();
+  ctx.ellipse(x, y - 21 + fl * 0.4, 3, 6 + fl, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(255,184,77,0.12)";
+  ctx.beginPath();
+  ctx.arc(x, y - 18, 34, 0, Math.PI * 2);
+  ctx.fill();
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // The winter dusk.
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, "#2c3450");
+  sky.addColorStop(0.7, "#4a5570");
+  sky.addColorStop(1, "#6a7488");
+  ctx.fillStyle = sky;
+  ctx.fillRect(camX, 0, W, H);
+  // Snowfield ground.
+  ctx.fillStyle = "#dfe5ec";
+  ctx.fillRect(camX, GROUND, W, H - GROUND);
+  ctx.fillStyle = "#c4ccd6";
+  ctx.fillRect(camX, GROUND, W, 7);
+
+  // Bare trees along the road.
+  ctx.strokeStyle = "rgba(40,40,52,0.8)";
+  ctx.lineWidth = 3;
+  [120, 230, 330].forEach(tx => {
+    ctx.beginPath();
+    ctx.moveTo(tx, GROUND); ctx.lineTo(tx, GROUND - 90);
+    ctx.moveTo(tx, GROUND - 52); ctx.lineTo(tx - 18, GROUND - 78);
+    ctx.moveTo(tx, GROUND - 40) ; ctx.lineTo(tx + 16, GROUND - 70);
+    ctx.stroke();
+  });
+
+  // The gate and the precinct wall.
+  ctx.fillStyle = "#6e7484";
+  ctx.fillRect(GATE_X - 20, 240, 40, GROUND - 240);
+  ctx.fillRect(GATE_X + 60, 240, 40, GROUND - 240);
+  ctx.beginPath();
+  ctx.moveTo(GATE_X - 24, 244); ctx.lineTo(GATE_X + 40, 200); ctx.lineTo(GATE_X + 104, 244);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#3a3540";
+  ctx.fillRect(GATE_X + 20, 300, 40, GROUND - 300);
+  ctx.fillStyle = "#6e7484";
+  ctx.fillRect(camX > 0 ? GATE_X - 400 : 0, 300, GATE_X - 20 - (camX > 0 ? GATE_X - 400 : 0), 14);
+
+  // The cloister walk: arches between the gate and the scriptorium.
+  ctx.fillStyle = "#7d8494";
+  ctx.fillRect(600, 250, 460, 16);
+  for (let ax = 620; ax < 1040; ax += 70) {
+    ctx.fillRect(ax, 266, 12, GROUND - 266);
+    ctx.beginPath();
+    ctx.arc(ax + 41, 296, 30, Math.PI, 0);
+    ctx.lineWidth = 12;
+    ctx.strokeStyle = "#7d8494";
+    ctx.stroke();
+  }
+
+  // The scriptorium, wall cut away: desks, candles, the prior.
+  ctx.fillStyle = "#565d6e";
+  ctx.fillRect(1060, 216, 400, 18);
+  ctx.fillStyle = "#454b5a";
+  ctx.fillRect(1060, 234, 400, GROUND - 234);
+  ctx.fillStyle = "#3b414e";
+  for (let bx = 1074; bx < 1440; bx += 62) {
+    ctx.fillRect(bx, 252, 48, 3);
+    ctx.fillRect(bx + 24, 300, 48, 3);
+    ctx.fillRect(bx, 348, 48, 3);
+  }
+  // Anselm's desk, manuscript, and candles.
+  ctx.fillStyle = "#5a4a38";
+  ctx.fillRect(1080, GROUND - 40, 90, 8);
+  ctx.fillRect(1088, GROUND - 32, 8, 32);
+  ctx.fillRect(1154, GROUND - 32, 8, 32);
+  ctx.fillStyle = "#e8e0cc";
+  ctx.fillRect(1096, GROUND - 48, 42, 9);
+  drawCandle(1160, GROUND - 40);
+  drawCandle(1250, GROUND - 4);
+  drawCandle(1400, GROUND - 4);
+  // A second desk with a working monk.
+  ctx.fillStyle = "#5a4a38";
+  ctx.fillRect(1330, GROUND - 40, 80, 8);
+  ctx.fillRect(1338, GROUND - 32, 8, 32);
+  ctx.fillRect(1394, GROUND - 32, 8, 32);
+  drawSeatedMonk(1370, GROUND, "#3a3a45");
+  // The prior, seated at his desk.
+  drawSeatedMonk(npcs.anselm.x, GROUND, npcs.anselm.color);
+  // The stool.
+  ctx.fillStyle = "#5a4a38";
+  ctx.fillRect(SEAT_X - 12, GROUND - 18, 24, 6);
+  ctx.fillRect(SEAT_X - 8, GROUND - 12, 5, 12);
+  ctx.fillRect(SEAT_X + 4, GROUND - 12, 5, 12);
+
+  // The porter at the gate.
+  drawMonk(npcs.porter.x, GROUND, npcs.porter.color);
+
+  // Snow, outside the roofed sections.
+  ctx.fillStyle = "rgba(240,244,250,0.85)";
+  flakes.forEach(f => {
+    if (f.x > 1060 && f.y > 216) return;
+    if (f.x > 600 && f.x < 1060 && f.y > 250) return;
+    ctx.beginPath();
+    ctx.arc(f.x, f.y, f.s + 0.6, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Markers and the player.
+  if (flags.porterMet && !flags.tookSeat) drawMarker(SEAT_X, GROUND);
+  if (flags.tookSeat) drawMarker(SEAT_X, GROUND);
+  drawPerson(player.x, GROUND, player.color, player.facing);
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(14,16,23,0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f0f2f7";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Anselm's Argument", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#a9b1c4";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You are on the road below the abbey. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

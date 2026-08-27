@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hume in Edinburgh</title>
+<style>
+:root{
+  --page:#12141d;
+  --panel:#1a1e2b;
+  --panel-2:#242a3c;
+  --line:#39415e;
+  --text:#f0f2f7;
+  --muted:#a9b1c4;
+  --candle:#e6c073;
+  --candle-deep:#a8862f;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2d3449}
+button.primary{background:var(--candle); border-color:var(--candle-deep); color:#221a08; font-weight:600}
+button.primary:hover{background:#f0d18e}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--candle); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0e1017; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--candle-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#1e2334; border-color:var(--candle)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--candle); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--candle)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--candle)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#10131c; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--candle)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--candle); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#10131c; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--candle)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--candle); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--candle)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>Hume in Edinburgh</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>The other road through this region, and it starts where Descartes refused to. It is 1748, and David Hume has just rewritten his unread first book into something shorter and harder to ignore. He takes the senses as the only source of material the mind has, follows that assumption honestly, and arrives somewhere uncomfortable. You will walk the city with him while he lays out three steps: an inventory of what is in the mind, a look at what you actually observe when one thing causes another, and a question about tomorrow that he cannot answer and does not pretend to. Walk with the arrow keys, press E at each marked spot, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you, and advances the evening at each marked spot. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The next stop in the region is Berkeley and the Tree in the Quad.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Hume grants that we cannot stop expecting the future to resemble the past, and denies that any argument supports it. Is a belief we cannot give up, and cannot justify, in good standing? Give a reason either way.</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. Science depends on inference from observed cases to unobserved ones. Describe how a working scientist might respond to Hume, and whether the response answers him or changes the subject.</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. Hume applies one test throughout: for any idea, which impression did it come from? Pick a word used seriously in public argument, apply his test to it, and report what you find.</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> Hume's copy principle says that</p>
+      <label><input type="radio" name="q1" value="Every idea is a copy of some impression"> every idea is a copy of some impression</label>
+      <label><input type="radio" name="q1" value="Every impression is a copy of some idea"> every impression is a copy of some idea</label>
+      <label><input type="radio" name="q1" value="Ideas and impressions are the same thing"> ideas and impressions are the same thing</label>
+
+      <p><strong>2.</strong> When we say one billiard ball caused another to move, what Hume says we actually observe is</p>
+      <label><input type="radio" name="q2" value="One event following another, repeatedly"> one event following another, repeatedly</label>
+      <label><input type="radio" name="q2" value="A force passing between them"> a force passing between them</label>
+      <label><input type="radio" name="q2" value="A law of nature"> a law of nature</label>
+
+      <p><strong>3.</strong> What carries us from past experience to expectations about the future, on Hume's account?</p>
+      <label><input type="radio" name="q3" value="Custom, or habit"> custom, or habit</label>
+      <label><input type="radio" name="q3" value="A valid argument from the uniformity of nature"> a valid argument from the uniformity of nature</label>
+      <label><input type="radio" name="q3" value="Innate ideas"> innate ideas</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_hume";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: Before the walk",
+    text: "Descartes started from the mind and reasoned outward. Hume proposes to start from experience and see how far it reaches. Before you hear him: where do you think your own knowledge actually comes from?",
+    mcq: ["Mostly from reasoning, once I have a few ideas to work with", "Mostly from experience, one way or another", "From both, and they cannot be separated", "I am not sure yet"],
+    requireText: true
+  },
+  copy: {
+    title: "Stage 1: Impressions and ideas",
+    text: "Hume divides everything in the mind into impressions, which are lively, and ideas, which are faint copies of them. His claim is that every idea traces back to an impression. Does the missing shade of blue break the rule?",
+    mcq: ["Yes, and Hume admits it, so the rule is not exactly true", "No, since the gap is filled from other shades already experienced", "It is a small exception and the rule survives it", "It shows the whole division is too crude"],
+    requireText: true
+  },
+  cause: {
+    title: "Stage 2: What you actually see",
+    text: "One ball strikes another and the second moves. Hume asks what you observed. You saw one motion, then contact, then another motion. Did you see the causing?",
+    mcq: ["Yes, the causing is right there in the collision", "No, I saw one event follow another and supplied the rest", "I saw it because I already know how billiard balls behave", "Nothing here counts as seeing, since causing is not a colour or a shape"],
+    requireText: true
+  },
+  induction: {
+    title: "Stage 3: Tomorrow",
+    text: "Every argument that the future will resemble the past seems to assume that the future will resemble the past. Hume says no reasoning gets us out of that circle. If he is right, what follows about our expectations?",
+    mcq: ["They are irrational, and we should hold them more loosely", "They are not based on reasoning, and they are not therefore mistaken", "The circle can be broken, and I would need to see how", "Science answers this, so the problem is not a real one"],
+    requireText: true
+  },
+  custom: {
+    title: "Stage 4: Custom",
+    text: "Hume's answer is that habit, not argument, carries us from the past to the future. After enough repetitions the mind simply passes from one to the other, and that passage is what we call cause. Is this a solution or a surrender?",
+    mcq: ["A solution, since it explains what we actually do", "A surrender, since it explains the habit and not the truth", "Both, and Hume seems content with that", "It replaces one mystery with another"],
+    requireText: true
+  },
+  roads: {
+    title: "Stage 5: The two roads, compared",
+    text: "You have now walked both roads of this region. Descartes doubted the senses and rebuilt from reason. Hume trusted experience and found that reason cannot deliver what we expected of it. Say which road ends in the more uncomfortable place, and why, and then say which you would rather have to defend.",
+    mcq: null,
+    requireText: true,
+    textHint: "The more uncomfortable ending, then the one you would defend."
+  }
+};
+
+const quizKeys = [
+  "Every idea is a copy of some impression",
+  "One event following another, repeatedly",
+  "Custom, or habit"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world: the stove-heated room, with marked spots along
+   it, and the desk where the letters are read.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 1760;
+
+const STATIONS = [
+  { x: 380,  name: "the printer's window" },
+  { x: 680,  name: "the billiard table" },
+  { x: 980,  name: "the bridge" },
+  { x: 1280, name: "the fireside at the inn" },
+  { x: 1560, name: "the corner of the street" }
+];
+
+const flags = {
+  started: false,
+  firstDone: false,
+  friarMet: false,
+  beat1Done: false,
+  copyDone: false,
+  beat2Done: false,
+  causeDone: false,
+  beat3Done: false,
+  inductionDone: false,
+  beat4Done: false,
+  customDone: false,
+  finalDone: false
+};
+let closeView = null;    // "stick" or "wax" fills the view
+let boardStage = 0;      // what is pinned in the printer's window
+let paused = false;
+let startTimer = 0;
+let candleLit = true;
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  hume: { x: 300, color: "#4c5a48" }
+};
+const keys = {};
+const record = { verdicts: [] };
+
+/* Snow at the window. */
+const flakes = [];
+for (let i = 0; i < 50; i++) {
+  flakes.push({ x: (i * 137.3) % 1500, y: (i * 91.7) % 500, s: 0.5 + (i % 3) * 0.4, w: (i % 5) - 2 });
+}
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration, help, dialogue, and the modal
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  speechSynthesis.speak(new SpeechSynthesisUtterance(p.title + ". " + p.text));
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.friarMet) return "Walk right. Hume joins you a little way along the street.";
+  if (!flags.finalDone) return "Walk to the next marked spot and press E there. The questions appear between the spots.";
+  return "The walk is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.close !== undefined) closeView = step.close === false ? null : step.close;
+  if (step.diagram !== undefined) boardStage = step.diagram;
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  if (c.tag) record.verdicts.push(c.text);
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+function setObjective(txt) { setObjectiveText(txt); }
+function setObjectiveText(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   Edinburgh, and a walk that keeps stopping
+   ========================================================= */
+function dlgFriar() {
+  flags.friarMet = true;
+  startDlg([
+    { say: "A stout, cheerful man in his late thirties falls into step beside you on the pavement. Hume: You look like someone with an hour. I have one too, and I have been indoors with a manuscript since morning." },
+    { say: "Hume: David Hume. I write history to pay for the philosophy, and the philosophy has not sold a hundred copies. My first book fell dead-born from the press, as I put it in a moment of self-pity that I have decided to keep." },
+    { say: "Hume: Walk with me and I will lay out the argument that emptied the room. It has three steps and each one looks harmless." },
+    { note: true, say: "David Hume, 1711 to 1776, published A Treatise of Human Nature in 1739 to almost no notice, then rewrote its core as An Enquiry Concerning Human Understanding in 1748. He was twice refused a university chair, and earned his living largely from a bestselling History of England." }
+  ], () => {
+    setObjective("Walk right to the first marked spot, the printer's window, and press E.");
+  });
+}
+function dlgBeat1() {
+  flags.beat1Done = true;
+  startDlg([
+    { diagram: 1,
+      say: "At a printer's window the fresh sheets are pinned up, ink still dark. Hume: First, an inventory. Everything in your mind arrives as one of two things." },
+    { diagram: 1,
+      say: "Hume: Impressions come in hot. Seeing that red, feeling the cold on your hands, the anger you had this morning. They have a force to them." },
+    { diagram: 2,
+      say: "Hume: Ideas are the faint copies you keep afterward. Remember the red. It is the same thing, weaker. Try to think of a colour you have never seen and you will find you cannot." },
+    { diagram: 2,
+      say: "Hume: So the rule. Every idea is a copy of some impression, and where a philosopher uses a word, I ask which impression it came from. If there is none, the word is empty and the dispute is nothing." },
+    { diagram: 3,
+      say: "Hume: I will hand you the objection myself, because I found it and printed it. Suppose a man has seen every shade of blue except one, and you set the shades before him in order with the gap in place. Could he supply the missing shade from his own mind?",
+      choices: [
+        { tag: "yes", text: "I think he could.",
+          reply: ["Hume: So do I, which is awkward, since here is an idea with no impression behind it. I noted it and said the instance is so singular that it is scarcely worth observing, and does not deserve that for it alone we should alter our general maxim. My critics have never let me forget that sentence."] },
+        { tag: "no", text: "I do not think he could.",
+          reply: ["Hume: You are more consistent than I was. I said he could, and then said the instance is so singular it hardly deserves that we alter the general maxim for it. My critics have never let me forget that sentence."] }
+      ] }
+  ], () => {
+    openPrompt("copy", () => {
+      flags.copyDone = true;
+      setObjective("Walk to the tavern table, marked with E.");
+    });
+  });
+}
+function dlgBeat2() {
+  flags.beat2Done = true;
+  startDlg([
+    { say: "Through a low doorway there is a billiard table with two balls at rest. Hume: Now the second step, and I will use the case everybody uses." },
+    { close: "billiards",
+      say: "Hume: Watch. The white crosses the cloth, meets the red, and the red goes off toward the far cushion." },
+    { close: "billiards",
+      say: "Hume: Tell me precisely what you observed. Not what you know. What arrived through your eyes.",
+      choices: [
+        { tag: "saw", text: "Motion, then contact, then motion.",
+          reply: ["Hume: Exactly that, and nothing else. One thing, then a second thing, close together in space and following in time."] },
+        { tag: "cause", text: "I saw the white make the red move.",
+          reply: ["Hume: You saw motion, then contact, then motion. Now show me the making. Point at it. It has no colour, no shape, no sound. Whatever you added, it did not arrive through the eyes."] }
+      ] },
+    { close: "billiards",
+      say: "Hume: There is the trouble. I find succession and I find contact, and I find that this pair has repeated in my experience many times. I never find the necessary connection, though I speak as if I had seen it." },
+    { close: false,
+      say: "Hume: And notice I am not saying there is no such connection out there. I am saying it is not among the things I have observed, and I built the inventory out of what is observed." }
+  ], () => {
+    openPrompt("cause", () => {
+      flags.causeDone = true;
+      setObjective("Walk to the bridge over the loch, marked with E.");
+    });
+  });
+}
+function dlgBeat3() {
+  flags.beat3Done = true;
+  startDlg([
+    { say: "On the bridge the wind comes hard off the water. Hume: Third step, and this is the one that costs. Bread has nourished me every day of my life. Will it nourish me tomorrow?" },
+    { say: "Hume: You will say yes, and so will I, and we will both eat lunch. But give me the argument." },
+    { say: "Hume: You cannot get it from the bread itself. Nothing in the look or texture of bread contains tomorrow. So the argument must run from experience.",
+      choices: [
+        { tag: "past", text: "It has always nourished me before.",
+          reply: ["Hume: And why does that bear on tomorrow? Only if the future resembles the past. Now prove that."] },
+        { tag: "nature", text: "Nature is uniform.",
+          reply: ["Hume: And how do you know nature is uniform? From experience, which is entirely of the past. So the premise you need is the very thing in question."] }
+      ] },
+    { diagram: 4,
+      say: "Hume: Every road runs into the same circle. To argue from what has happened to what will happen, I must assume that what has happened is a guide to what will happen, which is the thing I was trying to establish." },
+    { diagram: 4,
+      say: "Hume: So I say it plainly. There is no argument that carries us from the past to the future. Not a bad argument. None." }
+  ], () => {
+    openPrompt("induction", () => {
+      flags.inductionDone = true;
+      setObjective("Walk to the fireside at the inn, marked with E.");
+    });
+  });
+}
+function dlgBeat4() {
+  flags.beat4Done = true;
+  startDlg([
+    { say: "Inside the inn, out of the wind, Hume puts his hands to the fire and is visibly pleased with himself. Hume: Now the part where I am supposed to despair, and do not." },
+    { say: "Hume: I asked what carries us from the past to the future, and answered that it is not reasoning. Very well. Something plainly does carry us, because I am about to eat." },
+    { say: "Hume: It is custom. Habit. After enough repetitions the mind slides from the one to the other without being asked, and that sliding, that determination of the mind, is what I find when I look for necessary connection." },
+    { say: "Hume: Which is a strange result. The connection I could not find in the billiard balls turns out to be something in me, felt as though it were out there." },
+    { say: "Hume: And custom is no small thing. It is the great guide of human life. Without it we should know nothing beyond what is immediately present to the senses, and we should be helpless within the hour." },
+    { note: true, say: "This is the argument of the Enquiry, sections four to seven. The problem of induction and the analysis of causation as constant conjunction plus a determination of the mind are Hume's most discussed contributions, and they set the problem that Kant said woke him from his dogmatic slumber." }
+  ], () => {
+    openPrompt("custom", () => {
+      flags.customDone = true;
+      setObjective("Walk to the end of the street, marked with E, for the last of the walk.");
+    });
+  });
+}
+function dlgClose() {
+  startDlg([
+    { say: "At the corner the wind drops. Hume: A man in France began by doubting his own hands and came out with certainty. I began by trusting my hands and came out with a habit." },
+    { say: "Hume: I do not think that is a defeat. I think it is what an honest inventory yields, and I would rather have the honest inventory than the certainty." },
+    { say: "Hume: Though I will tell you what I actually do about it. I dine, I play backgammon, I converse and am merry with my friends, and after three hours of that these speculations look so cold and strained that I cannot find it in my heart to enter into them any further." }
+  ], () => {
+    openPrompt("roads", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+function nextStationIndex() {
+  if (!flags.beat1Done) return 0;
+  if (!flags.copyDone) return -1;
+  if (!flags.beat2Done) return 1;
+  if (!flags.causeDone) return -1;
+  if (!flags.beat3Done) return 2;
+  if (!flags.inductionDone) return -1;
+  if (!flags.beat4Done) return 3;
+  if (!flags.customDone) return -1;
+  if (!flags.finalDone) return 4;
+  return -1;
+}
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.friarMet) return;
+  const idx = nextStationIndex();
+  if (idx < 0) return;
+  const st = STATIONS[idx];
+  if (Math.abs(player.x - st.x) < 45) {
+    [dlgBeat1, dlgBeat2, dlgBeat3, dlgBeat4, dlgClose][idx]();
+    return;
+  }
+  setStatus("The next spot, " + st.name + ", is marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_hume", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    if (r.response) parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "Hume in Edinburgh, Report\n";
+  text += "===========================================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    if (r.response) text += "Response: " + r.response + "\n";
+    text += "-".repeat(50);
+  });
+  text += "\n\nDiscussion questions:\n";
+  text += "1. The whole-series objection.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Modern cosmology and the first cause.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. The gap between a first cause and the God of worship.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Hume_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!REDUCED_MOTION) {
+    flakes.forEach(f => {
+      f.y += (14 + f.s * 16) * dt;
+      f.x += f.w * 6 * dt;
+      if (f.y > 500) { f.y = -4; f.x = (f.x + 137) % 1700; }
+    });
+  }
+  if (!flags.started || paused) return;
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right along the street. Someone falls into step beside you.");
+      });
+    }
+  }
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+  if (!flags.friarMet && !dialogueActive && player.x > 240) {
+    player.x = Math.min(player.x, 240);
+    dlgFriar();
+  }
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawHume(x, y) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = "#4c5a48";
+  ctx.beginPath(); ctx.arc(0, -50, 10, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-11, -42); ctx.lineTo(11, -42); ctx.lineTo(16, 0); ctx.lineTo(-16, 0);
+  ctx.closePath(); ctx.fill();
+  // The long hair and the white collar of the period.
+  ctx.fillStyle = "#23232a";
+  ctx.beginPath();
+  ctx.moveTo(-10, -54); ctx.lineTo(10, -54); ctx.lineTo(12, -38); ctx.lineTo(-12, -38);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#e6e3d6";
+  ctx.fillRect(-7, -42, 14, 4);
+  ctx.strokeStyle = "rgba(230,227,214,0.85)";
+  ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.arc(0, -50, 9, 0, Math.PI * 2); ctx.stroke();
+  ctx.restore();
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(230,192,115,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 76 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(230,192,115,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 72 + lift);
+}
+
+/* =========================================================
+   Close views. The stick in water and the wax fill the frame
+   while the conversation is looking at them.
+   ========================================================= */
+
+/* A close view is a zoom, not the scene at scale, so it is drawn
+   inside a frame that says as much. */
+function drawCloseFrame(caption) {
+  const pad = 26;
+  ctx.save();
+  ctx.strokeStyle = "rgba(230,221,194,0.55)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(pad, pad, W - pad * 2, H - pad * 2);
+  ctx.fillStyle = "rgba(230,221,194,0.9)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.letterSpacing = "1px";
+  const label = "A CLOSER LOOK";
+  const lw = ctx.measureText(label).width;
+  ctx.fillStyle = "rgba(20,22,31,0.95)";
+  ctx.fillRect(pad + 16, pad - 9, lw + 16, 18);
+  ctx.fillStyle = "rgba(230,221,194,0.9)";
+  ctx.fillText(label, pad + 24, pad + 4);
+  ctx.letterSpacing = "0px";
+  if (caption) {
+    ctx.fillStyle = "#e6ddc2";
+    ctx.font = "15px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText(caption, W / 2, H - pad - 14);
+    ctx.textAlign = "left";
+  }
+  ctx.restore();
+}
+
+function drawBilliardsClose() {
+  const cy = 268;
+  ctx.fillStyle = "#161a20";
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = "#5a4632";
+  ctx.fillRect(90, cy - 78, 720, 176);
+  ctx.fillStyle = "#2f6a45";
+  ctx.fillRect(104, cy - 64, 692, 148);
+  ctx.strokeStyle = "rgba(0,0,0,0.25)";
+  ctx.lineWidth = 10;
+  ctx.strokeRect(104, cy - 64, 692, 148);
+
+  // The white ball has crossed the cloth, and the red is leaving.
+  const trail = [230, 268, 306, 344];
+  trail.forEach((tx, i) => {
+    ctx.fillStyle = "rgba(239,234,222," + (0.10 + i * 0.06) + ")";
+    ctx.beginPath(); ctx.arc(tx, cy + 12, 20, 0, Math.PI * 2); ctx.fill();
+  });
+  ctx.fillStyle = "#efeade";
+  ctx.beginPath(); ctx.arc(392, cy + 12, 22, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#b8443a";
+  ctx.beginPath(); ctx.arc(452, cy + 12, 22, 0, Math.PI * 2); ctx.fill();
+  [500, 540, 578].forEach((tx, i) => {
+    ctx.fillStyle = "rgba(184,68,58," + (0.26 - i * 0.07) + ")";
+    ctx.beginPath(); ctx.arc(tx, cy + 12, 22, 0, Math.PI * 2); ctx.fill();
+  });
+
+  // The three things actually observed, labelled in order.
+  ctx.strokeStyle = "rgba(238,242,246,0.55)";
+  ctx.lineWidth = 1.5;
+  ctx.font = "13px 'Segoe UI', sans-serif";
+  ctx.fillStyle = "rgba(238,242,246,0.8)";
+  ctx.beginPath(); ctx.moveTo(300, cy - 20); ctx.lineTo(300, cy - 56); ctx.stroke();
+  ctx.fillText("1. one motion", 246, cy - 64);
+  ctx.beginPath(); ctx.moveTo(422, cy - 14); ctx.lineTo(422, cy - 92); ctx.stroke();
+  ctx.fillText("2. contact", 386, cy - 100);
+  ctx.beginPath(); ctx.moveTo(540, cy - 20); ctx.lineTo(540, cy - 56); ctx.stroke();
+  ctx.fillText("3. another motion", 486, cy - 64);
+
+  ctx.fillStyle = "rgba(238,242,246,0.55)";
+  ctx.fillText("no fourth thing was observed", 352, cy + 122);
+  drawCloseFrame("What arrives through the eyes");
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  if (closeView === "billiards") { drawBilliardsClose(); return; }
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // Night outside, lamplight inside.
+  ctx.fillStyle = "#161a26";
+  ctx.fillRect(camX, 0, W, H);
+
+  // Edinburgh: tall tenements down one side, the street below.
+  ctx.fillStyle = "#2e3444";
+  ctx.fillRect(200, 96, WORLD_W - 300, GROUND - 96);
+  ctx.fillStyle = "#39404f";
+  for (let bx = 220; bx < WORLD_W - 140; bx += 190) {
+    const hgt = 250 + ((bx / 190) % 3) * 34;
+    ctx.fillRect(bx, GROUND - hgt, 168, hgt);
+    ctx.fillStyle = "#2b3140";
+    ctx.fillRect(bx, GROUND - hgt, 168, 12);
+    ctx.fillStyle = "#4a5364";
+    for (let wy = GROUND - hgt + 34; wy < GROUND - 60; wy += 54) {
+      for (let wx = bx + 22; wx < bx + 150; wx += 48) ctx.fillRect(wx, wy, 22, 30);
+    }
+    ctx.fillStyle = "#39404f";
+  }
+  // Chimney smoke, the reason the city was called Auld Reekie.
+  ctx.fillStyle = "rgba(180,186,196,0.16)";
+  for (let sx0 = 260; sx0 < WORLD_W - 200; sx0 += 190) {
+    const drift = REDUCED_MOTION ? 0 : Math.sin(t * 0.6 + sx0) * 10;
+    ctx.beginPath();
+    ctx.arc(sx0 + drift, 120, 26, 0, Math.PI * 2);
+    ctx.arc(sx0 + 34 + drift, 104, 20, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // The street.
+  ctx.fillStyle = "#4a4a52";
+  ctx.fillRect(200, GROUND, WORLD_W - 300, H - GROUND);
+  ctx.fillStyle = "#41414a";
+  for (let cb = 200; cb < WORLD_W - 100; cb += 26) ctx.fillRect(cb, GROUND + 8, 18, 9);
+  ctx.fillStyle = "#5a5a64";
+  ctx.fillRect(200, GROUND, WORLD_W - 300, 6);
+
+  // The printer's window at the first spot.
+  const px1 = STATIONS[0].x;
+  ctx.fillStyle = "#2a2f3c";
+  ctx.fillRect(px1 - 56, GROUND - 132, 112, 118);
+  ctx.fillStyle = "#c9c2ae";
+  ctx.fillRect(px1 - 48, GROUND - 124, 96, 102);
+  const shades = ["#2f4f9e", "#4a6fc4", "#7f9ddb"];
+  if (boardStage >= 1) {
+    ctx.fillStyle = "#8f8a78";
+    ctx.fillRect(px1 - 40, GROUND - 116, 24, 34);
+  }
+  if (boardStage >= 2) {
+    ctx.fillStyle = "#b8b2a0";
+    ctx.fillRect(px1 - 8, GROUND - 116, 24, 34);
+  }
+  if (boardStage >= 3) {
+    // The shades of blue, with the gap left open.
+    shades.forEach((c, i) => {
+      ctx.fillStyle = c;
+      ctx.fillRect(px1 - 40 + i * 20, GROUND - 70, 16, 20);
+    });
+    ctx.strokeStyle = "#8f8a78";
+    ctx.setLineDash([3, 3]);
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(px1 + 20, GROUND - 70, 16, 20);
+    ctx.setLineDash([]);
+  }
+  ctx.fillStyle = "#3a3428";
+  ctx.fillRect(px1 - 60, GROUND - 138, 120, 10);
+
+  // The billiard table, seen through a low doorway.
+  const bx2 = STATIONS[1].x;
+  ctx.fillStyle = "#241f24";
+  ctx.fillRect(bx2 - 70, GROUND - 160, 140, 160);
+  ctx.fillStyle = "#2f6a45";
+  ctx.fillRect(bx2 - 52, GROUND - 74, 104, 30);
+  ctx.fillStyle = "#5a4632";
+  ctx.fillRect(bx2 - 56, GROUND - 78, 112, 8);
+  ctx.fillRect(bx2 - 48, GROUND - 44, 8, 30);
+  ctx.fillRect(bx2 + 40, GROUND - 44, 8, 30);
+  ctx.fillStyle = "#efeade";
+  ctx.beginPath(); ctx.arc(bx2 - 24, GROUND - 60, 5, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#b8443a";
+  ctx.beginPath(); ctx.arc(bx2 + 20, GROUND - 60, 5, 0, Math.PI * 2); ctx.fill();
+
+  // The bridge and the water below it.
+  const gx2 = STATIONS[2].x;
+  ctx.fillStyle = "#1f3346";
+  ctx.fillRect(gx2 - 130, GROUND + 18, 260, H - GROUND - 18);
+  ctx.fillStyle = "rgba(150,190,220,0.16)";
+  for (let i = 0; i < 4; i++) {
+    const wob = REDUCED_MOTION ? 0 : Math.sin(t * 1.4 + i) * 6;
+    ctx.fillRect(gx2 - 110 + i * 58 + wob, GROUND + 34 + i * 12, 40, 3);
+  }
+  ctx.fillStyle = "#5a5a64";
+  ctx.fillRect(gx2 - 140, GROUND - 4, 280, 12);
+  ctx.strokeStyle = "#6a6a74";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(gx2 - 140, GROUND - 46); ctx.lineTo(gx2 + 140, GROUND - 46);
+  ctx.stroke();
+  for (let rx2 = gx2 - 132; rx2 <= gx2 + 132; rx2 += 33) {
+    ctx.beginPath(); ctx.moveTo(rx2, GROUND - 46); ctx.lineTo(rx2, GROUND - 4); ctx.stroke();
+  }
+
+  // The inn at the fourth spot, with firelight in the window.
+  const ix2 = STATIONS[3].x;
+  ctx.fillStyle = "#3b2f2a";
+  ctx.fillRect(ix2 - 76, GROUND - 176, 152, 176);
+  ctx.fillStyle = "#241c1a";
+  ctx.fillRect(ix2 - 22, GROUND - 84, 44, 84);
+  const glow = REDUCED_MOTION ? 0.5 : (Math.sin(t * 5) + 1) / 2;
+  ctx.fillStyle = "rgba(244,178,96," + (0.5 + glow * 0.3) + ")";
+  ctx.fillRect(ix2 + 26, GROUND - 122, 40, 44);
+  ctx.fillStyle = "rgba(244,178,96,0.10)";
+  ctx.beginPath(); ctx.arc(ix2 + 46, GROUND - 100, 130, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#5a4632";
+  ctx.fillRect(ix2 - 84, GROUND - 188, 168, 14);
+
+  // A signpost at the last spot.
+  const ex2 = STATIONS[4].x;
+  ctx.fillStyle = "#5a4632";
+  ctx.fillRect(ex2 - 4, GROUND - 120, 8, 120);
+  ctx.fillRect(ex2 - 44, GROUND - 122, 88, 20);
+
+  const idx = nextStationIndex();
+  const dX = !flags.friarMet ? npcs.hume.x
+    : idx >= 0 ? STATIONS[idx].x - 64
+    : STATIONS[4].x - 64;
+  drawHume(dX, GROUND);
+  if (flags.friarMet && idx >= 0) drawMarker(STATIONS[idx].x, GROUND);
+  drawPerson(player.x, GROUND, player.color, player.facing);
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(14,16,23,0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f0f2f7";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Hume in Edinburgh", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#a9b1c4";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You are on a street in Edinburgh. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

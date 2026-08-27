@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Academy of Plato</title>
+<style>
+:root{
+  --page:#131711;
+  --panel:#1b211a;
+  --panel-2:#252e23;
+  --line:#3d4a38;
+  --text:#f1f4ee;
+  --muted:#adb8a6;
+  --olive:#9fb87a;
+  --olive-deep:#66804a;
+  --gold:#dfae5c;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2f3a2c}
+button.primary{background:var(--olive); border-color:var(--olive-deep); color:#141c0e; font-weight:600}
+button.primary:hover{background:#b3c88f}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--olive); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#10140e; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--olive-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#212a1c; border-color:var(--olive)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--olive); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--olive)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--olive)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#11150f; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--olive)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--olive); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#11150f; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--olive)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--olive); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--olive)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>The Academy of Plato</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>Athens, 399 BC, during the month of the sacred ship. The verdict is in, the sentence waits on the ship's return from Delos, and the city argues with itself. You walk out through the northwest gate to the grove of Akademos, where the young note-taker from the trial spends his afternoons. He will not lecture you. He will smooth a patch of sand, draw a square, and re-run for you a lesson he once watched Socrates give, in which someone who never studied geometry finds a real geometric truth by answering questions. You play the answerer. Walk with the arrow keys, press E to talk and to take your place by the sand, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you, and advances the lesson from your place by the sand. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The next stop on the map is The Allegory of the Cave.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Children acquire the grammar of their first language without anyone stating its rules, and infants show expectations about number and objects before any teaching. Do modern cases like these support anything like Plato's claim that some knowledge is in us from the start? Where does the comparison hold, and where does it break?</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. Meno's paradox says you cannot search for what you do not know, since you would not recognize it if you found it. Researchers search for unknown things constantly. Describe how a scientist, a detective, or anyone else searches for something they cannot yet describe, and what stands in for recognition when they find it.</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. A standing objection to the lesson is that the questions quietly taught the answer. Take one of the questions asked at the sand and rewrite it so that it teaches less and tests more. What did you have to remove?</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> The lesson doubled the square's area using</p>
+      <label><input type="radio" name="q1" value="The square built on the diagonal"> the square built on the diagonal</label>
+      <label><input type="radio" name="q1" value="A square with doubled sides"> a square with doubled sides</label>
+      <label><input type="radio" name="q1" value="A square with sides of three feet"> a square with sides of three feet</label>
+
+      <p><strong>2.</strong> Socrates' own conclusion from the lesson was that the answerer</p>
+      <label><input type="radio" name="q2" value="Recollected knowledge his soul already had"> recollected knowledge his soul already had</label>
+      <label><input type="radio" name="q2" value="Was secretly taught by the questions"> was secretly taught by the questions</label>
+      <label><input type="radio" name="q2" value="Guessed until something worked"> guessed until something worked</label>
+
+      <p><strong>3.</strong> Late ancient sources claim the inscription over the Academy's entrance concerned</p>
+      <label><input type="radio" name="q3" value="Geometry"> geometry</label>
+      <label><input type="radio" name="q3" value="Silence"> silence</label>
+      <label><input type="radio" name="q3" value="Music"> music</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_academy";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: On the road to the grove",
+    text: "Before the lesson: can a person come to know something that nobody teaches them?",
+    mcq: ["No, everything known was taught, or observed, or built from those", "Yes, some knowledge might be drawn out from within", "Skills can work that way, but knowledge cannot", "I am not sure yet"],
+    requireText: true
+  },
+  aporia: {
+    title: "Stage 1: The sting",
+    text: "The answerer thought he knew, spoke confidently, and was wrong twice. Now he stands stung and silent, and Socrates called that sting progress. Is he better off or worse off than before the questions?",
+    mcq: ["Better off, since he now knows there is something to search for", "Worse off, since he could at least act on his answer before", "Unchanged, since only his confidence is different, and confidence is not knowledge"],
+    requireText: true
+  },
+  happened: {
+    title: "Stage 2: What happened at the sand",
+    text: "The answer came out of the answerer, step by step, and nobody stated it. What actually happened?",
+    mcq: ["Recollection, since the soul already had the knowledge, as Socrates concluded", "Teaching in disguise, since the questions carried the answer in", "Fresh reasoning, since ordinary capacities, well led, produced new knowledge", "The demonstration cannot decide between these"],
+    requireText: true
+  },
+  paradox: {
+    title: "Stage 3: Meno's paradox",
+    text: "Meno's paradox: you cannot search for what you do not know, because you would not know where to look, and you would not recognize it if you found it. Does the lesson answer the paradox?",
+    mcq: ["Yes, the answerer sought what he did not know, found it, and recognized it", "No, the guide already knew the answer, so nothing truly unknown was sought", "Partly, since it shows the search can happen without explaining how recognition works"],
+    requireText: true
+  },
+  school: {
+    title: "Stage 4: What a school is for",
+    text: "This grove will hold a school one day, and the word academy still carries its name. From what you saw at the sand today: what should a school be for? And describe one thing you came to understand in your own life by being questioned rather than told.",
+    mcq: null,
+    requireText: true,
+    textHint: "Answer both parts."
+  }
+};
+
+const quizKeys = [
+  "The square built on the diagonal",
+  "Recollected knowledge his soul already had",
+  "Geometry"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world: the road from the city gate to the grove, and
+   the smoothed sand where the lesson is drawn.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 1500;
+const STAND_X = 1180;   // the place by the sand
+
+const flags = {
+  started: false,
+  firstDone: false,     // stage 0
+  platoMet: false,
+  tookPlace: false,
+  lessonADone: false,
+  aporiaDone: false,    // stage 1
+  lessonBDone: false,
+  happenedDone: false,  // stage 2
+  paradoxTalkDone: false,
+  paradoxDone: false,   // stage 3
+  finalDone: false
+};
+let paused = false;
+let startTimer = 0;
+let diagramStage = -1;  // -1 empty sand, then 0..5 as the lesson draws
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  plato:   { x: 1120, color: "#4f7fb0" },
+  glaucon: { x: 1400, color: "#6b8f4f" }
+};
+const keys = {};
+const record = { guesses: [] };
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration, help, dialogue, and the modal
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  speechSynthesis.speak(new SpeechSynthesisUtterance(p.title + ". " + p.text));
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.platoMet) return "Walk right, out of the city and into the grove. The conversation starts when you reach the two men by the sand.";
+  if (!flags.tookPlace) return "Stand at the place marked E beside the sand, and press E.";
+  if (!flags.finalDone) return "The lesson advances each time you press E from your place, and your answers at the sand are given with the numbered replies.";
+  return "The lesson is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.diag !== undefined) diagramStage = step.diag;
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  if (c.tag) record.guesses.push(c.text);
+  if (c.diag !== undefined) diagramStage = c.diag;
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+function setObjective(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   The grove conversations
+   ========================================================= */
+function dlgPlato() {
+  flags.platoMet = true;
+  startDlg([
+    { say: "Two men stand by a patch of smoothed sand under the olives. The younger one straightens as you approach. Plato: You were on the jury benches." },
+    { say: "I was at the back with the other young men, writing it down. This is my brother Glaucon. We are in the grove of Akademos, outside the walls, where I come to get clear of the city." },
+    { say: "Plato: Socrates is in the prison until the ship returns from Delos. I go in with the others most mornings. The afternoons I spend out here, because the city is hard to stand right now and this ground is quiet." },
+    { say: "Let me show you something he did once, years ago, in a rich man's courtyard, because it says more about him than the trial did." },
+    { say: "Plato: He asked someone who had never studied geometry to double a square, using nothing but questions, and the answer came out of the answerer." },
+    { say: "I will play his part, and you will play the answerer. One rule only. Answer what you actually see in the sand, never what you think I want to hear." }
+  ], () => {
+    setObjective("Stand at the place marked E beside the sand, and press E to begin the lesson.");
+  });
+}
+function dlgLessonA() {
+  flags.lessonADone = true;
+  startDlg([
+    { diag: 0,
+      say: "Plato smooths the sand with a board and draws a square with a stick. Plato: A square, two feet along each side, cut by the middle lines so you can count it. Two rows of two. How much ground does it cover?",
+      choices: [
+        { text: "Four square feet.",
+          reply: ["Plato: Four. You see it, you do not take my word for it. Keep doing that."] }
+      ] },
+    { say: "Plato: Now the question he asked. I want a second square with twice this area, eight square feet. Its side must be longer than two feet. How long?",
+      choices: [
+        { tag: "double", diag: 1, text: "Four feet: double the side, double the square.",
+          reply: ["Plato draws the four-foot square around the first, and its middle lines. Plato: The answerer said the same. Now count what we made. Four rows of four is sixteen square feet, and we wanted eight. Doubling the side gave four times the area, not twice."] },
+        { tag: "three", diag: 2, text: "Three feet: something between two and four.",
+          reply: ["Plato draws it. Plato: The answerer tried this second. Three rows of three is nine square feet. Closer, and still not eight, and no length in whole feet will land on it."] },
+        { tag: "unsure", diag: 1, text: "I cannot say yet.",
+          reply: ["Plato: The answerer could not either, but he guessed four feet first, so let us test his guess. Plato draws the four-foot square. Four rows of four is sixteen, twice too much. And a side of three feet gives nine. No whole number of feet lands on eight."] }
+      ] },
+    { say: "Plato: At this point the answerer stopped and said the words that mattered. I do not know. And Socrates turned to his host and said, look at what we have done." },
+    { say: "He began confident and wrong, and now he is confused and silent, like a man stung numb. And the sting is progress, because a man who thinks he knows will never look." }
+  ], () => {
+    openPrompt("aporia", () => {
+      flags.aporiaDone = true;
+      setObjective("Press E at your place. The lesson continues in the sand.");
+    });
+  });
+}
+function dlgLessonB() {
+  flags.lessonBDone = true;
+  startDlg([
+    { diag: 3,
+      say: "Plato: Now watch the sand, and keep answering only what you see. Here is the four-foot square again, and its middle lines cut it into four squares of the original size, each covering four square feet." },
+    { diag: 4,
+      say: "Plato: I draw a line corner to corner across each of the four small squares, so, and the four lines stand up as a tilted square resting on its points. Each of my corner lines cuts its small square exactly in half. Does it?",
+      choices: [
+        { text: "It does: each corner line halves its small square.",
+          reply: ["Plato: Hold on to that."] }
+      ] },
+    { diag: 5,
+      say: "Plato: Then count the tilted square with me. It contains one half of each of the four small squares. Four halves of four square feet each. How much ground does the tilted square cover?",
+      choices: [
+        { text: "Eight square feet.",
+          reply: ["Plato: Eight, exactly the double we wanted. The square built on the corner line, the diagonal, has twice the area of the original. You said it. I never did. And in the courtyard, the answerer said it, and Socrates never stated one step of the answer, only questions."] }
+      ] },
+    { note: true,
+      say: "This is the geometry lesson of Plato's dialogue Meno, given historically to a boy enslaved in Meno's household who had never studied geometry. Socrates drew a large conclusion: the boy recollected knowledge his soul already possessed, a doctrine called anamnesis." },
+    { say: "Many readers since have drawn a smaller one: that well-chosen questions can lead a person to knowledge nobody handed over. The smaller claim is enough to found a method on, and a school." }
+  ], () => {
+    openPrompt("happened", () => {
+      flags.happenedDone = true;
+      setObjective("Press E at your place. Glaucon has an objection.");
+    });
+  });
+}
+function dlgParadox() {
+  flags.paradoxTalkDone = true;
+  startDlg([
+    { say: "Glaucon: You skipped the hard part, brother. Meno asked it before the lesson began: how can a man search for what he does not know at all? He does not know where to look, and if he trips over the answer, he will not recognize it as the thing he was seeking." },
+    { say: "Plato: And the lesson at the sand is the reply, or it is nothing. The answerer did not know the diagonal, and he searched, and he found it, and he knew it when he found it, because each step stood on one he could already see. Whether that shows a soul remembering or only a mind that can be led, the search that the paradox calls impossible plainly happened in front of us." }
+  ], () => {
+    openPrompt("paradox", () => {
+      flags.paradoxDone = true;
+      setObjective("Press E at your place for the end of the afternoon.");
+    });
+  });
+}
+function dlgClose() {
+  startDlg([
+    { say: "The light is going yellow in the olives. Plato: He is in a cell across the city, and I am out here drawing squares in sand." },
+    { say: "When the month is over, whatever happens, I intend to keep doing this. If I ever teach on this ground, there will be no fees, and no answers simply handed over. Questions, and company for the searching." },
+    { note: true, say: "Plato founded his school here in the grove of Akademos around 387 BC, and schools descended from it operated on and off for centuries. The word academy still carries the grove's name. Late ancient sources claim an inscription stood over its entrance, let no one ignorant of geometry enter, a report historians repeat with caution." }
+  ], () => {
+    openPrompt("school", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+function nextBeat() {
+  if (!flags.lessonADone) { dlgLessonA(); return; }
+  if (!flags.aporiaDone) return;
+  if (!flags.lessonBDone) { dlgLessonB(); return; }
+  if (!flags.happenedDone) return;
+  if (!flags.paradoxTalkDone) { dlgParadox(); return; }
+  if (!flags.paradoxDone) return;
+  if (!flags.finalDone) { dlgClose(); return; }
+}
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.tookPlace) {
+    if (flags.platoMet && Math.abs(player.x - STAND_X) < 30) {
+      flags.tookPlace = true;
+      setStatus("You take the place beside the sand.");
+      setObjective("Press E to begin the lesson, and after each part press E again to continue.");
+      return;
+    }
+    return;
+  }
+  if (Math.abs(player.x - STAND_X) < 60) {
+    nextBeat();
+    return;
+  }
+  setStatus("The lesson continues from your place beside the sand, marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_academy", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    if (r.response) parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "The Academy of Plato, Report\n";
+  text += "============================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    if (r.response) text += "Response: " + r.response + "\n";
+    text += "-".repeat(50);
+  });
+  if (record.guesses.length) {
+    text += "\n\nAnswers given at the sand: " + record.guesses.join("; ") + "\n";
+  }
+  text += "\nDiscussion questions:\n";
+  text += "1. Modern innateness beside Plato's claim.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Searching for what you cannot yet describe.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. Rewriting a question to teach less and test more.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Academy_of_Plato_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "3") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!flags.started || paused) return;
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right, out through the gate and along the road to the grove.");
+      });
+    }
+  }
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+  if (flags.tookPlace) player.x = STAND_X;
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+  if (!flags.platoMet && !dialogueActive && player.x > 1040) {
+    player.x = Math.min(player.x, 1040);
+    dlgPlato();
+  }
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawRobed(x, y, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-7, -44); ctx.lineTo(7, -44); ctx.lineTo(14, 0); ctx.lineTo(-14, 0);
+  ctx.closePath(); ctx.fill();
+  ctx.fillRect(-13, -41, 6, 17);
+  ctx.fillRect(7, -41, 6, 17);
+  ctx.restore();
+}
+function drawOlive(x, s) {
+  ctx.fillStyle = "#6a5a44";
+  ctx.fillRect(x - 4 * s, GROUND - 62 * s, 8 * s, 62 * s);
+  ctx.fillStyle = "#7a8f6a";
+  [[-18, -70], [0, -84], [18, -68], [-8, -60], [10, -58]].forEach(p => {
+    ctx.beginPath();
+    ctx.arc(x + p[0] * s, GROUND + p[1] * s, 16 * s, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(159,184,122,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 66 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(159,184,122,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 62 + lift);
+}
+/* The lesson in the sand. Unit u = 32 px per foot, bottom-left
+   corner of the base square at (SX, SY). */
+const SX = 1240, SY = 380, U = 32;
+function drawDiagram() {
+  // The sand itself.
+  ctx.fillStyle = "#d9c9a3";
+  ctx.fillRect(1210, 232, 190, 168);
+  ctx.fillStyle = "#c6b48c";
+  ctx.fillRect(1210, 394, 190, 6);
+  if (diagramStage < 0) return;
+  const line = "#4a3a28";
+  ctx.strokeStyle = line;
+  ctx.lineWidth = 2;
+  // Stage 0 and later: the two-foot square with its middle lines.
+  ctx.strokeRect(SX, SY - 2 * U, 2 * U, 2 * U);
+  ctx.beginPath();
+  ctx.moveTo(SX + U, SY - 2 * U); ctx.lineTo(SX + U, SY);
+  ctx.moveTo(SX, SY - U); ctx.lineTo(SX + 2 * U, SY - U);
+  ctx.stroke();
+  ctx.fillStyle = line;
+  ctx.font = "13px Georgia, serif";
+  if (diagramStage === 0) ctx.fillText("4", SX + U - 4, SY - U + 5);
+  // Stage 1: the four-foot square around it.
+  if (diagramStage === 1 || diagramStage >= 3) {
+    ctx.strokeRect(SX, SY - 4 * U, 4 * U, 4 * U);
+    if (diagramStage === 1) ctx.fillText("16", SX + 2 * U + 32, SY - 2 * U - 24);
+  }
+  // Stage 2: the three-foot square, dashed.
+  if (diagramStage === 2) {
+    ctx.setLineDash([5, 5]);
+    ctx.strokeRect(SX, SY - 3 * U, 3 * U, 3 * U);
+    ctx.setLineDash([]);
+    ctx.fillText("9", SX + 2 * U + 14, SY - 2 * U - 10);
+  }
+  // Stage 3 and later: the four-foot square cut into four.
+  if (diagramStage >= 3) {
+    ctx.beginPath();
+    ctx.moveTo(SX + 2 * U, SY - 4 * U); ctx.lineTo(SX + 2 * U, SY);
+    ctx.moveTo(SX, SY - 2 * U); ctx.lineTo(SX + 4 * U, SY - 2 * U);
+    ctx.stroke();
+  }
+  // Stage 4 and later: the diagonals forming the tilted square.
+  if (diagramStage >= 4) {
+    ctx.strokeStyle = "#b5502e";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(SX + 2 * U, SY - 4 * U);
+    ctx.lineTo(SX + 4 * U, SY - 2 * U);
+    ctx.lineTo(SX + 2 * U, SY);
+    ctx.lineTo(SX, SY - 2 * U);
+    ctx.closePath();
+    ctx.stroke();
+  }
+  // Stage 5: the tilted square shaded, and its area counted.
+  if (diagramStage >= 5) {
+    ctx.fillStyle = "rgba(181,80,46,0.25)";
+    ctx.beginPath();
+    ctx.moveTo(SX + 2 * U, SY - 4 * U);
+    ctx.lineTo(SX + 4 * U, SY - 2 * U);
+    ctx.lineTo(SX + 2 * U, SY);
+    ctx.lineTo(SX, SY - 2 * U);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "#8a3a1e";
+    ctx.font = "15px Georgia, serif";
+    ctx.fillText("8", SX + 2 * U - 5, SY - 2 * U + 6);
+  }
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // Late-afternoon sky.
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, "#9cc0da");
+  sky.addColorStop(0.7, "#e0d8b8");
+  sky.addColorStop(1, "#cfc19c");
+  ctx.fillStyle = sky;
+  ctx.fillRect(camX, 0, W, H);
+  ctx.fillStyle = "#b3a37f";
+  ctx.fillRect(camX, GROUND, W, H - GROUND);
+  ctx.fillStyle = "#9c8d6b";
+  ctx.fillRect(camX, GROUND, W, 7);
+
+  // The city behind: wall, gate, and rooftops.
+  ctx.fillStyle = "rgba(160,148,124,0.8)";
+  ctx.fillRect(0, 300, 340, GROUND - 300);
+  ctx.fillStyle = "rgba(140,128,104,0.8)";
+  ctx.fillRect(0, 288, 340, 16);
+  ctx.fillStyle = "#3a3128";
+  ctx.fillRect(250, 340, 54, GROUND - 340);
+  ctx.fillStyle = "rgba(120,105,84,0.6)";
+  ctx.fillRect(30, 330, 60, 40);
+  ctx.fillRect(120, 318, 74, 52);
+
+  // The road out, and the stream crossing it.
+  ctx.fillStyle = "#c2b28c";
+  ctx.fillRect(340, GROUND + 6, 1160, 18);
+  ctx.fillStyle = "#5aa7d4";
+  ctx.fillRect(560, GROUND, 46, H - GROUND);
+  ctx.fillStyle = "#8a7a5e";
+  ctx.fillRect(548, GROUND - 6, 70, 10);
+
+  // The grove.
+  drawOlive(700, 1);
+  drawOlive(810, 0.85);
+  drawOlive(920, 1.1);
+  drawOlive(1020, 0.8);
+  drawOlive(1350, 0.9);
+  drawOlive(1460, 1.05);
+  // A low wall and a herm at the grove's edge.
+  ctx.fillStyle = "rgba(190,180,156,0.8)";
+  ctx.fillRect(640, GROUND - 30, 120, 8);
+  ctx.fillStyle = "#ddd6c4";
+  ctx.fillRect(652, GROUND - 62, 14, 62);
+  ctx.beginPath(); ctx.arc(659, GROUND - 70, 8, 0, Math.PI * 2); ctx.fill();
+
+  // The sand and the lesson.
+  drawDiagram();
+
+  // People.
+  drawRobed(npcs.plato.x, GROUND, npcs.plato.color);
+  drawRobed(npcs.glaucon.x, GROUND, npcs.glaucon.color);
+  if (flags.platoMet && !flags.tookPlace) drawMarker(STAND_X, GROUND);
+  if (flags.tookPlace) drawMarker(STAND_X, GROUND);
+  drawPerson(player.x, GROUND, player.color, player.facing);
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(16,20,14,0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f1f4ee";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("The Academy of Plato", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#adb8a6";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You are at the northwest gate of the city. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

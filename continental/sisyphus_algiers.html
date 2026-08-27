@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Myth of Sisyphus</title>
+<style>
+:root{
+  --page:#12141d;
+  --panel:#1a1e2b;
+  --panel-2:#242a3c;
+  --line:#39415e;
+  --text:#f0f2f7;
+  --muted:#a9b1c4;
+  --candle:#e6c073;
+  --candle-deep:#a8862f;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2d3449}
+button.primary{background:var(--candle); border-color:var(--candle-deep); color:#221a08; font-weight:600}
+button.primary:hover{background:#f0d18e}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--candle); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0e1017; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--candle-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#1e2334; border-color:var(--candle)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--candle); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--candle)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--candle)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#10131c; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--candle)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--candle); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#10131c; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--candle)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--candle); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--candle)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>The Myth of Sisyphus</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>The first stop in the twentieth century, and a different kind of question. It is 1942, and Albert Camus is writing an essay above the harbour at Algiers about whether life is worth living. He is not asking anyone to answer that about themselves. He is asking what follows when a mind that wants the world to make sense meets a world that returns no answer, a gap he calls the absurd. You walk the hill with him while he defines the word, closes off two ways out, and arrives at a figure pushing a rock. The activity discusses suicide as the philosophical question Camus opens with, and does so briefly and without detail. If the subject is difficult for you, skip the second stop or the activity, and speak to someone you trust. Walk with the arrow keys, press E at each marked spot, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you, and advances the evening at each marked spot. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The Continental Room holds two more stops, in preparation.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Camus says the absurd needs both a questioner and a silent world, and vanishes if either goes. Test that claim by describing a case where one side is missing, and say whether anything absurd remains.</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. He calls it philosophical suicide to keep the question and assume an answer must be there. Construct the strongest reply on behalf of someone who makes that move, and then say whether it answers him.</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. The essay ends by asking us to imagine Sisyphus happy. Is that a conclusion the argument earns, an image that does work an argument could not, or a change of subject? Defend your answer.</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> For Camus the absurd is located</p>
+      <label><input type="radio" name="q1" value="In the confrontation between a questioner and a silent world"> in the confrontation between a questioner and a silent world</label>
+      <label><input type="radio" name="q1" value="In the world, which is cruel"> in the world, which is cruel</label>
+      <label><input type="radio" name="q1" value="In the person, who is broken"> in the person, who is broken</label>
+
+      <p><strong>2.</strong> What he calls philosophical suicide is</p>
+      <label><input type="radio" name="q2" value="Keeping the question but assuming an answer must be there"> keeping the question but assuming an answer must be there</label>
+      <label><input type="radio" name="q2" value="Refusing to think about philosophy"> refusing to think about philosophy</label>
+      <label><input type="radio" name="q2" value="Studying logic instead of ethics"> studying logic instead of ethics</label>
+
+      <p><strong>3.</strong> The three things he says follow from staying with the absurd are</p>
+      <label><input type="radio" name="q3" value="Revolt, freedom, and passion"> revolt, freedom, and passion</label>
+      <label><input type="radio" name="q3" value="Faith, hope, and charity"> faith, hope, and charity</label>
+      <label><input type="radio" name="q3" value="Doubt, method, and certainty"> doubt, method, and certainty</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_sisyphus";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: Before the climb",
+    text: "Camus begins from a gap. People want the world to make sense, and the world returns no answer. He calls the gap the absurd. Before you hear him: does a life need an overall meaning in order to be worth living?",
+    mcq: ["Yes, without one nothing else holds up", "No, the parts can be worth having without a whole", "Only if you were raised to expect one", "I am not sure yet"],
+    requireText: true
+  },
+  absurd: {
+    title: "Stage 1: Where the absurd lives",
+    text: "Camus insists the absurd is not in the world and not in us, but in the meeting between the two. Take away either side and it disappears. Why does he make a point of that?",
+    mcq: ["Because a silent universe alone is not absurd, and neither is a questioner alone", "Because it makes the problem ours rather than the world's fault", "Because it means the absurd could be ended by giving up the question", "Because it is a distinction without a difference"],
+    requireText: true
+  },
+  leaps: {
+    title: "Stage 2: The two exits",
+    text: "Camus rejects two ways out. One ends the questioner. The other, which he calls philosophical suicide, keeps the questioner and quietly drops the question, by deciding the answer must be there even though nothing shows it. Is the second really an evasion?",
+    mcq: ["Yes, it takes back the honesty the argument began with", "No, believing beyond the evidence is a reasonable response to a real need", "It depends entirely on how honestly the leap is made", "Calling it suicide overstates the case"],
+    requireText: true
+  },
+  revolt: {
+    title: "Stage 3: Staying with it",
+    text: "His answer is to hold the gap open. Revolt, which is refusing both consolation and surrender. Freedom, which comes from expecting nothing. Passion, which is taking as much of this life as there is. Can a person actually live that way?",
+    mcq: ["Yes, and many people already do without the vocabulary", "No, nobody can hold that posture for long", "Only in good times, which is when it is least needed", "It describes an attitude rather than a way of living"],
+    requireText: true
+  },
+  happy: {
+    title: "Stage 4: The last line",
+    text: "The book ends by saying we must imagine Sisyphus happy. Not that his task is fine, and not that the gods were merciful, but that in the descent, knowing exactly what waits, the rock becomes his. Write what you make of the claim, and whether an argument can be judged by whether it helps anyone live.",
+    mcq: null,
+    requireText: true,
+    textHint: "Your reading of the line, and your view on the second question."
+  }
+};
+
+const quizKeys = [
+  "In the confrontation between a questioner and a silent world",
+  "Keeping the question but assuming an answer must be there",
+  "Revolt, freedom, and passion"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world: the stove-heated room, with marked spots along
+   it, and the desk where the letters are read.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 1560;
+
+const STATIONS = [
+  { x: 380,  name: "the tram stop" },
+  { x: 700,  name: "the cemetery wall" },
+  { x: 1020, name: "the top of the hill" },
+  { x: 1340, name: "the boulder" }
+];
+
+const flags = {
+  started: false,
+  firstDone: false,
+  friarMet: false,
+  beat1Done: false,
+  absurdDone: false,
+  beat2Done: false,
+  leapsDone: false,
+  beat3Done: false,
+  revoltDone: false,
+  beat4Done: false,
+  finalDone: false
+};
+let closeView = null;    // "stick" or "wax" fills the view
+
+let paused = false;
+let startTimer = 0;
+let candleLit = true;
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  camus: { x: 300, color: "#4a4048" }
+};
+const keys = {};
+const record = { verdicts: [] };
+
+/* Snow at the window. */
+const flakes = [];
+for (let i = 0; i < 50; i++) {
+  flakes.push({ x: (i * 137.3) % 1500, y: (i * 91.7) % 500, s: 0.5 + (i % 3) * 0.4, w: (i % 5) - 2 });
+}
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration, help, dialogue, and the modal
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  speechSynthesis.speak(new SpeechSynthesisUtterance(p.title + ". " + p.text));
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.friarMet) return "Walk right. Someone is sitting on the wall above the harbour.";
+  if (!flags.finalDone) return "Walk to the next marked spot and press E there. The questions appear between the spots.";
+  return "The walk is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.close !== undefined) closeView = step.close === false ? null : step.close;
+
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  if (c.tag) record.verdicts.push(c.text);
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+function setObjective(txt) { setObjectiveText(txt); }
+function setObjectiveText(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   A hillside above Algiers, and a rock that will not stay
+   ========================================================= */
+function dlgFriar() {
+  flags.friarMet = true;
+  startDlg([
+    { say: "A man in a worn jacket is sitting on a wall above the harbour with a cigarette and a notebook. Camus: Sit if you like. I came up here to work and I have written one sentence, which is the usual proportion." },
+    { say: "Camus: Albert Camus. I grew up in the poor quarter down there, and I am writing an essay about whether life is worth living, which sounds grim and is not." },
+    { say: "Camus: The whole thing turns on one word, and I want to define it carefully, because everyone uses it to mean anything at all. Absurd." },
+    { note: true, say: "Albert Camus, 1913 to 1960, was born in French Algeria and published The Myth of Sisyphus in 1942. He resisted being called an existentialist and described his own subject as the absurd. He received the Nobel Prize in Literature in 1957 and died in a car accident three years later." }
+  ], () => {
+    setObjective("Walk right to the first marked spot, the tram stop, and press E.");
+  });
+}
+function dlgBeat1() {
+  flags.beat1Done = true;
+  startDlg([
+    { say: "At the tram stop the same people are waiting that were waiting yesterday. Camus: Rising, tram, four hours of work, meal, tram, four hours of work, meal, sleep, and the same rhythm Monday through Friday." },
+    { say: "Camus: Most of the time it carries you along easily enough. Then one day the question arrives. Why. And the weariness underneath everything is tinged with amazement, because the question was there the whole time." },
+    { say: "Camus: Now be careful with what I am claiming. The universe is not cruel to us. It is silent. That is different, and the difference matters." },
+    { say: "Camus: And I am not saying we are broken for wanting an answer. Wanting one is what a mind does. So where is the absurd?",
+      choices: [
+        { tag: "between", text: "In the gap between the wanting and the silence.",
+          reply: ["Camus: Exactly there, and nowhere else. It is not a property of the world and not a defect in us. It is born of their confrontation, and it lives in the space between them. Remove either party and it is gone."] },
+        { tag: "world", text: "In the world, which gives us nothing.",
+          reply: ["Camus: A silent world with nobody in it is not absurd. It is just silent. The absurd needs both parties, the questioner and the silence, and it lives in the space between them."] }
+      ] }
+  ], () => {
+    openPrompt("absurd", () => {
+      flags.absurdDone = true;
+      setObjective("Walk to the cemetery wall, marked with E.");
+    });
+  });
+}
+function dlgBeat2() {
+  flags.beat2Done = true;
+  startDlg([
+    { say: "The road passes a low wall with the sea beyond it. Camus: Two people leave the room when the question arrives, and I want to look at both of them, because I intend to stay." },
+    { say: "Camus: The first ends the questioner. I take that seriously enough to open the book with it, and my whole essay is an argument that it does not follow. The gap is not a reason to stop." },
+    { say: "Camus: The second is quieter and more common. A person keeps the question in view for a moment, finds the silence unbearable, and decides that meaning must be there behind it after all. Not because anything showed it. Because it is needed." },
+    { say: "Camus: I call that philosophical suicide, and I mean the questioner survives while the question is quietly put down.",
+      choices: [
+        { tag: "harsh", text: "That name seems harsh for an honest hope.",
+          reply: ["Camus: Perhaps. I do not say such a person is foolish or dishonest in their life. I say that within the argument, they granted the silence and then unsaid it, and I want the moment named so we can see it happen."] },
+        { tag: "fair", text: "It does look like taking back the honesty you started with.",
+          reply: ["Camus: That is my complaint exactly. The argument begins by refusing consolation, and the leap accepts one at the last moment, on no new evidence."] }
+      ] },
+    { note: true, say: "Camus opens the essay by calling the question of whether life is worth living the one truly serious philosophical problem, and the whole book is an argument for living. His term philosophical suicide is aimed at thinkers he admired, Kierkegaard and Jaspers among them, who he thought resolved the tension by a leap rather than holding it open." }
+  ], () => {
+    openPrompt("leaps", () => {
+      flags.leapsDone = true;
+      setObjective("Walk to the top of the hill, marked with E.");
+    });
+  });
+}
+function dlgBeat3() {
+  flags.beat3Done = true;
+  startDlg([
+    { say: "At the top there is nothing but sky, sea, and a great deal of light. Camus: So both exits are closed. What is left is to stay, and to stay without pretending." },
+    { say: "Camus: Three things come out of it. The first is revolt, which is not a raised fist. It is refusing to be consoled and refusing to give up, every day, as a condition of living." },
+    { say: "Camus: The second is freedom. If I expect nothing, no future is owed to me, and no plan can be ruined. That sounds like a loss and it is the opposite." },
+    { say: "Camus: The third is passion. Not depth of experience but quantity of it. As much of this world as there is, because this is the only one on offer." },
+    { say: "Camus: You are going to ask whether anyone lives like that, and I will not pretend the essay proves they can." }
+  ], () => {
+    openPrompt("revolt", () => {
+      flags.revoltDone = true;
+      setObjective("Walk to the boulder, marked with E.");
+    });
+  });
+}
+function dlgBeat4() {
+  flags.beat4Done = true;
+  startDlg([
+    { say: "Below the crest a boulder rests in a hollow it has clearly rolled into many times. Camus: Now the figure I chose, and I chose him because he is the worst case." },
+    { close: "push",
+      say: "Camus: Sisyphus offended the gods and they thought a while about the punishment. They settled on a rock, a hill, and no end. He pushes it up. It rolls down. He goes after it." },
+    { close: "push",
+      say: "Camus: They were right that this is a terrible punishment. Not the effort. Any labourer works. It is that the work comes to nothing and he knows it will, every time, in advance." },
+    { close: "roll",
+      say: "The rock reaches the crest, hangs, and goes back down the way it came. Camus: There. That is the moment the gods were counting on." },
+    { close: "roll",
+      say: "Camus: But I am not interested in the climb. I am interested in what happens next, when he walks back down. That descent is the hour of consciousness, and it is the only hour that is his." },
+    { close: false,
+      say: "Camus: On that walk he is superior to his fate, because he knows exactly what waits and goes anyway. There is no destiny that cannot be surmounted by scorn.",
+      choices: [
+        { tag: "his", text: "Then the rock belongs to him rather than to the gods.",
+          reply: ["Camus: That is the sentence I have been walking toward. His rock is his thing. The punishment they designed depends on him wanting it to end, and he has stopped."] },
+        { tag: "cold", text: "That sounds like consolation dressed as defiance.",
+          reply: ["Camus: A fair suspicion, and the difference is that I am not promising him anything. The rock still rolls down. Nothing is fixed. What changes is that he has stopped waiting for it to be fixed."] }
+      ] },
+    { note: true, say: "The essay closes with the line that one must imagine Sisyphus happy. Camus does not argue that the punishment is good or that meaning is secretly present. His claim is narrower, that lucid acceptance without hope is available, and that it is enough to fill a life." }
+  ], () => {
+    openPrompt("happy", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+function nextStationIndex() {
+  if (!flags.beat1Done) return 0;
+  if (!flags.absurdDone) return -1;
+  if (!flags.beat2Done) return 1;
+  if (!flags.leapsDone) return -1;
+  if (!flags.beat3Done) return 2;
+  if (!flags.revoltDone) return -1;
+  if (!flags.beat4Done) return 3;
+  return -1;
+}
+function dlgClose() { }
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.friarMet) return;
+  const idx = nextStationIndex();
+  if (idx < 0) return;
+  const st = STATIONS[idx];
+  if (Math.abs(player.x - st.x) < 45) {
+    [dlgBeat1, dlgBeat2, dlgBeat3, dlgBeat4][idx]();
+    return;
+  }
+  setStatus("The next spot, " + st.name + ", is marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_sisyphus", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    if (r.response) parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "The Myth of Sisyphus, Report\n";
+  text += "===========================================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    if (r.response) text += "Response: " + r.response + "\n";
+    text += "-".repeat(50);
+  });
+  text += "\n\nDiscussion questions:\n";
+  text += "1. The whole-series objection.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Modern cosmology and the first cause.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. The gap between a first cause and the God of worship.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Sisyphus_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!REDUCED_MOTION) {
+    flakes.forEach(f => {
+      f.y += (14 + f.s * 16) * dt;
+      f.x += f.w * 6 * dt;
+      if (f.y > 500) { f.y = -4; f.x = (f.x + 137) % 1700; }
+    });
+  }
+  if (!flags.started || paused) return;
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right along the road above the harbour.");
+      });
+    }
+  }
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+  if (!flags.friarMet && !dialogueActive && player.x > 240) {
+    player.x = Math.min(player.x, 240);
+    dlgFriar();
+  }
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawCamus(x, y) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = "#4a4048";
+  ctx.beginPath(); ctx.arc(0, -50, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-8, -43); ctx.lineTo(8, -43); ctx.lineTo(14, 0); ctx.lineTo(-14, 0);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#e6e3d6";
+  ctx.fillRect(-6, -42, 12, 5);
+  ctx.strokeStyle = "rgba(230,227,214,0.75)";
+  ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.arc(0, -50, 9, 0, Math.PI * 2); ctx.stroke();
+  // The long hair and the white collar of the period.
+  ctx.fillStyle = "#23232a";
+  ctx.beginPath();
+  ctx.moveTo(-10, -54); ctx.lineTo(10, -54); ctx.lineTo(12, -38); ctx.lineTo(-12, -38);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#e6e3d6";
+  ctx.fillRect(-7, -42, 14, 4);
+  ctx.strokeStyle = "rgba(230,227,214,0.85)";
+  ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.arc(0, -50, 9, 0, Math.PI * 2); ctx.stroke();
+  ctx.restore();
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(230,192,115,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 76 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(230,192,115,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 72 + lift);
+}
+
+/* =========================================================
+   Close views. The stick in water and the wax fill the frame
+   while the conversation is looking at them.
+   ========================================================= */
+
+/* A close view is a zoom, not the scene at scale, so it is drawn
+   inside a frame that says as much. */
+function drawCloseFrame(caption) {
+  const pad = 26;
+  ctx.save();
+  ctx.strokeStyle = "rgba(230,221,194,0.55)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(pad, pad, W - pad * 2, H - pad * 2);
+  ctx.fillStyle = "rgba(230,221,194,0.9)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.letterSpacing = "1px";
+  const label = "A CLOSER LOOK";
+  const lw = ctx.measureText(label).width;
+  ctx.fillStyle = "rgba(20,22,31,0.95)";
+  ctx.fillRect(pad + 16, pad - 9, lw + 16, 18);
+  ctx.fillStyle = "rgba(230,221,194,0.9)";
+  ctx.fillText(label, pad + 24, pad + 4);
+  ctx.letterSpacing = "0px";
+  if (caption) {
+    ctx.fillStyle = "#e6ddc2";
+    ctx.font = "15px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText(caption, W / 2, H - pad - 14);
+    ctx.textAlign = "left";
+  }
+  ctx.restore();
+}
+
+function drawHillScene(rolling) {
+  ctx.fillStyle = "#1a1a22";
+  ctx.fillRect(0, 0, W, H);
+  const sky = ctx.createLinearGradient(0, 0, 0, 420);
+  sky.addColorStop(0, "#3f6f96");
+  sky.addColorStop(1, "#d9c99c");
+  ctx.fillStyle = sky;
+  ctx.fillRect(40, 40, W - 80, 380);
+  // The slope, running up to the right.
+  ctx.fillStyle = "#b9a681";
+  ctx.beginPath();
+  ctx.moveTo(40, 420); ctx.lineTo(760, 130); ctx.lineTo(860, 130); ctx.lineTo(860, 420);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#a89571";
+  ctx.beginPath();
+  ctx.moveTo(40, 420); ctx.lineTo(760, 138); ctx.lineTo(760, 150); ctx.lineTo(40, 428);
+  ctx.closePath(); ctx.fill();
+
+  const cycle = REDUCED_MOTION ? 0.55 : (t % 6) / 6;
+  let px2, py2, rot;
+  if (!rolling) {
+    // Pushing it up, slowly.
+    const u = 0.15 + cycle * 0.55;
+    px2 = 120 + u * 600;
+    py2 = 420 - u * 280;
+    rot = u * 9;
+  } else {
+    // Going back down, faster than it went up.
+    const u = 1 - Math.min(1, cycle * 2.2);
+    px2 = 120 + u * 600;
+    py2 = 420 - u * 280;
+    rot = -u * 16;
+  }
+  // The rock.
+  ctx.save();
+  ctx.translate(px2, py2 - 34);
+  ctx.rotate(rot);
+  ctx.fillStyle = "#8e8676";
+  ctx.beginPath(); ctx.arc(0, 0, 34, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#7c7466";
+  ctx.beginPath(); ctx.arc(-12, -8, 13, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(14, 10, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+  // The figure, behind it going up and following it going down.
+  const fx4 = rolling ? px2 + 92 : px2 - 54;
+  const fy4 = rolling ? py2 + 42 : py2;
+  ctx.save();
+  ctx.translate(fx4, fy4);
+  ctx.rotate(rolling ? -0.2 : -0.42);
+  ctx.fillStyle = "#4a4048";
+  ctx.beginPath(); ctx.arc(0, -40, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-7, -33, 14, 22);
+  ctx.fillRect(-7, -11, 5, 12);
+  ctx.fillRect(2, -11, 5, 12);
+  ctx.fillRect(4, -30, 16, 5);
+  ctx.restore();
+
+  ctx.fillStyle = "rgba(30,26,20,0.8)";
+  ctx.font = "13px 'Segoe UI', sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText(rolling ? "and it goes back down" : "the same climb, again", W / 2, 452);
+  ctx.textAlign = "left";
+  drawCloseFrame(rolling ? "The descent, which is his own hour" : "The climb, which the gods designed");
+}
+function drawPushClose() { drawHillScene(false); }
+function drawRollClose() { drawHillScene(true); }
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  if (closeView === "push") { drawPushClose(); return; }
+  if (closeView === "roll") { drawRollClose(); return; }
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // Night outside, lamplight inside.
+  ctx.fillStyle = "#161a26";
+  ctx.fillRect(camX, 0, W, H);
+
+  // Algiers in strong afternoon light: white terraces stepping down
+  // to a bay, the hill climbing to the right.
+  const sky = ctx.createLinearGradient(0, 0, 0, GROUND);
+  sky.addColorStop(0, "#4a86b8");
+  sky.addColorStop(0.7, "#8ec0d8");
+  sky.addColorStop(1, "#d6d2b8");
+  ctx.fillStyle = sky;
+  ctx.fillRect(camX, 0, W, GROUND);
+  // The bay behind everything.
+  ctx.fillStyle = "#2f6f8f";
+  ctx.fillRect(200, 250, WORLD_W - 300, 110);
+  ctx.fillStyle = "rgba(255,255,255,0.14)";
+  for (let i = 0; i < 26; i++) {
+    const wx = 210 + i * 62 + (REDUCED_MOTION ? 0 : Math.sin(t * 0.7 + i) * 8);
+    ctx.fillRect(wx, 276 + (i % 4) * 18, 34, 3);
+  }
+  // White houses stepping up the slope.
+  for (let bx = 210; bx < WORLD_W - 160; bx += 96) {
+    const lift = 40 + ((bx / 96) % 5) * 26;
+    ctx.fillStyle = "#e6e0d2";
+    ctx.fillRect(bx, GROUND - lift - 96, 84, 96);
+    ctx.fillStyle = "#cfc7b6";
+    ctx.fillRect(bx, GROUND - lift - 104, 84, 10);
+    ctx.fillStyle = "#3f5f74";
+    for (let wx2 = bx + 12; wx2 < bx + 74; wx2 += 26) {
+      ctx.fillRect(wx2, GROUND - lift - 74, 14, 20);
+      ctx.fillRect(wx2, GROUND - lift - 44, 14, 20);
+    }
+  }
+  // The dusty road along the front.
+  ctx.fillStyle = "#c9b68e";
+  ctx.fillRect(200, GROUND, WORLD_W - 300, H - GROUND);
+  ctx.fillStyle = "#bcaa83";
+  for (let fx = 200; fx < WORLD_W - 100; fx += 58) ctx.fillRect(fx, GROUND + 14, 30, 4);
+
+  // The tram stop.
+  const tsx = STATIONS[0].x;
+  ctx.fillStyle = "#5a5a52";
+  ctx.fillRect(tsx - 5, GROUND - 110, 10, 110);
+  ctx.fillRect(tsx - 46, GROUND - 118, 92, 12);
+  ctx.fillStyle = "#8a8578";
+  ctx.fillRect(tsx - 40, GROUND - 34, 80, 8);
+  ctx.fillRect(tsx - 34, GROUND - 26, 6, 26);
+  ctx.fillRect(tsx + 28, GROUND - 26, 6, 26);
+  // Two people waiting, as they were yesterday.
+  ctx.fillStyle = "#6a6a7a";
+  ctx.beginPath(); ctx.arc(tsx - 62, GROUND - 46, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(tsx - 68, GROUND - 40, 12, 40);
+  ctx.fillStyle = "#7a6a62";
+  ctx.beginPath(); ctx.arc(tsx + 60, GROUND - 46, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(tsx + 54, GROUND - 40, 12, 40);
+
+  // The cemetery wall, low, with cypresses behind it.
+  const cwx = STATIONS[1].x;
+  ctx.fillStyle = "#3f5540";
+  [-70, -20, 34, 84].forEach(d2 => {
+    ctx.beginPath();
+    ctx.moveTo(cwx + d2, GROUND - 40);
+    ctx.lineTo(cwx + d2 - 12, GROUND - 40);
+    ctx.lineTo(cwx + d2 - 6, GROUND - 150);
+    ctx.lineTo(cwx + d2 + 6, GROUND - 150);
+    ctx.lineTo(cwx + d2 + 12, GROUND - 40);
+    ctx.closePath(); ctx.fill();
+  });
+  ctx.fillStyle = "#d8d0bc";
+  ctx.fillRect(cwx - 96, GROUND - 44, 210, 44);
+  ctx.fillStyle = "#c4bca8";
+  ctx.fillRect(cwx - 96, GROUND - 48, 210, 6);
+
+  // The crest of the hill: nothing but light.
+  const hx2 = STATIONS[2].x;
+  ctx.fillStyle = "rgba(255,246,214,0.30)";
+  ctx.beginPath(); ctx.arc(hx2, GROUND - 210, 130, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#c9b68e";
+  ctx.beginPath();
+  ctx.moveTo(hx2 - 190, GROUND);
+  ctx.quadraticCurveTo(hx2, GROUND - 74, hx2 + 190, GROUND);
+  ctx.closePath(); ctx.fill();
+
+  // The boulder, resting in the hollow it keeps returning to.
+  const bxr = STATIONS[3].x;
+  ctx.fillStyle = "#b3a88f";
+  ctx.beginPath(); ctx.ellipse(bxr, GROUND + 4, 52, 16, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#8e8676";
+  ctx.beginPath(); ctx.arc(bxr, GROUND - 30, 36, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#7c7466";
+  ctx.beginPath(); ctx.arc(bxr - 12, GROUND - 38, 14, 0, Math.PI * 2); ctx.fill();
+
+  const idx = nextStationIndex();
+  const dX = !flags.friarMet ? npcs.camus.x
+    : idx >= 0 ? STATIONS[idx].x - 64
+    : STATIONS[3].x - 64;
+  drawCamus(dX, GROUND);
+  if (flags.friarMet && idx >= 0) drawMarker(STATIONS[idx].x, GROUND);
+  drawPerson(player.x, GROUND, player.color, player.facing);
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(14,16,23,0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f0f2f7";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("The Myth of Sisyphus", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#a9b1c4";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You are on a road above Algiers. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

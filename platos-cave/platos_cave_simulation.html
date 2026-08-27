@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Allegory of the Cave</title>
+<style>
+:root{
+  --page:#0f0d0b;
+  --panel:#1d1813;
+  --panel-2:#26201a;
+  --line:#3a3128;
+  --text:#f0e8dd;
+  --muted:#b9ac9c;
+  --amber:#e8b25c;
+  --amber-deep:#c98d33;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+label{color:var(--muted)}
+button,select{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#332a21}
+button.primary{background:var(--amber); border-color:var(--amber-deep); color:#231a0d; font-weight:600}
+button.primary:hover{background:#f2c476}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--amber); font-size:15px; text-align:center; min-height:22px;
+}
+canvas{
+  background:#0a0806; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox.note{background:#1b2028; border-color:#8fb7dd}
+#dlgTag{display:none; margin:0 0 6px; color:#8fb7dd; font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--amber-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--amber)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(540px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--amber)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#15110d; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--amber)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--amber); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#15110d; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--amber)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--amber); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+@media (prefers-reduced-motion: reduce){ .overlay{transition:none} }
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>The Allegory of the Cave</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>It is the month of the sacred ship: Socrates is convicted, the sentence waits on the ship's return from Delos, and the city argues with itself. You walk out to the grove of Akademos northwest of the walls, where a young follower of Socrates named Plato, the note-taker you saw at the trial, will one day found his Academy, and where, in Book 7 of the <em>Republic</em>, he will one day ask his readers to imagine people who have lived their whole lives chained in a cave, watching shadows move across a wall. Today he asks you first, and the story becomes yours to live: you play one of the prisoners. Follow the objective bar above the game window and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin the simulation to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Plato, in the grove of Akademos</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. Jump: up arrow. E engages with whatever is next to you: talk, pet, pick up, put down. R rotates a held object. Dialogue replies: click them, or press 1 or 2. Objects can also be dragged with the mouse once you have reached the ledge.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. Jump: up arrow. E engages with whatever is next to you. Dialogue replies: click them, or press 1 or 2.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowUp" aria-label="Jump">&#8593;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+    <button data-k="r" aria-label="Rotate">R</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p>The next stop on the map is The Prison of Socrates.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <p id="outcomeLine"></p>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. How did your emotional state change as you moved through the stages?</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. Why did the other prisoners refuse to believe you?</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. The cave is often read as a picture of ordinary life. Describe one situation in your own life, or in the world around you, where people mistake appearances for the way things really are.</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> In the allegory, the shadows on the wall stand for</p>
+      <label><input type="radio" name="q1" value="The highest form of knowledge"> the highest form of knowledge</label>
+      <label><input type="radio" name="q1" value="Appearances that people mistake for reality"> appearances that people mistake for reality</label>
+      <label><input type="radio" name="q1" value="Things exactly as they really are"> things exactly as they really are</label>
+
+      <p><strong>2.</strong> The fire inside the cave is</p>
+      <label><input type="radio" name="q2" value="The highest reality"> the highest reality</label>
+      <label><input type="radio" name="q2" value="A symbol of true knowledge"> a symbol of true knowledge</label>
+      <label><input type="radio" name="q2" value="The light source that casts the shadows"> the light source that casts the shadows</label>
+
+      <p><strong>3.</strong> The climb out of the cave stands for</p>
+      <label><input type="radio" name="q3" value="The mind's ascent from appearances toward truth"> the mind's ascent from appearances toward truth</label>
+      <label><input type="radio" name="q3" value="Gaining political power"> gaining political power</label>
+      <label><input type="radio" name="q3" value="A return to ignorance"> a return to ignorance</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_cave";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  intro: {
+    title: "Stage 0: Chained in the cave",
+    text: "You have been chained here your whole life. You can only face the wall in front of you. Shapes move across it. What do you think these moving shapes are?",
+    mcq: [
+      "Real things, exactly as they appear",
+      "Appearances of some kind, though I cannot tell of what",
+      "Signs of something beyond the wall, though I cannot know what"
+    ],
+    requireText: true,
+    textHint: "Explain your choice in a sentence or two."
+  },
+  insideCave: {
+    title: "Stage 1: What the prisoners believe",
+    text: "The prisoner beside you says the shapes on the wall are the only real things there are. Do you agree?",
+    mcq: ["Yes, the shapes are all there is", "I am not sure, there might be more", "No, I think the prisoner is wrong"],
+    requireText: true,
+    textHint: "Explain your answer in a sentence or two."
+  },
+  fireZone: {
+    title: "Stage 2: By the fire",
+    text: "You have seen the fire, the turning platform, and the objects that cast the shadows, and you have cast shadows yourself. What does this show about the shapes you watched from your chains?",
+    mcq: null,
+    requireText: true,
+    textHint: "Write your answer here."
+  },
+  outside: {
+    title: "Stage 3: Outside the cave",
+    text: "You are outside in full daylight. You can see the things that cast the shadows, in color and in detail. Compare what you see now to what you believed inside the cave.",
+    mcq: null,
+    requireText: true,
+    textHint: "Write your answer here."
+  },
+  final_all: {
+    title: "Stage 4: The return",
+    text: "You went back down and told the others what you saw. They laughed at you and refused to leave. Why do you think they refused?",
+    mcq: null,
+    requireText: true,
+    textHint: "Write your answer here."
+  },
+  final_one: {
+    title: "Stage 4: The return",
+    text: "You went back down, told the others what you saw, and showed one of them the shadows changing. That prisoner rose to follow you, and the rest laughed and refused to leave. Why do you think most of them refused, and what made the difference for the one who followed?",
+    mcq: null,
+    requireText: true,
+    textHint: "Write your answer here."
+  }
+};
+
+const quizKeys = [
+  "Appearances that people mistake for reality",
+  "The light source that casts the shadows",
+  "The mind's ascent from appearances toward truth"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+const keysEl = document.getElementById("keys");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* =========================================================
+   World definition
+   ========================================================= */
+const W = 900, H = 500;
+const WORLD_W = 2400;
+const WALL_FACE = 100;
+const FIRE = { x: 800, y: 352 };
+const SUN = { x: 1980, y: 90 };
+const LEDGE = { x0: 600, x1: 900, y: 360 };
+const CAROUSEL = { x: 700, r: 66 };
+const SHADOW_LIMIT = FIRE.x - 25;
+const SHORE_X = 2050;
+
+const groundSegs = [
+  { x0: 0,    x1: 520,  y: 440 },
+  { x0: 520,  x1: 560,  y: 415 },
+  { x0: 560,  x1: 600,  y: 388 },
+  { x0: 600,  x1: 900,  y: 360 },
+  { x0: 900,  x1: 940,  y: 325 },
+  { x0: 940,  x1: 980,  y: 290 },
+  { x0: 980,  x1: 1140, y: 255 },
+  { x0: 1140, x1: SHORE_X, y: 330 },
+  { x0: SHORE_X, x1: WORLD_W, y: 420 }   // under the water
+];
+function groundY(x) {
+  for (const s of groundSegs) if (x >= s.x0 && x < s.x1) return s.y;
+  return 440;
+}
+
+/* =========================================================
+   Game state
+   ========================================================= */
+const flags = {
+  started: false,
+  introDone: false,
+  freed: false,           // the rock has broken the chain
+  talkedInside: false,
+  fireTaskDone: false,
+  firePromptDone: false,
+  passingTold: false,
+  phase1Talked: false,
+  outsideSeen: false,
+  outsidePromptDone: false,
+  demoAsked: false,
+  demoDone: false,
+  waterTold: false,       // the player has spoken about the water once
+  horsePetted: false,
+  finalDone: false
+};
+let paused = false;
+let introTimer = 0;
+let dazzle = 0;
+let darkAdjust = 0;
+let wasOutside = false;
+let lastBurn = -10;
+let lastBump = -10;
+let wetTimer = 0;
+let reveal = 0;   // 0 = only the wall is visible, 1 = the whole cave
+let persuasionAttempts = 0;
+let persuasionStarted = false;
+let lastAttempt = null;     // { a, b } choices of the most recent attempt
+let persuasion = null;      // { c1, c2, demo, outcome, attempts }
+
+const PLAYER_START = 165;
+const player = {
+  x: PLAYER_START, y: 440, vx: 0, vy: 0,
+  onGround: true, facing: -1, color: "#6f8fe0", canMove: false
+};
+
+// The rock that falls and breaks the player's chain.
+const rock = { active: false, x: 0, y: 0, vy: 0, landed: false };
+
+/* The guard stands at the top of the stairs where the freed
+   prisoner enters the platform. He watches the player and stops any
+   attempt to carry an object away from the platform. */
+const guard = {
+  x: 620, post: 620,
+  state: "posted",   // posted | marching | scolding | returning
+  facing: 1,
+  alertObj: null,
+  scolded: false,
+  met: false
+};
+
+const keys = {};
+const floatTexts = [];
+
+const objects = [
+  { kind: "ship",    x: 0, y: LEDGE.y, rot: 0, onCarousel: true, angle: 0 },
+  { kind: "amphora", x: 0, y: LEDGE.y, rot: 0, onCarousel: true, angle: 2 * Math.PI / 3 },
+  { kind: "horse",   x: 0, y: LEDGE.y, rot: 0, onCarousel: true, angle: 4 * Math.PI / 3 }
+];
+let carried = null;
+let dragged = null;
+let fireProgress = { carriedOnce: false, rotatedOnce: false, shadowSeen: false };
+
+const prisoners = [ { x: 225, freed: false }, { x: 285, freed: false }, { x: 345, freed: false } ];
+
+// The living world outside.
+const horse = { x: 1750, facing: 1, mode: "graze", timer: 3, petTimer: 0, min: 1620, max: 1880 };
+const amph = { x: 1985, tipped: false, anim: 0, dir: 1, chipped: false };
+const ship = { x: 2240 };
+
+function castsShadow(x) { return x < SHADOW_LIMIT && x > WALL_FACE; }
+
+/* =========================================================
+   Narration
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  const u = new SpeechSynthesisUtterance(p.title + ". " + p.text);
+  speechSynthesis.speak(u);
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+/* =========================================================
+   Help panel and stage-aware controls line
+   ========================================================= */
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.introDone) return "Watch the wall. The first question appears on its own.";
+  if (!flags.freed) return "Wait a moment. Something is shifting in the ceiling.";
+  if (!flags.talkedInside) return "Walk right toward the steps. The conversation with the prisoners starts on its own, or press E near them.";
+  if (!flags.fireTaskDone && !flags.outsideSeen) return "On the ledge: press E near an object on the turning platform to pick it up, then press R to turn it while holding it on the left side of the fire, and watch its shadow on the wall. The guard at the top of the stairs allows inspection, but the objects must stay on the platform.";
+  if (!flags.firePromptDone) return "Answer the question in the popup to continue.";
+  if (!flags.outsideSeen) return "The guard lets you pass now. Jump over the fire and climb up through the tunnel on the right.";
+  if (flags.demoAsked && !flags.demoDone) return "Climb to the ledge and pick up or turn an object so the prisoner sees its shadow change, then go back down and press E.";
+  if (!flags.finalDone) return "Outside you can pet the horse with E and explore to the water. When you are ready, go back down to the prisoners and press E to talk.";
+  return "The simulation is complete. Fill in the discussion questions, take the quiz, and download the report.";
+}
+function refreshKeys() {
+  let base = "Move: left and right arrow keys. Jump: up arrow. E engages with whatever is next to you: talk, pet, pick up, put down. Dialogue replies: click them, or press 1 or 2.";
+  if (flags.talkedInside) base += " R rotates a held object. Objects can also be dragged with the mouse.";
+  keysEl.textContent = base;
+}
+
+/* =========================================================
+   Dialogue engine
+   ========================================================= */
+let dlg = null;
+let dialogueActive = false;
+
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  const replies = (typeof c.reply === "function" ? c.reply(dlg.tags) : c.reply).map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+
+
+/* =========================================================
+   Dialogue content
+   ========================================================= */
+function dlgPhase0() {
+  startDlg([
+    { say: "Prisoner: The shapes on the wall are the only real things there are." },
+    { say: "Prisoner: There has never been anything else. Do you agree?",
+      choices: [
+        { text: "Yes, of course.", reply: ["Prisoner: Exactly. Nothing else exists."] },
+        { text: "Maybe there is more than the shapes.", reply: ["Prisoner: More? What more could there be? You are being foolish."] }
+      ] }
+  ], () => openPrompt("insideCave", afterInsidePrompt));
+}
+function dlgPhase1() {
+  startDlg([
+    { say: "Prisoner: You climbed up toward the light. Why were the shapes moving strangely just now?",
+      choices: [
+        { text: "There are objects up there making the shapes on the wall.", reply: ["Prisoner: Made? Shapes are not made. They appear on the wall, as they always have."] },
+        { text: "I do not think I can explain it in a way you would accept.", reply: ["Prisoner: Then stop talking nonsense and sit down."] }
+      ] },
+    { say: "Prisoner: Whatever you saw up there, the wall is still the wall." }
+  ], () => {
+    flags.phase1Talked = true;
+    setObjective("They did not understand. Climb back up and continue right, out of the cave.");
+  });
+}
+
+/* The persuasion attempt. It can be repeated: after a refusal the
+   player chooses to keep trying or to give up and end the game. */
+function approachChoices() {
+  return [
+    { text: "Because I have seen the truth and you have not. Everything you believe is false.",
+      tag: "assert",
+      reply: ["Prisoner: The man who cannot walk straight calls the rest of us blind. Go on, then. Finish your speech."] },
+    { text: "Tell me something first. Have the shapes ever puzzled you? They swell, they shrink, they vanish.",
+      tag: "question",
+      reply: ["Prisoner: Sometimes one grows until it swallows the whole wall, then dwindles to nothing. I never asked why."] }
+  ];
+}
+function askChoices() {
+  return [
+    { text: "Stand up and come with me now. Once you are outside you will understand everything at once.",
+      tag: "drag",
+      reply: t => persuasionClose(t) },
+    { text: "Nothing yet. Keep your eyes on the wall, and I will show you one small thing you cannot explain.",
+      tag: "step",
+      reply: t => persuasionClose(t) }
+  ];
+}
+function persuasionClose(tags) {
+  const a = tags[tags.length - 2], b = tags[tags.length - 1];
+  if (a.tag === "question" && b.tag === "step") {
+    return [
+      "Prisoner: My neck aches when I turn it, and you say the light stings. But watching the wall costs me nothing.",
+      "Prisoner: Go on, then. Prove it. Make the shapes change while I watch."
+    ];
+  }
+  return [
+    "Prisoner: Climb into the dark on the word of a stumbling man? No. Sit down and be quiet.",
+    "The other prisoners laugh and turn back to the wall."
+  ];
+}
+function persuasionSteps(first) {
+  const steps = [];
+  if (first) {
+    steps.push({ say: "You: Listen. The shapes on the wall are shadows. I have stood beside the fire that casts them, and I have walked above, where the sun makes everything plain." });
+    steps.push({ say: "Prisoner: You left an ordinary man and came back squinting, tripping on a floor you have known your whole life. Why should we listen to you?",
+      choices: approachChoices() });
+  } else {
+    steps.push({ say: "Prisoner: You again. Say your piece, then sit down.",
+      choices: approachChoices() });
+  }
+  steps.push({ say: "Prisoner: Suppose the shapes did come from somewhere. What would you have us do about it?",
+    choices: askChoices() });
+  return steps;
+}
+function persuasionDone(tags) {
+  const a = tags[0], b = tags[1];
+  persuasionAttempts++;
+  lastAttempt = { a, b };
+  if (a.tag === "question" && b.tag === "step") {
+    flags.demoAsked = true;
+    setObjective("Climb to the ledge, then pick up or turn an object so its shadow changes while the prisoner watches. Then come back down and press E.");
+    return;
+  }
+  startDlg([
+    { say: "The prisoners have turned back to the wall. What do you do?",
+      choices: [
+        { text: "Keep trying. There must be words that reach them.",
+          tag: "retry",
+          reply: ["Prisoner: Persistent, are you."] },
+        { text: "Give up. There is nothing more you can say.",
+          tag: "end",
+          reply: ["You sit beside them in silence for a moment."] }
+      ] }
+  ], t2 => {
+    if (t2[0].tag === "retry") {
+      startDlg(persuasionSteps(false), persuasionDone);
+    } else {
+      persuasion = { c1: a.text, c2: b.text, demo: "not requested", outcome: "all", attempts: persuasionAttempts };
+      openPrompt("final_all", afterFinalPrompt);
+    }
+  });
+}
+function dlgPhase2() {
+  persuasionStarted = true;
+  startDlg(persuasionSteps(persuasionAttempts === 0), persuasionDone);
+}
+function dlgPhase2b() {
+  startDlg([
+    { say: "Prisoner: The shapes moved when you moved. Nothing on that wall has ever answered to a person before." },
+    { say: "Prisoner: My legs are weak and you say the light stings. Walk slowly, and show me the first step." },
+    { say: "The other prisoners laugh and call out that the two of you have lost your minds." }
+  ], () => {
+    prisoners[2].freed = true;
+    persuasion = { c1: lastAttempt.a.text, c2: lastAttempt.b.text, demo: "performed", outcome: "one", attempts: persuasionAttempts };
+    openPrompt("final_one", afterFinalPrompt);
+  });
+}
+function dlgDemoNag() {
+  startDlg([
+    { say: "Prisoner: I have seen nothing change yet. Make the shapes move while I watch." }
+  ], () => {});
+}
+function dlgGuardGreet() {
+  guard.met = true;
+  startDlg([
+    { say: "Guard: You are not chained anymore? Well, nobody prepared me for this, so I will just keep my eye on you." },
+    { say: "Guard: Look at whatever you like. But do not try to take anything unauthorized down to the other prisoners, or I will have to stop you." }
+  ], () => {
+    setObjective("Press E near an object on the turning platform to pick it up, then press R to turn it and watch the wall.");
+  });
+}
+function dlgGuardScold(first) {
+  const line = first
+    ? "Guard: Hey! You leave that alone, or I will chain you up again myself!"
+    : "Guard: I warned you. Leave the objects alone.";
+  startDlg([{ say: line }], () => resolveScold());
+}
+function dlgWater() {
+  startDlg([
+    { say: "You: What is this? I feel like I will sink if I keep going." }
+  ], () => {});
+}
+
+/* =========================================================
+   Guard behavior
+   ========================================================= */
+function disturbObjects(o) {
+  if (!flags.started) return;
+  guard.alertObj = o;
+  if (guard.state === "posted") {
+    guard.state = "marching";
+  }
+}
+function returnToCarousel(o) {
+  o.onCarousel = true;
+  const c = Math.min(Math.max((o.x - CAROUSEL.x) / CAROUSEL.r, -1), 1);
+  o.angle = Math.acos(c);
+  o.y = LEDGE.y;
+}
+function resolveScold() {
+  const held = carried || dragged || guard.alertObj;
+  carried = null;
+  dragged = null;
+  if (held) returnToCarousel(held);
+  guard.alertObj = null;
+  guard.state = "returning";
+  setStatus("The guard put the object back on the platform. You may inspect the objects there, but they cannot leave the fire ledge.");
+}
+function guardTargetX() {
+  const held = carried || dragged || guard.alertObj;
+  return held ? held.x : CAROUSEL.x;
+}
+function updateGuard(dt) {
+  const gspeed = 110;
+  if (guard.state === "marching") {
+    const tx = guardTargetX();
+    const dir = tx > guard.x ? 1 : -1;
+    guard.facing = dir;
+    guard.x += dir * gspeed * dt;
+    if (Math.abs(guard.x - tx) < 44) {
+      if (!dialogueActive && !paused) {
+        guard.state = "scolding";
+        dlgGuardScold(!guard.scolded);
+        guard.scolded = true;
+      }
+    }
+  } else if (guard.state === "returning") {
+    const dir = guard.post > guard.x ? 1 : -1;
+    guard.facing = dir;
+    guard.x += dir * gspeed * dt;
+    if (Math.abs(guard.x - guard.post) < 6) { guard.x = guard.post; guard.state = "posted"; guard.facing = 1; }
+  }
+}
+
+/* =========================================================
+   Reflection modal
+   ========================================================= */
+let activePrompt = null;
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+
+/* =========================================================
+   Stage flow
+   ========================================================= */
+function setObjective(t) { objectiveEl.textContent = t; }
+
+
+function afterIntroPrompt() {
+  flags.introDone = true;
+  rock.active = true;
+  rock.x = player.x + 24;
+  rock.y = 150;
+  rock.vy = 0;
+  setObjective("Something is shifting in the ceiling above you.");
+}
+function afterInsidePrompt() {
+  flags.talkedInside = true;
+  setObjective("Climb the steps up to the fire on the right. Try picking up an object from the turning platform with E.");
+  refreshKeys();
+}
+function afterFirePrompt() {
+  flags.firePromptDone = true;
+  setObjective("Jump over the fire and climb right, out of the cave, or go back down and talk to the prisoners first.");
+  setStatus("");
+}
+function afterOutsidePrompt() {
+  flags.outsidePromptDone = true;
+  setObjective("Explore if you like, then walk back down into the cave and press E near the other prisoners to tell them what you saw.");
+}
+function afterFinalPrompt() {
+  flags.finalDone = true;
+  endGame();
+}
+
+function nearPrisoners() { return player.x < 470; }
+
+function tryInteract() {
+  if (paused) return;
+  if (dialogueActive) { continueDlg(); return; }
+
+  if (nearPrisoners() && flags.freed) {
+    if (!flags.talkedInside) { dlgPhase0(); return; }
+    if (flags.outsidePromptDone && !flags.finalDone) {
+      if (!persuasionStarted) { dlgPhase2(); return; }
+      if (flags.demoAsked && !flags.demoDone) { dlgDemoNag(); return; }
+      if (flags.demoAsked && flags.demoDone) { dlgPhase2b(); return; }
+      dlgPhase2(); return;
+    }
+    if (flags.fireTaskDone && !flags.outsideSeen && !flags.phase1Talked) { dlgPhase1(); return; }
+    if (!flags.outsideSeen) {
+      startDlg([{ say: "Prisoner: The wall is all there is. Watch it with us." }], () => {});
+      return;
+    }
+  }
+
+  // Outside interactions.
+  if (player.x > 1150) {
+    if (Math.abs(player.x - horse.x) < 60) {
+      horse.mode = "look";
+      horse.petTimer = 2.5;
+      horse.facing = player.x < horse.x ? -1 : 1;
+      flags.horsePetted = true;
+      setStatus("The horse leans into your hand.");
+      return;
+    }
+    if (Math.abs(player.x - amph.x) < 42) {
+      setStatus("You strain at the amphora. It is far too heavy to lift.");
+      return;
+    }
+  }
+
+  if (carried) {
+    dropObject(carried);
+    carried = null;
+    setStatus("");
+    return;
+  }
+  if (!flags.talkedInside) return;
+  let best = null, bestD = 60;
+  for (const o of objects) {
+    const d = Math.abs(player.x - o.x) + Math.abs((player.y - 20) - o.y) * 0.5;
+    if (d < bestD) { best = o; bestD = d; }
+  }
+  if (best) {
+    best.onCarousel = false;
+    carried = best;
+    fireProgress.carriedOnce = true;
+    markDemo(best);
+    setStatus("You are carrying the " + best.kind + ". Press R to turn it and watch the wall. The guard allows you to inspect the objects, but they must stay by the platform.");
+  }
+}
+
+function dropObject(o) {
+  if (Math.abs(o.x - CAROUSEL.x) < 90 && Math.abs(groundY(o.x) - LEDGE.y) < 5) {
+    returnToCarousel(o);
+  } else {
+    o.onCarousel = false;
+    o.y = groundY(o.x);
+  }
+}
+
+function rotateObject() {
+  const target = carried || dragged || nearestObject();
+  if (target && flags.talkedInside) {
+    if (target.onCarousel && target !== carried && target !== dragged) {
+      target.spin = (target.spin || 0) + Math.PI / 6;
+    } else {
+      target.rot += Math.PI / 6;
+    }
+    fireProgress.rotatedOnce = true;
+    markDemo(target);
+  }
+}
+function nearestObject() {
+  let best = null, bestD = 70;
+  for (const o of objects) {
+    const d = Math.abs(player.x - o.x);
+    if (d < bestD) { best = o; bestD = d; }
+  }
+  return best;
+}
+function markDemo(o) {
+  if (flags.demoAsked && !flags.demoDone && castsShadow(o.x)) {
+    flags.demoDone = true;
+    setStatus("The prisoner saw the shadow change. Go back down and press E to talk.");
+    setObjective("Go back down to the prisoners and press E.");
+  }
+}
+function onLedge(x) { return x >= LEDGE.x0 - 20 && x <= LEDGE.x1; }
+
+function checkFireTask() {
+  if (flags.fireTaskDone || !flags.talkedInside) return;
+  const held = carried || dragged;
+  if (held && castsShadow(held.x)) fireProgress.shadowSeen = true;
+  if (fireProgress.carriedOnce && fireProgress.rotatedOnce && fireProgress.shadowSeen) {
+    flags.fireTaskDone = true;
+    openPrompt("fireZone", afterFirePrompt);
+  }
+}
+
+function endGame() {
+  try { localStorage.setItem("phil_map_cave", "1"); } catch (err) { /* storage is optional */ }
+  document.getElementById("outcomeLine").textContent =
+    persuasion && persuasion.outcome === "one"
+      ? "Outcome: one prisoner rose to follow you. The rest refused."
+      : "Outcome: the prisoners refused to leave.";
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+/* =========================================================
+   Quiz and report
+   ========================================================= */
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "The Allegory of the Cave, Simulation Report\n";
+  text += "===========================================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    text += "Response: " + r.response + "\n" + "-".repeat(50);
+  });
+  text += "\n\nActivity record:\n";
+  text += "Fire ledge task completed: " + (flags.fireTaskDone ? "yes" : "no") + "\n";
+  text += "Optional conversation after seeing the fire: " + (flags.phase1Talked ? "yes" : "no") + "\n";
+  text += "Petted the horse outside: " + (flags.horsePetted ? "yes" : "no") + "\n";
+  text += "Tipped the amphora outside: " + (amph.tipped ? "yes" : "no") + "\n";
+  if (persuasion) {
+    text += "Persuasion attempts: " + persuasion.attempts + "\n";
+    text += "Final approach: " + persuasion.c1 + "\n";
+    text += "Final request: " + persuasion.c2 + "\n";
+    text += "Demonstration for the prisoner: " + persuasion.demo + "\n";
+    text += "Outcome: " + (persuasion.outcome === "one"
+      ? "one prisoner followed, the rest refused" : "all of the prisoners refused") + "\n";
+  }
+  text += "\nDiscussion questions:\n";
+  text += "1. How did your emotional state change as you moved through the stages?\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Why did the other prisoners refuse to believe you?\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. Where do people mistake appearances for the way things really are?\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Platos_Cave_Reflection_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k === "1" || k === "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright", "arrowup"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+  if (k === "r") rotateObject();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+    if (k === "r") rotateObject();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+function canvasToWorld(ev) {
+  const rect = canvas.getBoundingClientRect();
+  const sx = (ev.clientX - rect.left) * (W / rect.width);
+  const sy = (ev.clientY - rect.top) * (H / rect.height);
+  return { x: sx + camX, y: sy };
+}
+canvas.addEventListener("pointerdown", ev => {
+  if (paused || dialogueActive || !flags.started || !flags.talkedInside) return;
+  const p = canvasToWorld(ev);
+  for (const o of objects) {
+    if (Math.abs(p.x - o.x) < 34 && Math.abs(p.y - (o.y - 30)) < 44) {
+      dragged = o;
+      o.onCarousel = false;
+      if (carried === o) carried = null;
+      fireProgress.carriedOnce = true;
+      markDemo(o);
+      canvas.setPointerCapture(ev.pointerId);
+      break;
+    }
+  }
+});
+canvas.addEventListener("pointermove", ev => {
+  if (!dragged || paused) return;
+  const p = canvasToWorld(ev);
+  dragged.x = Math.min(Math.max(p.x, LEDGE.x0 + 10), CAROUSEL.x + 138);
+  dragged.y = Math.min(Math.max(p.y, 250), groundY(dragged.x));
+  markDemo(dragged);
+});
+canvas.addEventListener("pointerup", () => {
+  if (dragged) { dropObject(dragged); dragged = null; }
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!flags.started || paused) return;
+
+  if (!flags.introDone && activePrompt === null && !dialogueActive) {
+    introTimer += dt;
+    if (introTimer > 5) openPrompt("intro", afterIntroPrompt);
+  }
+
+  // The falling rock that breaks the chain.
+  if (rock.active && !rock.landed) {
+    rock.vy += 1200 * dt;
+    rock.y += rock.vy * dt;
+    if (rock.y >= 436) {
+      rock.y = 436;
+      rock.landed = true;
+      flags.freed = true;
+      player.canMove = true;
+      floatTexts.push({ x: rock.x, y: 400, t: 0, text: "Crack!" });
+      setStatus("A rock fell from the ceiling and broke your chain. For the first time you can turn your head and see the cave.");
+      setObjective("You are free. Use the arrow keys to walk. The conversation with the other prisoners begins when you approach the steps, or press E near them now.");
+      refreshKeys();
+    }
+  }
+
+  // Movement.
+  const speed = 220;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+    if (keys["arrowup"] && player.onGround) { player.vy = -420; player.onGround = false; }
+  }
+  player.vy += 1200 * dt;
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+  player.y += player.vy * dt;
+
+  if (player.x < WALL_FACE + 40) player.x = WALL_FACE + 40;
+  if (player.x > WORLD_W - 40) player.x = WORLD_W - 40;
+
+  // Approaching the steps starts the first conversation on its own.
+  if (flags.freed && !flags.talkedInside && !dialogueActive && player.x > 475) {
+    player.x = 475;
+    dlgPhase0();
+  }
+
+  // The guard greets the freed prisoner at the top of the stairs.
+  if (flags.talkedInside && !guard.met && !dialogueActive && player.x > 598) {
+    player.x = Math.min(player.x, 600);
+    dlgGuardGreet();
+  }
+
+  // The guard lets the freed prisoner go wherever they like. If
+  // they head up the passage before examining the fire, he offers
+  // one comment and nothing more.
+  if (!flags.firePromptDone && !flags.passingTold && player.x > 905) {
+    flags.passingTold = true;
+    setStatus("Guard: Going up? Suit yourself. The fire and the carriers are worth a look on your way back.");
+  }
+
+  // The water blocks the far right.
+  if (player.x > SHORE_X + 8) {
+    player.x = SHORE_X - 15;
+    player.y = 330;
+    player.vy = 0;
+    wetTimer = 2;
+    floatTexts.push({ x: player.x + 30, y: 310, t: 0, text: "Splash!" });
+    if (!flags.waterTold) {
+      flags.waterTold = true;
+      dlgWater();
+    } else {
+      setStatus("The water is deep. You wade back to the shore.");
+    }
+  }
+  wetTimer = Math.max(0, wetTimer - dt);
+
+  // The view widens once the chain is broken. While chained, the
+  // player faces the wall and sees nothing beyond it.
+  if (flags.freed && reveal < 1) {
+    reveal = Math.min(1, reveal + dt / (REDUCED_MOTION ? 0.8 : 2.4));
+  }
+
+  // Ground collision.
+  const gy = groundY(player.x);
+  if (player.y >= gy) { player.y = gy; player.vy = 0; player.onGround = true; }
+  else player.onGround = false;
+
+  // Fire hazard.
+  const fd = Math.hypot(player.x - FIRE.x, (player.y - 24) - (FIRE.y - 20));
+  if (fd < 42 && t - lastBurn > 1.2) {
+    lastBurn = t;
+    player.x += (player.x < FIRE.x ? -55 : 55);
+    player.vy = -140;
+    floatTexts.push({ x: player.x, y: player.y - 60, t: 0, text: "Ow!" });
+    setStatus("The fire burns. Keep your distance.");
+  }
+  for (let i = floatTexts.length - 1; i >= 0; i--) {
+    floatTexts[i].t += dt;
+    floatTexts[i].y -= 24 * dt;
+    if (floatTexts[i].t > 1.3) floatTexts.splice(i, 1);
+  }
+
+  // The carousel turns and carries its objects, and each object
+  // turns with the platform, facing along its direction of travel.
+  const omega = REDUCED_MOTION ? 0.12 : 0.3;
+  objects.forEach(o => {
+    if (o.onCarousel && o !== carried && o !== dragged) {
+      o.angle += omega * dt;
+      o.x = CAROUSEL.x + CAROUSEL.r * Math.cos(o.angle);
+      o.y = LEDGE.y;
+      o.rot = o.angle + Math.PI / 2 + (o.spin || 0);
+    }
+  });
+
+  if (carried) {
+    carried.x = player.x + player.facing * 26;
+    carried.y = player.y - 30;
+    markDemo(carried);
+  }
+
+  updateGuard(dt);
+
+  // The guard permits inspection but not removal. He reacts the
+  // moment a held object is carried away from the platform.
+  const heldNow = carried || dragged;
+  if (heldNow && Math.abs(heldNow.x - CAROUSEL.x) > 145 &&
+      guard.state === "posted") {
+    disturbObjects(heldNow);
+  }
+
+  // The horse outside wanders and grazes.
+  if (horse.petTimer > 0) {
+    horse.petTimer -= dt;
+    horse.mode = "look";
+  } else {
+    horse.timer -= dt;
+    if (horse.timer <= 0) {
+      if (horse.mode === "graze" || horse.mode === "look") {
+        horse.mode = "walk";
+        horse.facing = Math.random() < 0.5 ? -1 : 1;
+        horse.timer = 2 + Math.random() * 2.5;
+      } else {
+        horse.mode = "graze";
+        horse.timer = 2.5 + Math.random() * 3;
+      }
+    }
+    if (horse.mode === "walk") {
+      horse.x += horse.facing * (REDUCED_MOTION ? 10 : 22) * dt;
+      if (horse.x < horse.min) { horse.x = horse.min; horse.facing = 1; }
+      if (horse.x > horse.max) { horse.x = horse.max; horse.facing = -1; }
+    }
+  }
+
+  // The amphora outside tips when walked into.
+  if (!amph.tipped && Math.abs(player.x - amph.x) < 24 && player.y > 300) {
+    amph.tipped = true;
+    amph.dir = player.x < amph.x ? 1 : -1;
+  }
+  if (amph.tipped && amph.anim < 1) {
+    amph.anim = Math.min(1, amph.anim + dt * 2.2);
+    if (amph.anim >= 1 && !amph.chipped) {
+      amph.chipped = true;
+      floatTexts.push({ x: amph.x + amph.dir * 50, y: 300, t: 0, text: "Crack!" });
+      setStatus("The amphora tips over. A chip breaks from its lip.");
+    }
+  }
+
+  // Outside transition.
+  const outsideNow = player.x > 1150;
+  if (outsideNow && !wasOutside && !flags.outsideSeen) dazzle = 1;
+  if (!outsideNow && wasOutside && flags.outsideSeen) darkAdjust = 1;
+  wasOutside = outsideNow;
+  dazzle = Math.max(0, dazzle - dt / (REDUCED_MOTION ? 0.6 : 2.2));
+  darkAdjust = Math.max(0, darkAdjust - dt / (REDUCED_MOTION ? 0.5 : 1.6));
+
+  if (outsideNow && !flags.outsideSeen && dazzle < 0.4) {
+    flags.outsideSeen = true;
+    openPrompt("outside", afterOutsidePrompt);
+  }
+
+  // Ledge hints.
+  if (onLedge(player.x) && flags.talkedInside && !flags.fireTaskDone) {
+    const held = carried || dragged;
+    if (!held && guard.state === "posted") {
+      setStatus("Press E near an object to take it off the turning platform, or drag it with the mouse. Its shadow falls on the wall the prisoners are watching.");
+    } else if (held && !castsShadow(held.x)) {
+      setStatus("Nothing appears on the wall. Keep the object on the left side of the fire.");
+    } else if (held) {
+      setStatus("Its shadow is on the wall. Press R to turn it and watch the shadow change.");
+    }
+  } else if (!onLedge(player.x) && !dialogueActive && statusEl.textContent.indexOf("shadow") !== -1 && !flags.demoAsked) {
+    setStatus("");
+  }
+  checkFireTask();
+
+  // Camera.
+  const camTarget = player.x > 920 ? Math.min(player.x - 450, WORLD_W - W) : 0;
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 2.6));
+  camX = Math.max(0, Math.min(camX, WORLD_W - W));
+}
+
+/* =========================================================
+   Drawing helpers
+   ========================================================= */
+function drawShape(kind, x, y, scale, yaw, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  // Turning in depth: the width foreshortens with the yaw and the
+  // profile mirrors as the object comes around.
+  let f = Math.cos(yaw || 0);
+  if (Math.abs(f) < 0.12) f = f < 0 ? -0.12 : 0.12;
+  ctx.scale(scale * f, scale);
+  ctx.fillStyle = color;
+  if (kind === "amphora") {
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 14, 20, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillRect(-6, -32, 12, 14);
+    ctx.fillRect(-11, -34, 22, 5);
+    ctx.beginPath();
+    ctx.ellipse(-15, -18, 5, 9, 0.4, 0, Math.PI * 2);
+    ctx.ellipse(15, -18, 5, 9, -0.4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(-8, 18); ctx.lineTo(8, 18); ctx.lineTo(5, 26); ctx.lineTo(-5, 26);
+    ctx.closePath(); ctx.fill();
+  } else if (kind === "horse") {
+    // Barrel: rump and chest as overlapping rounds.
+    ctx.beginPath();
+    ctx.ellipse(-7, -7, 15, 10, 0.05, 0, Math.PI * 2);
+    ctx.ellipse(7, -8, 12, 9, -0.08, 0, Math.PI * 2);
+    ctx.fill();
+    // Legs, with hooves.
+    ctx.beginPath();
+    ctx.moveTo(-18, -2); ctx.lineTo(-13, -2); ctx.lineTo(-14, 21); ctx.lineTo(-19, 21); ctx.closePath();
+    ctx.moveTo(-9, -2);  ctx.lineTo(-4, -2);  ctx.lineTo(-4, 21);  ctx.lineTo(-9, 21);  ctx.closePath();
+    ctx.moveTo(5, -2);   ctx.lineTo(10, -2);  ctx.lineTo(10, 21);  ctx.lineTo(5, 21);   ctx.closePath();
+    ctx.moveTo(12, -2);  ctx.lineTo(17, -2);  ctx.lineTo(17, 21);  ctx.lineTo(12, 21);  ctx.closePath();
+    ctx.fill();
+    ctx.fillRect(-20, 21, 7, 3);
+    ctx.fillRect(-10, 21, 7, 3);
+    ctx.fillRect(4, 21, 7, 3);
+    ctx.fillRect(11, 21, 7, 3);
+    // Arched neck, head, muzzle, and an ear.
+    ctx.beginPath();
+    ctx.moveTo(8, -4);
+    ctx.quadraticCurveTo(12, -16, 17, -25);
+    ctx.lineTo(24, -22);
+    ctx.quadraticCurveTo(18, -12, 17, -3);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(22, -26, 7, 4.4, 0.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(26.5, -22.6, 3.4, 2.6, 0.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(17.5, -29); ctx.lineTo(19, -35); ctx.lineTo(21.5, -29);
+    ctx.closePath();
+    ctx.fill();
+    // Tail.
+    ctx.beginPath();
+    ctx.moveTo(-20, -12);
+    ctx.quadraticCurveTo(-30, -6, -27, 14);
+    ctx.quadraticCurveTo(-26, 0, -19, -5);
+    ctx.closePath();
+    ctx.fill();
+  } else if (kind === "ship") {
+    ctx.beginPath();
+    ctx.moveTo(-26, 4); ctx.quadraticCurveTo(0, 20, 26, 4);
+    ctx.lineTo(30, -4); ctx.lineTo(-30, -4); ctx.closePath(); ctx.fill();
+    ctx.fillRect(-2, -30, 4, 27);
+    ctx.beginPath();
+    ctx.moveTo(2, -28); ctx.quadraticCurveTo(20, -18, 2, -8);
+    ctx.closePath(); ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(26, 4); ctx.lineTo(34, -8); ctx.lineTo(28, -4); ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+}
+const SHAPE_BASE = { amphora: 26, horse: 24, ship: 12 };
+
+function drawPerson(x, y, color, seated, facing, scale) {
+  ctx.save();
+  ctx.translate(x, y);
+  if (scale && scale !== 1) ctx.scale(scale, scale);
+  ctx.fillStyle = color;
+  if (seated) {
+    ctx.beginPath(); ctx.arc(0, -34, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillRect(-7, -27, 14, 18);
+    ctx.fillRect(facing < 0 ? -16 : 2, -10, 14, 6);
+    ctx.fillRect(facing < 0 ? -16 : 10, -14, 6, 8);
+  } else {
+    ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillRect(-6, -31, 12, 20);
+    ctx.fillRect(-6, -11, 5, 11);
+    ctx.fillRect(1, -11, 5, 11);
+    ctx.fillRect(-10, -29, 4, 15);
+    ctx.fillRect(6, -29, 4, 15);
+  }
+  ctx.restore();
+}
+function drawGuard(x, y, facing) {
+  drawPerson(x, y, "#6e4632", false, facing, 1);
+  ctx.strokeStyle = "#8a7a63";
+  ctx.lineWidth = 3;
+  const sx = x + (facing < 0 ? 9 : -9);
+  ctx.beginPath();
+  ctx.moveTo(sx, y);
+  ctx.lineTo(sx, y - 62);
+  ctx.stroke();
+  ctx.fillStyle = "#8a7a63";
+  ctx.beginPath();
+  ctx.moveTo(sx - 4, y - 62); ctx.lineTo(sx + 4, y - 62); ctx.lineTo(sx, y - 74);
+  ctx.closePath(); ctx.fill();
+}
+
+/* Chains: an anchor stake in the floor, sagging links, and a
+   shackle at the prisoner's ankle. */
+function drawChainLinks(x1, y1, x2, y2) {
+  ctx.strokeStyle = "#6a5b48";
+  ctx.lineWidth = 2;
+  const cxm = (x1 + x2) / 2;
+  const cym = Math.max(y1, y2) + 9;
+  const n = 8;
+  for (let i = 0; i <= n; i++) {
+    const u = i / n;
+    const px = (1 - u) * (1 - u) * x1 + 2 * (1 - u) * u * cxm + u * u * x2;
+    const py = (1 - u) * (1 - u) * y1 + 2 * (1 - u) * u * cym + u * u * y2;
+    ctx.beginPath();
+    ctx.arc(px, py, 2.6, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+}
+function drawAnchor(x, y) {
+  ctx.fillStyle = "#3a3128";
+  ctx.fillRect(x - 5, y - 3, 10, 5);
+  ctx.strokeStyle = "#6a5b48";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 6, 3.5, 0, Math.PI * 2);
+  ctx.stroke();
+}
+function drawShackle(x, y) {
+  ctx.strokeStyle = "#8a7a63";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(x, y, 4.5, 0, Math.PI * 2);
+  ctx.stroke();
+}
+function drawPrisonerChain(px) {
+  const ankleX = px - 15, ankleY = 434;
+  const anchorX = px + 22, anchorY = 442;
+  drawAnchor(anchorX, anchorY);
+  drawChainLinks(anchorX, anchorY - 6, ankleX, ankleY);
+  drawShackle(ankleX, ankleY);
+}
+function drawRock(x, y) {
+  ctx.fillStyle = "#4a3a28";
+  ctx.beginPath();
+  ctx.moveTo(x - 14, y);
+  ctx.lineTo(x - 9, y - 12);
+  ctx.lineTo(x + 2, y - 15);
+  ctx.lineTo(x + 12, y - 8);
+  ctx.lineTo(x + 14, y);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = "#5c4933";
+  ctx.beginPath();
+  ctx.moveTo(x - 9, y - 12);
+  ctx.lineTo(x + 2, y - 15);
+  ctx.lineTo(x + 4, y - 9);
+  ctx.closePath();
+  ctx.fill();
+}
+function drawHorseOutside(h) {
+  const gy = 330;
+  ctx.save();
+  ctx.translate(h.x, gy);
+  ctx.scale(h.facing, 1);
+  // Legs with hooves.
+  ctx.fillStyle = "#8a5a33";
+  ctx.beginPath();
+  ctx.moveTo(-26, -26); ctx.lineTo(-19, -26); ctx.lineTo(-21, -3); ctx.lineTo(-27, -3); ctx.closePath();
+  ctx.moveTo(-13, -26); ctx.lineTo(-6, -26);  ctx.lineTo(-7, -3);  ctx.lineTo(-13, -3); ctx.closePath();
+  ctx.moveTo(7, -26);   ctx.lineTo(14, -26);  ctx.lineTo(13, -3);  ctx.lineTo(7, -3);   ctx.closePath();
+  ctx.moveTo(17, -26);  ctx.lineTo(24, -26);  ctx.lineTo(24, -3);  ctx.lineTo(18, -3);  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = "#5f3d20";
+  ctx.fillRect(-28, -3, 8, 3);
+  ctx.fillRect(-14, -3, 8, 3);
+  ctx.fillRect(6, -3, 8, 3);
+  ctx.fillRect(17, -3, 8, 3);
+  // Barrel: rump and chest.
+  ctx.fillStyle = "#8a5a33";
+  ctx.beginPath();
+  ctx.ellipse(-10, -38, 22, 14, 0.06, 0, Math.PI * 2);
+  ctx.ellipse(12, -40, 17, 12, -0.08, 0, Math.PI * 2);
+  ctx.fill();
+  // Tail.
+  ctx.beginPath();
+  ctx.moveTo(-30, -46);
+  ctx.quadraticCurveTo(-42, -36, -37, -10);
+  ctx.quadraticCurveTo(-35, -30, -28, -36);
+  ctx.closePath();
+  ctx.fill();
+  const graze = h.mode === "graze";
+  if (!graze) {
+    // Head up: arched neck, head, muzzle, ear.
+    ctx.beginPath();
+    ctx.moveTo(8, -44);
+    ctx.quadraticCurveTo(16, -52, 20, -64);
+    ctx.lineTo(31, -60);
+    ctx.quadraticCurveTo(24, -48, 24, -38);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(27, -66, 9.5, 6, 0.45, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(33.5, -61.5, 4.5, 3.4, 0.45, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(23, -72); ctx.lineTo(25, -80); ctx.lineTo(29, -71);
+    ctx.closePath();
+    ctx.fill();
+    // Mane along the crest, from the withers up to the ears.
+    ctx.fillStyle = "#5f3d20";
+    ctx.beginPath();
+    ctx.moveTo(5, -45);
+    ctx.quadraticCurveTo(12, -55, 17, -68);
+    ctx.quadraticCurveTo(19, -73, 24, -74);
+    ctx.lineTo(22, -66);
+    ctx.quadraticCurveTo(17, -55, 11, -43);
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    // Head down to the grass: lowered neck, head, muzzle, ear.
+    ctx.beginPath();
+    ctx.moveTo(12, -42);
+    ctx.quadraticCurveTo(24, -34, 30, -16);
+    ctx.lineTo(37, -12);
+    ctx.quadraticCurveTo(30, -30, 26, -44);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(33, -10, 9.5, 6, 1.0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(36.5, -3.5, 4.5, 3.4, 1.0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(27, -17); ctx.lineTo(24, -24); ctx.lineTo(31, -19);
+    ctx.closePath();
+    ctx.fill();
+    // Mane along the crest of the lowered neck.
+    ctx.fillStyle = "#5f3d20";
+    ctx.beginPath();
+    ctx.moveTo(10, -44);
+    ctx.quadraticCurveTo(22, -37, 29, -20);
+    ctx.lineTo(25, -15);
+    ctx.quadraticCurveTo(18, -32, 8, -40);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+/* Project a silhouette onto the deep wall. */
+function drawWallShadow(kind, ox, oy, yaw, flick) {
+  if (!castsShadow(ox)) return;
+  // Nearer the fire the shadow grows until it can swallow the wall.
+  const ratio = (FIRE.x - WALL_FACE) / (FIRE.x - ox);
+  const s = Math.min(Math.max(0.5 + 0.09 * ratio, 0.55), 2.3);
+  let raw = 88 + (ox - 700) * 1.0;
+  let sx = Math.min(Math.max(raw, 24), 150);
+  // Toward the edges of the lit patch the shadow stretches, thins
+  // out, and dwindles to nothing.
+  const edge = Math.min(Math.max((Math.abs(raw - 87) - 38) / 30, 0), 1);
+  const alphaMul = 1 - 0.78 * edge;
+  const stretch = 1 + 0.9 * edge;
+  if (!REDUCED_MOTION) sx += Math.sin(t * 7 + ox * 0.15) * 1.3;
+  const lift = Math.max(0, groundY(ox) - oy);
+  const baseY = Math.min(Math.max(398 - lift * Math.min(ratio, 2) * 0.9, 240), 398);
+  const soft = "rgba(8,5,3," + ((0.20 + 0.07 * flick) * alphaMul).toFixed(3) + ")";
+  const core = "rgba(8,5,3," + ((0.62 + 0.22 * flick) * alphaMul).toFixed(3) + ")";
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, 165, 168, H - 165);
+  ctx.clip();
+  if (kind === "person") {
+    drawPerson(sx, baseY, soft, false, -1, s * 1.06);
+    drawPerson(sx, baseY, core, false, -1, s);
+  } else {
+    // The fire sees the object side-on to the viewer: the shadow's
+    // profile runs a quarter turn out of phase with what the eye
+    // sees, so the wall never shows what the visitor is looking at.
+    ctx.save();
+    ctx.translate(sx, 0);
+    ctx.scale(stretch, 1);
+    ctx.translate(-sx, 0);
+    drawShape(kind, sx, baseY - SHAPE_BASE[kind] * s * 1.06, s * 1.06, (yaw || 0) - Math.PI / 2, soft);
+    drawShape(kind, sx, baseY - SHAPE_BASE[kind] * s, s, (yaw || 0) - Math.PI / 2, core);
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+/* =========================================================
+   Render
+   ========================================================= */
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  const flick = REDUCED_MOTION ? 0.5 : (0.5 + 0.5 * Math.sin(t * 9) * Math.sin(t * 4.3));
+
+  // Sky and rock columns.
+  for (let sx = 0; sx <= W; sx += 30) {
+    const wx = camX + sx;
+    const out = Math.min(Math.max((wx - 1050) / 300, 0), 1);
+    const top = blend([12, 9, 7], [168, 208, 238], out);
+    const bot = blend([26, 19, 13], [222, 232, 210], out);
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, rgb(top));
+    g.addColorStop(1, rgb(bot));
+    ctx.fillStyle = g;
+    ctx.fillRect(wx, 0, 31, H);
+  }
+
+  // Sun.
+  if (camX + W > 1400) {
+    const grd = ctx.createRadialGradient(SUN.x, SUN.y, 10, SUN.x, SUN.y, 140);
+    grd.addColorStop(0, "rgba(255,240,190,1)");
+    grd.addColorStop(0.25, "rgba(255,230,160,0.9)");
+    grd.addColorStop(1, "rgba(255,230,160,0)");
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.arc(SUN.x, SUN.y, 140, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff3c9";
+    ctx.beginPath(); ctx.arc(SUN.x, SUN.y, 34, 0, Math.PI * 2); ctx.fill();
+  }
+
+  // Cave ceiling mass.
+  ctx.fillStyle = "#161009";
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(1240, 0);
+  ctx.lineTo(1150, 130);
+  ctx.lineTo(1020, 165);
+  ctx.lineTo(880, 190);
+  ctx.lineTo(500, 205);
+  ctx.lineTo(120, 185);
+  ctx.lineTo(0, 165);
+  ctx.closePath();
+  ctx.fill();
+
+  // Ground (the sea bed segment is skipped, water is drawn instead).
+  for (const s of groundSegs) {
+    if (s.x0 >= SHORE_X) continue;
+    const daylight = s.x0 >= 1140;
+    ctx.fillStyle = daylight ? "#5f8f4c" : "#2c2115";
+    ctx.fillRect(s.x0, s.y, s.x1 - s.x0, H - s.y);
+    ctx.fillStyle = daylight ? "#7fae5f" : "#3a2c1c";
+    ctx.fillRect(s.x0, s.y, s.x1 - s.x0, 8);
+  }
+
+  // The water, from the shore to the edge of the world.
+  const waterTop = 344;
+  const wg = ctx.createLinearGradient(0, waterTop, 0, H);
+  wg.addColorStop(0, "#4d7fb5");
+  wg.addColorStop(1, "#27436b");
+  ctx.fillStyle = wg;
+  ctx.fillRect(SHORE_X, waterTop, WORLD_W - SHORE_X, H - waterTop);
+  // Ripples.
+  ctx.strokeStyle = "rgba(220,238,255,0.35)";
+  ctx.lineWidth = 1.5;
+  for (let r = 0; r < 3; r++) {
+    ctx.beginPath();
+    for (let x = SHORE_X; x <= WORLD_W; x += 12) {
+      const y = waterTop + 8 + r * 16 + Math.sin(t * (REDUCED_MOTION ? 0.4 : 1.4) + x * 0.05 + r) * 2;
+      if (x === SHORE_X) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+
+  // The deep wall the prisoners face.
+  ctx.fillStyle = "#241a12";
+  ctx.fillRect(0, 165, 168, H - 165);
+  ctx.fillStyle = "#2e2318";
+  ctx.fillRect(160, 165, 8, H - 165);
+  const glow = ctx.createLinearGradient(0, 0, 220, 0);
+  glow.addColorStop(0, "rgba(255,170,80," + (0.10 + 0.08 * flick) + ")");
+  glow.addColorStop(1, "rgba(255,170,80,0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 165, 220, H - 165);
+  ctx.fillStyle = "rgba(255,190,110," + (0.03 + 0.03 * flick) + ")";
+  ctx.fillRect(10, 240, 150, 168);
+
+  // Wall shadows.
+  objects.forEach(o => drawWallShadow(o.kind, o.x, o.y, o.rot, flick));
+  if (player.y <= LEDGE.y + 4 && castsShadow(player.x) && player.x > 540) {
+    drawWallShadow("person", player.x, player.y, 0, flick);
+  }
+  if (castsShadow(guard.x) && groundY(guard.x) === LEDGE.y) {
+    drawWallShadow("person", guard.x, groundY(guard.x), 0, flick);
+  }
+
+  // Chains, anchors, and shackles for the seated prisoners.
+  prisoners.forEach(p => { if (!p.freed) drawPrisonerChain(p.x); });
+
+  // The player's chain: intact before the rock falls, then broken.
+  if (!flags.freed) {
+    drawPrisonerChain(player.x);
+  } else {
+    drawAnchor(PLAYER_START + 22, 442);
+    drawChainLinks(PLAYER_START + 22, 436, rock.x - 4, 432);
+  }
+
+  // The other prisoners.
+  prisoners.forEach(p => {
+    if (p.freed) drawPerson(p.x, 440, "#8a7a63", false, -1, 1);
+    else drawPerson(p.x, 440, "#4a3d30", true, -1, 1);
+  });
+
+  // The carousel.
+  const backObjs = objects.filter(o => o.onCarousel && Math.sin(o.angle) < 0);
+  const frontObjs = objects.filter(o => o.onCarousel && Math.sin(o.angle) >= 0);
+  backObjs.forEach(o => {
+    ctx.globalAlpha = 0.75;
+    drawShape(o.kind, o.x, o.y - 30, 0.9, o.rot, colorFor(o.kind));
+    ctx.globalAlpha = 1;
+  });
+  ctx.fillStyle = "#6b5233";
+  ctx.beginPath();
+  ctx.ellipse(CAROUSEL.x, LEDGE.y - 2, CAROUSEL.r + 12, 10, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#8a6a45";
+  ctx.beginPath();
+  ctx.ellipse(CAROUSEL.x, LEDGE.y - 5, CAROUSEL.r + 12, 8, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "rgba(232,178,92,0.5)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.ellipse(CAROUSEL.x, LEDGE.y - 8, CAROUSEL.r + 11, 7, 0, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "#9a7a52";
+  ctx.fillRect(CAROUSEL.x - 3, LEDGE.y - 52, 6, 48);
+  ctx.beginPath();
+  ctx.arc(CAROUSEL.x, LEDGE.y - 54, 5, 0, Math.PI * 2);
+  ctx.fill();
+  frontObjs.forEach(o => drawShape(o.kind, o.x, o.y - 26, 1, o.rot, colorFor(o.kind)));
+
+  // Loose objects.
+  objects.forEach(o => {
+    if (!o.onCarousel && o !== carried) drawShape(o.kind, o.x, o.y - 26, 1, o.rot, colorFor(o.kind));
+  });
+
+  // Fire.
+  const fx = FIRE.x, fy = FIRE.y;
+  const fg = ctx.createRadialGradient(fx, fy - 18, 5, fx, fy - 18, 150 + 20 * flick);
+  fg.addColorStop(0, "rgba(255,190,90,0.55)");
+  fg.addColorStop(1, "rgba(255,150,60,0)");
+  ctx.fillStyle = fg;
+  ctx.beginPath(); ctx.arc(fx, fy - 18, 170, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#4a300f";
+  ctx.fillRect(fx - 24, fy - 8, 48, 8);
+  ctx.fillStyle = "#ff9c3f";
+  flame(fx, fy - 8, 20, 34 + 6 * flick);
+  ctx.fillStyle = "#ffd27a";
+  flame(fx, fy - 8, 12, 22 + 5 * flick);
+
+  // The guard.
+  drawGuard(guard.x, groundY(guard.x), guard.facing);
+
+  // Carried object.
+  if (carried) drawShape(carried.kind, carried.x, carried.y, 0.85, carried.rot, colorFor(carried.kind));
+
+  // Outside: tree, horse, amphora, ship on the water.
+  drawTree(1400, 330);
+  drawHorseOutside(horse);
+
+  // The amphora, upright or tipped with a chip.
+  ctx.save();
+  ctx.translate(amph.x, 330);
+  ctx.rotate(amph.anim * 1.3 * amph.dir);
+  drawShape("amphora", 0, -26 * 1.05, 1.05, 0, "#c9803c");
+  ctx.restore();
+  if (amph.chipped) {
+    ctx.fillStyle = "#c9803c";
+    ctx.beginPath();
+    const shardX = amph.x + amph.dir * 50;
+    ctx.moveTo(shardX, 330);
+    ctx.lineTo(shardX + 9, 330);
+    ctx.lineTo(shardX + 4, 322);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // The ship, large, bobbing on the water.
+  ctx.save();
+  const bob = Math.sin(t * (REDUCED_MOTION ? 0.5 : 1.1)) * 4;
+  ctx.translate(ship.x, waterTop + 4 + bob);
+  ctx.rotate(Math.sin(t * (REDUCED_MOTION ? 0.4 : 0.8)) * 0.06);
+  drawShape("ship", 0, -10, 2.6, 0, "#7c6a4f");
+  ctx.restore();
+  // A surface band over the hull so the ship sits in the water.
+  ctx.fillStyle = "rgba(77,127,181,0.65)";
+  ctx.fillRect(SHORE_X, waterTop + 6, WORLD_W - SHORE_X, 22);
+
+  // Sign at the tunnel mouth.
+  ctx.fillStyle = "#6b4f30";
+  ctx.fillRect(1160, 268, 6, 40);
+  ctx.fillRect(1142, 258, 44, 16);
+  ctx.fillStyle = "#f0e8dd";
+  ctx.font = "9px Georgia, serif";
+  ctx.fillText("THE CAVE", 1146, 269);
+
+  // The falling or fallen rock.
+  if (rock.active) drawRock(rock.x, rock.y);
+
+  // Player.
+  drawPerson(player.x, player.y, player.color, !flags.freed, player.facing, 1);
+  if (flags.freed) drawShackle(player.x - 4, player.y - 3);
+  if (wetTimer > 0) {
+    ctx.fillStyle = "rgba(120,170,220," + (wetTimer / 2) + ")";
+    for (let d = 0; d < 3; d++) {
+      ctx.beginPath();
+      ctx.arc(player.x - 8 + d * 8, player.y - 30 + ((t * 60 + d * 17) % 34), 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  if (carried) {
+    ctx.strokeStyle = "rgba(232,178,92,0.8)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(carried.x - 24, carried.y - 52, 48, 58);
+  }
+
+  ctx.font = "bold 17px 'Segoe UI', sans-serif";
+  floatTexts.forEach(f => {
+    ctx.fillStyle = "rgba(240,232,221," + Math.max(0, 1 - f.t / 1.3) + ")";
+    ctx.fillText(f.text, f.x - 10, f.y);
+  });
+
+  ctx.restore();
+
+  // Before the chain breaks, only the wall and the seated prisoners
+  // are visible. The darkness sweeps away as the view widens.
+  if (flags.started && reveal < 1) {
+    const edge = 410 + reveal * (W - 280);
+    if (edge < W + 90) {
+      const g = ctx.createLinearGradient(edge - 90, 0, edge, 0);
+      g.addColorStop(0, "rgba(5,3,2,0)");
+      g.addColorStop(1, "rgba(5,3,2,1)");
+      ctx.fillStyle = g;
+      ctx.fillRect(edge - 90, 0, 90, H);
+      if (edge < W) {
+        ctx.fillStyle = "rgba(5,3,2,1)";
+        ctx.fillRect(edge, 0, W - edge, H);
+      }
+    }
+  }
+
+  if (dazzle > 0) {
+    ctx.fillStyle = "rgba(255,250,235," + Math.min(dazzle, 1) + ")";
+    ctx.fillRect(0, 0, W, H);
+  }
+  if (darkAdjust > 0) {
+    ctx.fillStyle = "rgba(0,0,0," + Math.min(darkAdjust * 0.8, 0.8) + ")";
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(10,8,6,0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f0e8dd";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("The Allegory of the Cave", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#b9ac9c";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+function flame(x, y, w, h) {
+  ctx.beginPath();
+  ctx.moveTo(x - w, y);
+  ctx.quadraticCurveTo(x - w * 0.6, y - h * 0.6, x, y - h);
+  ctx.quadraticCurveTo(x + w * 0.6, y - h * 0.6, x + w, y);
+  ctx.closePath();
+  ctx.fill();
+}
+function drawTree(x, gy) {
+  ctx.fillStyle = "#6b4a2c";
+  ctx.fillRect(x - 8, gy - 90, 16, 90);
+  ctx.fillStyle = "#4f8a3d";
+  ctx.beginPath(); ctx.arc(x, gy - 110, 46, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x - 34, gy - 86, 30, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 34, gy - 86, 30, 0, Math.PI * 2); ctx.fill();
+}
+function colorFor(kind) {
+  if (kind === "amphora") return "#c9803c";
+  if (kind === "horse") return "#8a5a33";
+  return "#7c6a4f";
+}
+function blend(a, b, f) {
+  return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
+}
+function rgb(c) { return "rgb(" + (c[0] | 0) + "," + (c[1] | 0) + "," + (c[2] | 0) + ")"; }
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  document.getElementById("startBtn").disabled = true;
+  startDlg([
+    { note: true, say: "In the olive grove of Akademos, the young man who ran the sand lesson for you sets his wax tablet down. Imagine, he says, people who have lived since childhood in a cave, legs and necks chained, able to look only at the wall in front of them." },
+    { note: true, say: "Behind them burns a fire, and between the fire and the prisoners a low wall, along which carriers move objects whose shadows fall on the cave wall." },
+    { say: "The prisoners have never seen anything else. Now imagine, he says, that you are one of them. From here, the story is yours to live." }
+  ], () => {
+    setObjective("You are chained facing the wall. Watch the shapes. The first question will appear in a moment.");
+  });
+});
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

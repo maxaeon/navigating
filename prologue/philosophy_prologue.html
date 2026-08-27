@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Philosophy Is</title>
+<style>
+:root{
+  --page:#0b0e16;
+  --panel:#151a26;
+  --panel-2:#1e2534;
+  --line:#303a4e;
+  --text:#eef2f6;
+  --muted:#a7b4c2;
+  --accent:#8fb7dd;
+  --accent-deep:#4f7fae;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#28324a}
+button.primary{background:var(--accent); border-color:var(--accent-deep); color:#0c1622; font-weight:600}
+button.primary:hover{background:#aecdea}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--accent); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#05070d; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+
+#dialogueBox{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--accent-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open{display:block}
+#dialogueBox.note{background:#182031; border-color:var(--accent)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--accent); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--accent)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#10131d; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--accent)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--accent); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#10131d; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--accent)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--accent); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>What Philosophy Is</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>Before the journey begins, this prologue introduces philosophy itself: what kind of questions it asks, and the branches those questions sort into, including metaphysics, epistemology, ethics, logic, and aesthetics. The scenes advance with the Continue button, and questions appear along the way. Your answers are recorded, and at the end you can review them, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Narration</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Prologue completed</h1>
+    <p>The first stop on the map is The Presocratic Philosophers.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Name a question that science can inform but not settle on its own, and say why.</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. Describe an everyday disagreement you have witnessed that was really a disagreement about ethics or about knowledge, even if nobody said so.</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. Which branch of philosophy do you expect to interest you least, and what might change your mind?</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> The branch of philosophy that asks what exists is</p>
+      <label><input type="radio" name="q1" value="Epistemology"> epistemology</label>
+      <label><input type="radio" name="q1" value="Metaphysics"> metaphysics</label>
+      <label><input type="radio" name="q1" value="Aesthetics"> aesthetics</label>
+
+      <p><strong>2.</strong> The branch that asks what separates knowledge from lucky guessing is</p>
+      <label><input type="radio" name="q2" value="Epistemology"> epistemology</label>
+      <label><input type="radio" name="q2" value="Logic"> logic</label>
+      <label><input type="radio" name="q2" value="Metaphysics"> metaphysics</label>
+
+      <p><strong>3.</strong> The trolley problem is a question of</p>
+      <label><input type="radio" name="q3" value="Aesthetics"> aesthetics</label>
+      <label><input type="radio" name="q3" value="Logic"> logic</label>
+      <label><input type="radio" name="q3" value="Ethics"> ethics</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_prologue";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: Your question",
+    text: "Philosophy is the attempt to answer the largest questions by reasoning carefully about them. Which kind of question pulls at you most?",
+    mcq: ["What exists, really?", "How can anyone know anything?", "How should we live?", "What follows from what?", "What makes something beautiful?"],
+    requireText: true,
+    textHint: "Write the question in your own words."
+  },
+  knowing: {
+    title: "Stage 1: Knowing and being sure",
+    text: "The person below is certain of many things: that the sun will rise, that their memories are their own, that the world outside their head is really there. Pick one thing you are certain of, and say how you know it.",
+    mcq: null,
+    requireText: true,
+    textHint: "Name the thing, then say how you know it."
+  },
+  trolley: {
+    title: "Stage 2: The trolley",
+    text: "A runaway trolley is rolling toward five people on the track. You stand at a lever. Pull it, and the trolley switches to a side track where it will hit one person instead. Nobody can be warned in time. What do you do?",
+    mcq: ["Pull the lever, so one is struck instead of five", "Do not pull the lever, so I do not redirect the harm myself", "I cannot decide"],
+    requireText: true,
+    textHint: "Give your reason. The reason is the philosophy."
+  },
+  branches: {
+    title: "Stage 3: Sorting your question",
+    text: "You wrote a question at the start. Which branch of philosophy does it belong to?",
+    mcq: ["Metaphysics, what exists", "Epistemology, how we know", "Ethics, how to live", "Logic, what follows from what", "Aesthetics, beauty and art"],
+    requireText: true,
+    textHint: "Say why it belongs there, or why it straddles branches."
+  },
+  hopes: {
+    title: "Stage 4: What you hope for",
+    text: "The journey ahead visits the people who spent their lives on these questions, starting in ancient Greece. What do you hope philosophy will help you figure out?",
+    mcq: null,
+    requireText: true,
+    textHint: "One honest sentence is enough."
+  }
+};
+
+const quizKeys = ["Metaphysics", "Epistemology", "Ethics"];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The scene plan
+   The prologue is a sequence of scenes. Each scene animates on
+   the canvas while its narration cards are read, and some scenes
+   end in a question. The whole sequence:
+   0 earth        the spinning planet, then Stage 0
+   1 person       zoom to one person and a thought bubble:
+                  metaphysics, then epistemology, then Stage 1
+   2 trolley      pull back to the junction, then Stage 2
+   3 branches     the five branches side by side, then Stage 3
+   4 closing      the planet again, the road to Greece, Stage 4
+   ========================================================= */
+let scene = 0;         // current scene index
+let sceneT = 0;        // seconds inside the current scene
+let bubbleMode = 0;    // 0 stars, 1 question mark, in scene 1
+let trolleyGo = false; // trolley rolls in gently, then holds
+let started = false;
+let paused = false;
+let finished = false;
+
+const SCENE_CARDS = [
+  [
+    { note: true, say: "This is where the questions live. Every person on this planet has asked at least one question that no measurement, no telescope, and no survey could settle." },
+    { note: true, say: "Philosophy is the craft of taking such questions seriously: stating them clearly, proposing answers, and testing the answers with reasons. It began independently in Greece, India, and China, and it has never stopped." }
+  ],
+  [
+    { note: true, say: "Zoom in far enough and the questions belong to someone. This person is wondering what there is: matter, minds, numbers, time, God, nothing at all. Questions about what exists belong to metaphysics." },
+    { note: true, say: "Now they are wondering how they could know any of it. Their eyes have fooled them before, and their memory too. What separates knowledge from confident guessing? Questions about knowing belong to epistemology." }
+  ],
+  [
+    { note: true, say: "Pull back and the questions get urgent. The same person now stands at a lever beside a track junction. A runaway trolley is coming, five people are on the main track, and one person is on the side track." },
+    { note: true, say: "Questions about what to do, what we owe each other, and what kind of person to be belong to ethics. This one has a famous name, the trolley problem, and your answer to it comes next." }
+  ],
+  [
+    { note: true, say: "Your reason mattered more than your choice. If you weighed outcomes, five lives against one, philosophers call that consequentialist thinking. If you refused to make yourself the cause of a death, whatever the count, that is deontological thinking. Both have serious defenders." },
+    { note: true, say: "The questions sort into branches. Metaphysics asks what exists. Epistemology asks how we know. Ethics asks how to live." },
+    { say: "Logic asks what follows from what. Aesthetics asks about beauty and art. Every stop on this journey belongs to at least one of these branches." }
+  ],
+  [
+    { note: true, say: "The journey starts where written philosophy in the West began, on the coast of ancient Greece, and it will travel far beyond: Europe, India, China, Japan, and some strange detours in between." }
+  ]
+];
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  const u = new SpeechSynthesisUtterance(p.title + ". " + p.text);
+  speechSynthesis.speak(u);
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+/* =========================================================
+   Narration cards (reusing the dialogue machinery)
+   ========================================================= */
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  dlgContinue.style.display = "inline-block";
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function continueDlg() {
+  if (!dlg) return;
+  dlg.i++;
+  // The thought bubble follows the narration in the person scene.
+  if (scene === 1) bubbleMode = Math.min(dlg.i, 1);
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb();
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive && (k === "e" || k === "enter" || k === " ")) {
+    e.preventDefault();
+    continueDlg();
+  }
+});
+
+/* =========================================================
+   Reflection modal
+   ========================================================= */
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+
+/* =========================================================
+   Scene flow
+   ========================================================= */
+function setObjective(txt) { objectiveEl.textContent = txt; }
+
+
+function enterScene(n) {
+  scene = n;
+  sceneT = 0;
+  if (n === 1) bubbleMode = 0;
+  if (n === 2) trolleyGo = true;
+  const objectives = [
+    "Read the narration and continue.",
+    "Read the narration. The thought bubble follows it.",
+    "Read the narration, then answer at the lever.",
+    "Read the narration about the branches.",
+    "One last question, then the journey begins."
+  ];
+  setObjective(objectives[n]);
+  startDlg(SCENE_CARDS[n], () => afterCards(n));
+}
+function afterCards(n) {
+  if (n === 0) openPrompt("first", () => enterScene(1));
+  else if (n === 1) openPrompt("knowing", () => enterScene(2));
+  else if (n === 2) openPrompt("trolley", () => enterScene(3));
+  else if (n === 3) openPrompt("branches", () => enterScene(4));
+  else openPrompt("hopes", endGame);
+}
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (started) return;
+  started = true;
+  document.getElementById("startBtn").disabled = true;
+  enterScene(0);
+});
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  finished = true;
+  try { localStorage.setItem("phil_map_prologue", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "What Philosophy Is, Prologue Report\n";
+  text += "===================================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    text += "Response: " + r.response + "\n" + "-".repeat(50);
+  });
+  text += "\n\nDiscussion questions:\n";
+  text += "1. A question science can inform but not settle.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. An everyday disagreement that was really philosophy.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. The branch expected to interest you least.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Philosophy_Prologue_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+const stars = [];
+for (let i = 0; i < 90; i++) {
+  stars.push({ x: (i * 137.5) % W, y: (i * 89.3) % (H - 60), r: 0.6 + (i % 3) * 0.5, p: i * 0.7 });
+}
+function drawStars(alpha) {
+  stars.forEach(st => {
+    const tw = REDUCED_MOTION ? 0.8 : 0.55 + 0.45 * Math.sin(t * 1.3 + st.p);
+    ctx.fillStyle = "rgba(238,242,246," + (alpha * tw * 0.9).toFixed(3) + ")";
+    ctx.beginPath();
+    ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+/* The planet: a disc of sea with shaped continents, polar ice, and
+   drifting cloud bands. Shapes are rough but recognizable: the
+   Americas, Europe with Africa, Asia, and Australia. */
+const CONTINENTS = [
+  { lon: 0.0,  lat: 0.0,  s: 0.085, pts: [[-2,-5.5],[0.5,-6],[2.5,-4.5],[1.2,-2.5],[0.2,-0.5],[1.8,1.5],[1.2,4.5],[-0.5,6],[-1.5,3.5],[-0.8,0.5],[-2.8,-2.5]] },
+  { lon: 1.9,  lat: -0.4, s: 0.082,  pts: [[-1,-3.2],[0.8,-3.8],[1.6,-2.6],[1.1,-1.6],[2.2,-0.4],[1.7,2],[0.3,4.6],[-1,3.6],[-1.4,0.8],[-2.2,-0.8],[-1.6,-2.2]] },
+  { lon: 3.15, lat: -0.9, s: 0.088, pts: [[-4,-2.6],[-0.5,-3.4],[3.4,-2.8],[4.6,-1],[3.2,0.4],[3.8,1.6],[2.2,1.1],[1.2,3],[0.2,1.4],[-1.8,1.8],[-3.6,0]] },
+  { lon: 4.35, lat: 1.6,  s: 0.06, pts: [[-2,-1],[0,-1.6],[2,-0.8],[2.2,0.8],[0.6,1.6],[-1.4,1.2],[-2.4,0.2]] }
+];
+const CLOUD_BANDS = [
+  { lon: 0.8, lat: -0.55 }, { lon: 2.5, lat: 0.7 },
+  { lon: 4.0, lat: -0.15 }, { lon: 5.4, lat: 0.45 }
+];
+function drawEarth(cx, cy, R, spin) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI * 2);
+  ctx.clip();
+  // The ocean.
+  const oc = ctx.createLinearGradient(cx - R, cy - R, cx + R, cy + R);
+  oc.addColorStop(0, "#3a6f9e");
+  oc.addColorStop(1, "#274f78");
+  ctx.fillStyle = oc;
+  ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
+  // The continents, wrapping with the spin.
+  CONTINENTS.forEach(L => {
+    const lon = L.lon + spin;
+    const c = Math.cos(lon);
+    if (c <= 0.04) return;
+    const x0 = cx + Math.sin(lon) * R * 0.8;
+    const y0 = cy + L.lat * R * 0.28;
+    const s = L.s * R;
+    ctx.fillStyle = "#5f8f5a";
+    ctx.beginPath();
+    L.pts.forEach((p, i) => {
+      const px = x0 + p[0] * s * c;
+      const py = y0 + p[1] * s;
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    });
+    ctx.closePath();
+    ctx.fill();
+  });
+  // The polar ice.
+  ctx.fillStyle = "rgba(240,246,250,0.9)";
+  ctx.beginPath();
+  ctx.ellipse(cx, cy - R * 0.95, R * 0.6, R * 0.18, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + R * 0.96, R * 0.5, R * 0.15, 0, 0, Math.PI * 2);
+  ctx.fill();
+  // Cloud bands, drifting a little faster than the land.
+  CLOUD_BANDS.forEach(B => {
+    const lon = B.lon + spin * 1.25;
+    const c = Math.cos(lon);
+    if (c <= 0.04) return;
+    const x0 = cx + Math.sin(lon) * R * 0.8;
+    const y0 = cy + B.lat * R * 0.7;
+    const s = 0.035 * R;
+    ctx.fillStyle = "rgba(248,250,252,0.78)";
+    [[-2.4, 0.2, 1.6, 0.7], [-0.8, -0.5, 1.9, 0.8], [0.9, 0.15, 2.1, 0.75], [2.6, -0.25, 1.4, 0.6]].forEach(e => {
+      ctx.beginPath();
+      ctx.ellipse(x0 + e[0] * s * 2 * c, y0 + e[1] * s * 2, e[2] * s * 2 * c, e[3] * s * 1.6, 0, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  });
+  // Day-side shading.
+  const g = ctx.createRadialGradient(cx - R * 0.45, cy - R * 0.4, R * 0.2, cx, cy, R * 1.25);
+  g.addColorStop(0, "rgba(255,255,255,0.12)");
+  g.addColorStop(0.6, "rgba(0,0,0,0)");
+  g.addColorStop(1, "rgba(0,0,10,0.5)");
+  ctx.fillStyle = g;
+  ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
+  ctx.restore();
+  // The atmosphere at the limb.
+  ctx.strokeStyle = "rgba(170,210,245,0.7)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(cx, cy, R + 1, 0, Math.PI * 2);
+  ctx.stroke();
+}
+function drawFigure(x, y, s, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(s, s);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -28, 4, 14);
+  ctx.fillRect(6, -28, 4, 14);
+  ctx.restore();
+}
+function drawThoughtBubble(x, y, mode) {
+  ctx.fillStyle = "rgba(238,242,246,0.95)";
+  ctx.beginPath(); ctx.arc(x - 34, y + 44, 5, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x - 22, y + 30, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(x + 10, y, 62, 44, 0, 0, Math.PI * 2);
+  ctx.fill();
+  if (mode === 0) {
+    // What exists: a little cosmos in the head.
+    ctx.fillStyle = "#2f5f8f";
+    ctx.beginPath(); ctx.arc(x - 8, y + 4, 12, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#5f8f5a";
+    ctx.beginPath(); ctx.ellipse(x - 12, y + 2, 5, 3, 0.3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#f2d06b";
+    ctx.beginPath(); ctx.arc(x + 26, y - 14, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#10131d";
+    for (const [sx, sy] of [[x + 14, y + 14], [x + 34, y + 4], [x + 2, y - 20]]) {
+      ctx.beginPath(); ctx.arc(sx, sy, 1.8, 0, Math.PI * 2); ctx.fill();
+    }
+  } else {
+    // How to know: a question mark over an open eye.
+    ctx.fillStyle = "#10131d";
+    ctx.font = "bold 34px Georgia, serif";
+    ctx.fillText("?", x + 14, y + 2);
+    ctx.strokeStyle = "#10131d";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(x - 28, y + 12);
+    ctx.quadraticCurveTo(x - 12, y - 2, x + 4, y + 12);
+    ctx.quadraticCurveTo(x - 12, y + 26, x - 28, y + 12);
+    ctx.stroke();
+    ctx.beginPath(); ctx.arc(x - 12, y + 12, 5, 0, Math.PI * 2); ctx.fill();
+  }
+}
+function drawTrolleyScene(alpha) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  // A field seen from above, with upright figures, the way trolley
+  // diagrams are usually drawn.
+  ctx.fillStyle = "#2c3a24";
+  ctx.fillRect(0, 90, W, H - 90);
+  function track(pts) {
+    // Two rails and ties along a polyline given as [x, y] points.
+    [-9, 9].forEach(off => {
+      ctx.strokeStyle = "#8b95a5";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      pts.forEach((p, i) => {
+        if (i === 0) ctx.moveTo(p[0], p[1] + off);
+        else ctx.lineTo(p[0], p[1] + off);
+      });
+      ctx.stroke();
+    });
+    ctx.strokeStyle = "#5a4a38";
+    ctx.lineWidth = 4;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const [x0, y0] = pts[i], [x1, y1] = pts[i + 1];
+      const len = Math.hypot(x1 - x0, y1 - y0);
+      const n = Math.floor(len / 26);
+      for (let k = 0; k <= n; k++) {
+        const u = k / Math.max(1, n);
+        const mx = x0 + (x1 - x0) * u, my = y0 + (y1 - y0) * u;
+        const dx = (y1 - y0) / len, dy = -(x1 - x0) / len;
+        ctx.beginPath();
+        ctx.moveTo(mx + dx * 12, my + dy * 12);
+        ctx.lineTo(mx - dx * 12, my - dy * 12);
+        ctx.stroke();
+      }
+    }
+  }
+  // The main track runs straight across. The side track leaves the
+  // junction and runs lower across the field.
+  track([[0, 240], [900, 240]]);
+  track([[440, 240], [560, 320], [900, 340]]);
+  // The trolley, rolling in and holding short of the junction.
+  const tx = Math.min(60 + sceneT * (REDUCED_MOTION ? 20 : 55), 350);
+  ctx.fillStyle = "#8f3b3b";
+  ctx.fillRect(tx - 52, 196, 104, 52);
+  ctx.fillStyle = "#c9b98a";
+  ctx.fillRect(tx - 42, 206, 26, 20);
+  ctx.fillRect(tx - 8, 206, 26, 20);
+  ctx.fillStyle = "#2a2f3a";
+  ctx.beginPath(); ctx.arc(tx - 30, 250, 10, 0, Math.PI * 2); ctx.arc(tx + 30, 250, 10, 0, Math.PI * 2); ctx.fill();
+  // Five people standing on the main track, ahead of the junction.
+  for (let i = 0; i < 5; i++) drawFigure(640 + i * 46, 262, 0.85, "#8fb7dd");
+  ctx.fillStyle = "#eef2f6";
+  ctx.font = "14px 'Segoe UI', sans-serif";
+  ctx.fillText("five people", 680, 292);
+  // One person standing on the side track.
+  drawFigure(760, 362, 0.85, "#8fb7dd");
+  ctx.fillText("one person", 722, 392);
+  // The lever, and you beside the junction.
+  ctx.strokeStyle = "#c9b98a";
+  ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.moveTo(452, 168); ctx.lineTo(470, 136); ctx.stroke();
+  ctx.fillStyle = "#8b95a5";
+  ctx.fillRect(446, 164, 12, 8);
+  drawFigure(420, 168, 1, "#5b84b1");
+  ctx.fillStyle = "#eef2f6";
+  ctx.fillText("you, at the lever", 366, 108);
+  ctx.restore();
+}
+function drawBranchPanels() {
+  const items = [
+    { name: "Metaphysics", q: "what exists" },
+    { name: "Epistemology", q: "how we know" },
+    { name: "Ethics", q: "how to live" },
+    { name: "Logic", q: "what follows" },
+    { name: "Aesthetics", q: "beauty and art" }
+  ];
+  const pw = 156, gap = 14;
+  const x0 = (W - (pw * 5 + gap * 4)) / 2;
+  items.forEach((it, i) => {
+    const x = x0 + i * (pw + gap);
+    const y = 150;
+    ctx.fillStyle = "#151a26";
+    ctx.strokeStyle = "#4f7fae";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(x + 10, y);
+    ctx.lineTo(x + pw - 10, y);
+    ctx.quadraticCurveTo(x + pw, y, x + pw, y + 10);
+    ctx.lineTo(x + pw, y + 180);
+    ctx.quadraticCurveTo(x + pw, y + 190, x + pw - 10, y + 190);
+    ctx.lineTo(x + 10, y + 190);
+    ctx.quadraticCurveTo(x, y + 190, x, y + 180);
+    ctx.lineTo(x, y + 10);
+    ctx.quadraticCurveTo(x, y, x + 10, y);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    // A small emblem per branch.
+    const ex = x + pw / 2, ey = y + 62;
+    ctx.fillStyle = "#8fb7dd";
+    ctx.strokeStyle = "#8fb7dd";
+    if (i === 0) {
+      ctx.beginPath(); ctx.arc(ex, ey, 16, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#f2d06b";
+      ctx.beginPath(); ctx.arc(ex + 22, ey - 16, 4, 0, Math.PI * 2); ctx.fill();
+    } else if (i === 1) {
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(ex - 22, ey);
+      ctx.quadraticCurveTo(ex, ey - 16, ex + 22, ey);
+      ctx.quadraticCurveTo(ex, ey + 16, ex - 22, ey);
+      ctx.stroke();
+      ctx.beginPath(); ctx.arc(ex, ey, 6, 0, Math.PI * 2); ctx.fill();
+    } else if (i === 2) {
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(ex, ey - 18); ctx.lineTo(ex, ey + 14); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(ex - 20, ey - 10); ctx.lineTo(ex + 20, ey - 10); ctx.stroke();
+      ctx.beginPath(); ctx.arc(ex - 20, ey + 2, 9, 0, Math.PI); ctx.stroke();
+      ctx.beginPath(); ctx.arc(ex + 20, ey + 2, 9, 0, Math.PI); ctx.stroke();
+    } else if (i === 3) {
+      ctx.font = "bold 17px Georgia, serif";
+      ctx.textAlign = "center";
+      ctx.fillText("A \u2192 B", ex, ey + 6);
+      ctx.textAlign = "left";
+    } else {
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(ex - 12, ey + 16);
+      ctx.quadraticCurveTo(ex - 16, ey - 12, ex, ey - 16);
+      ctx.quadraticCurveTo(ex + 16, ey - 12, ex + 12, ey + 16);
+      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(ex - 12, ey + 16); ctx.lineTo(ex + 12, ey + 16); ctx.stroke();
+    }
+    ctx.fillStyle = "#eef2f6";
+    ctx.font = "16px 'Iowan Old Style', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText(it.name, ex, y + 130);
+    ctx.fillStyle = "#a7b4c2";
+    ctx.font = "13px 'Segoe UI', sans-serif";
+    ctx.fillText(it.q, ex, y + 152);
+    ctx.textAlign = "left";
+  });
+}
+
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = "#05070d";
+  ctx.fillRect(0, 0, W, H);
+
+  if (!started) {
+    drawStars(0.8);
+    drawEarth(W / 2, H / 2, 120, t * 0.12);
+    ctx.fillStyle = "#eef2f6";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("What Philosophy Is", W / 2, 92);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#a7b4c2";
+    ctx.fillText("Press Begin to start.", W / 2, 120);
+    ctx.textAlign = "left";
+    return;
+  }
+
+  const spin = t * (REDUCED_MOTION ? 0.04 : 0.12);
+  if (scene === 0) {
+    drawStars(0.9);
+    drawEarth(W / 2, H / 2, 150, spin);
+  } else if (scene === 1) {
+    // The zoom: the planet swells past the frame, then the person.
+    const z = Math.min(sceneT / (REDUCED_MOTION ? 0.2 : 1.6), 1);
+    if (z < 1) {
+      drawStars(0.9 * (1 - z));
+      drawEarth(W / 2, H / 2 + z * 600, 150 + z * 900, spin);
+    }
+    if (z >= 1) {
+      ctx.fillStyle = "#131b2a";
+      ctx.fillRect(0, 0, W, H);
+      drawStars(0.25);
+      ctx.fillStyle = "#26301f";
+      ctx.fillRect(0, 360, W, H - 360);
+      drawFigure(W / 2 - 60, 360, 1.7, "#5b84b1");
+      drawThoughtBubble(W / 2 + 90, 190, bubbleMode);
+    }
+  } else if (scene === 2) {
+    ctx.fillStyle = "#131b2a";
+    ctx.fillRect(0, 0, W, H);
+    drawStars(0.2);
+    drawTrolleyScene(Math.min(sceneT / 0.8, 1));
+  } else if (scene === 3) {
+    drawStars(0.5);
+    ctx.fillStyle = "#eef2f6";
+    ctx.font = "22px 'Iowan Old Style', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("The branches of philosophy", W / 2, 100);
+    ctx.textAlign = "left";
+    drawBranchPanels();
+  } else {
+    drawStars(0.9);
+    // The planet holds still, turned so the Mediterranean faces us.
+    drawEarth(240, 260, 115, -1.9);
+    // A marker on Greece, at the southeast corner of Europe.
+    const gx = 253, gy = 235;
+    ctx.strokeStyle = "#e8deb4";
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(gx, gy, 7, 0, Math.PI * 2); ctx.stroke();
+    // A dashed line from the marker to a magnified inset.
+    ctx.setLineDash([6, 6]);
+    ctx.strokeStyle = "rgba(232,222,180,0.8)";
+    ctx.beginPath();
+    ctx.moveTo(gx + 8, gy);
+    ctx.lineTo(548, 240);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    // The inset: the Aegean, magnified.
+    const ix = 660, iy = 245, ir = 100;
+    ctx.fillStyle = "#3d7ba6";
+    ctx.strokeStyle = "#e8deb4";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(ix, iy, ir, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.save();
+    ctx.beginPath(); ctx.arc(ix, iy, ir, 0, Math.PI * 2); ctx.clip();
+    ctx.fillStyle = "#5f8f5a";
+    // The Greek mainland at the upper left of the inset.
+    ctx.beginPath();
+    ctx.moveTo(ix - 100, iy - 100);
+    ctx.lineTo(ix - 4, iy - 100);
+    ctx.lineTo(ix - 22, iy - 58);
+    ctx.lineTo(ix - 44, iy - 40);
+    ctx.lineTo(ix - 30, iy - 10);
+    ctx.lineTo(ix - 56, iy + 14);
+    ctx.lineTo(ix - 100, iy - 4);
+    ctx.closePath(); ctx.fill();
+    // The coast of Ionia at the right.
+    ctx.beginPath();
+    ctx.moveTo(ix + 100, iy - 100);
+    ctx.lineTo(ix + 100, iy + 60);
+    ctx.lineTo(ix + 64, iy + 42);
+    ctx.lineTo(ix + 74, iy + 6);
+    ctx.lineTo(ix + 56, iy - 30);
+    ctx.lineTo(ix + 68, iy - 66);
+    ctx.lineTo(ix + 44, iy - 100);
+    ctx.closePath(); ctx.fill();
+    // Islands, and Crete along the bottom.
+    [[ix - 6, iy + 6], [ix + 16, iy - 8], [ix + 30, iy + 22], [ix + 4, iy + 34], [ix - 16, iy + 44]].forEach(p => {
+      ctx.beginPath(); ctx.ellipse(p[0], p[1], 6, 4, 0.3, 0, Math.PI * 2); ctx.fill();
+    });
+    ctx.beginPath();
+    ctx.ellipse(ix + 6, iy + 78, 34, 7, 0.05, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = "#eef2f6";
+    ctx.font = "17px 'Iowan Old Style', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Ancient Greece and the Aegean Sea", ix, iy + ir + 28);
+    ctx.textAlign = "left";
+  }
+
+  if (finished) {
+    ctx.fillStyle = "rgba(5,7,13,0.6)";
+    ctx.fillRect(0, 0, W, H);
+  }
+}
+
+/* =========================================================
+   Main loop
+   ========================================================= */
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (started && !paused) sceneT += dt;
+}
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The School of Epictetus</title>
+<style>
+:root{
+  --page:#12141d;
+  --panel:#1a1e2b;
+  --panel-2:#242a3c;
+  --line:#39415e;
+  --text:#f0f2f7;
+  --muted:#a9b1c4;
+  --candle:#e6c073;
+  --candle-deep:#a8862f;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2d3449}
+button.primary{background:var(--candle); border-color:var(--candle-deep); color:#221a08; font-weight:600}
+button.primary:hover{background:#f0d18e}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--candle); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0e1017; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--candle-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#1e2334; border-color:var(--candle)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--candle); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--candle)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--candle)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#10131c; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--candle)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--candle); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#10131c; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--candle)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--candle); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--candle)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>The School of Epictetus</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>Nicopolis, in Greece, around the year 108. The philosophers were expelled from Rome years ago, and the most sought-after teacher of the age now runs a plain school here that Romans sail across the Adriatic to attend. Epictetus was born enslaved, was freed, and walks with a permanent limp. He teaches Stoicism as a set of exercises rather than a system to admire, and he is famously hard on students who take notes and change nothing. You will sit through a morning session and be asked the questions he asks. Walk with the arrow keys, press E at each marked stop, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you, and advances the visit at each marked stop. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The next stop in the region is The Physician's Question, on skepticism.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Critics argue that the division between what is and is not up to us understates how much our inner lives are shaped by circumstances we did not choose, including poverty, illness, and how we were raised. Assess that criticism. Can the Stoic answer it without giving up the core claim?</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. Stoicism is widely marketed today as a productivity and resilience method. Compare that use with what Epictetus actually taught, and identify what is preserved and what is lost.</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. Epictetus says we should want events to happen as they do happen. Is that wisdom, or does it risk accepting conditions that should be resisted? Give a case where you think acceptance is right and one where you think it is wrong, and say what distinguishes them.</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> The distinction Epictetus places first is between</p>
+      <label><input type="radio" name="q1" value="What is up to us and what is not"> what is up to us and what is not</label>
+      <label><input type="radio" name="q1" value="Body and soul"> body and soul</label>
+      <label><input type="radio" name="q1" value="Reason and emotion"> reason and emotion</label>
+
+      <p><strong>2.</strong> Epictetus held that people are disturbed by</p>
+      <label><input type="radio" name="q2" value="Their judgments about things rather than the things themselves"> their judgments about things rather than the things themselves</label>
+      <label><input type="radio" name="q2" value="Fate, which cannot be resisted"> fate, which cannot be resisted</label>
+      <label><input type="radio" name="q2" value="The gods, who are indifferent"> the gods, who are indifferent</label>
+
+      <p><strong>3.</strong> The Discourses and the Handbook were</p>
+      <label><input type="radio" name="q3" value="Recorded by his student Arrian, since Epictetus wrote nothing"> recorded by his student Arrian, since Epictetus wrote nothing</label>
+      <label><input type="radio" name="q3" value="Written by Epictetus late in life"> written by Epictetus late in life</label>
+      <label><input type="radio" name="q3" value="Compiled by Marcus Aurelius"> compiled by Marcus Aurelius</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_epictetus";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: At the door",
+    text: "Before the session, a question this school asks on the first day. How much of whether your life goes well is actually within your control?",
+    mcq: ["Very little, since circumstances decide most outcomes", "A great deal, since how I respond shapes almost everything that matters", "Roughly half, and the trick is telling which half is which", "The question is badly framed, and control is not the right measure"],
+    requireText: true
+  },
+  dichotomy: {
+    title: "Stage 1: The division",
+    text: "Epictetus divides everything into what is up to us, meaning our judgments, choices, and responses, and what is not, meaning our bodies, reputations, property, and everything others do. Is the division as clean as he says?",
+    mcq: ["Yes, and it is the most useful distinction in philosophy", "Roughly right, though the boundary moves with circumstances", "No, since our judgments are themselves shaped by things outside us", "It is clean but useless, since we care about the outside part"],
+    requireText: true
+  },
+  judgments: {
+    title: "Stage 2: Judgments",
+    text: "The claim is that it is not events that disturb us but our judgments about events, and that the judgment is the part we can work on. Test it against something that upset you recently. Was the distress in the event, or in what you took the event to mean?",
+    mcq: ["Almost entirely in the judgment, and I could have judged differently", "Partly, though some events would distress anyone", "The distinction did not survive contact with the case", "The event mattered, and telling myself otherwise would be a lie"],
+    requireText: true
+  },
+  acceptance: {
+    title: "Stage 3: The hardest teaching",
+    text: "Epictetus asks students not to want things to be as they wish, but to want them as they are. Applied to loss, illness, and the actions of others, is that a path to freedom or a counsel of resignation?",
+    mcq: ["Freedom, since fighting what has already happened only adds suffering", "Resignation, since some conditions ought to be resisted rather than accepted", "It depends entirely on whether the thing can still be changed", "Both at once, and the school never resolves the tension"],
+    requireText: true
+  },
+  exercise: {
+    title: "Stage 4: Your own exercise",
+    text: "Epictetus insisted that philosophy is training, not talk, and that a student who can quote the doctrine and has not changed a habit has learned nothing. Write one Stoic exercise you could actually practice this week, describe the situation you would apply it to, and state honestly what you expect to be hard about it.",
+    mcq: null,
+    requireText: true,
+    textHint: "The exercise, the situation, and the difficulty."
+  }
+};
+
+const quizKeys = [
+  "What is up to us and what is not",
+  "Their judgments about things rather than the things themselves",
+  "Recorded by his student Arrian, since Epictetus wrote nothing"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world: the road into Nicopolis and the schoolroom,
+   which is a bare portico with benches.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 1500;
+
+const STATIONS = [
+  { x: 430,  name: "the doorway" },
+  { x: 760,  name: "the bench" },
+  { x: 1080, name: "the lamp shelf" },
+  { x: 1080, name: "the lamp shelf" }
+];
+
+const flags = {
+  started: false,
+  firstDone: false,
+  friarMet: false,
+  beat1Done: false,
+  dichotomyDone: false,
+  beat2Done: false,
+  judgmentsDone: false,
+  beat3Done: false,
+  acceptanceDone: false,
+  beat4Done: false,
+  finalDone: false
+};
+let paused = false;
+let startTimer = 0;
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  student:   { x: 300, color: "#6b8f4f" },
+  epictetus: { x: 1180, color: "#6a6a58" }
+};
+const keys = {};
+const record = { verdicts: [] };
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration, help, dialogue, and the modal
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  speechSynthesis.speak(new SpeechSynthesisUtterance(p.title + ". " + p.text));
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.friarMet) return "Walk right. A student is waiting outside the school.";
+  if (!flags.finalDone) return "Walk to the next marked stop and press E there. The questions appear between the stops.";
+  return "The walk is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  if (c.tag) record.verdicts.push(c.text);
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+function setObjective(txt) { setObjectiveText(txt); }
+function setObjectiveText(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   The morning session
+   ========================================================= */
+function dlgFriar() {
+  flags.friarMet = true;
+  startDlg([
+    { say: "A young Roman in an expensive cloak is sitting on the wall outside, looking unhappy. Student: You are here for the session. So am I, third month." },
+    { say: "My father sent me to learn eloquence and I have not been allowed to make a single speech. Yesterday he asked me what I had changed since arriving. I said I understood the doctrine much better. He said that was not an answer." },
+    { say: "Student: Go in. He starts whether or not the benches are full, and he will notice you." },
+    { note: true, say: "Epictetus, roughly 50 to 135, was born enslaved in Phrygia, was freed, and taught in Rome until Domitian expelled the philosophers around 93, after which he founded his school in Nicopolis. He wrote nothing. The Discourses and the short Handbook were recorded by his student Arrian." }
+  ], () => {
+    setObjective("Walk right to the doorway, marked with E, and press E there.");
+  });
+}
+function dlgBeat1() {
+  flags.beat1Done = true;
+  startDlg([
+    { say: "Inside, a plain room with benches and a lamp. The teacher is already speaking, leaning on a stick. Epictetus: Sit anywhere." },
+    { say: "We begin where we always begin, because everything else in this school hangs on it. Of the things there are, some are up to us and some are not." },
+    { say: "Epictetus: Up to us are our judgment, our impulse, our desire, our refusal, everything that is our own doing. Not up to us are our body, our property, our reputation, our office, everything that is not our own doing." },
+    { say: "What is up to us is by nature free, unhindered, unobstructed. What is not is weak, enslaved, subject to interference, and belongs to others." },
+    { say: "Epictetus: So remember, if you take what is by nature enslaved to be free, and what belongs to others to be your own, you will be obstructed, you will grieve, you will be disturbed, and you will find fault with gods and with other people. But if you take only what is yours to be yours, no one will ever compel you, no one will hinder you, you will find fault with no one, and no one will harm you." }
+  ], () => {
+    openPrompt("dichotomy", () => {
+      flags.dichotomyDone = true;
+      setObjective("Walk to the bench, marked with E, and press E there.");
+    });
+  });
+}
+function dlgBeat2() {
+  flags.beat2Done = true;
+  startDlg([
+    { say: "The Roman student from outside is now on the bench beside you, and the teacher turns to him. Epictetus: You. You told me last week that your brother wronged you and that this is why you cannot work. Where is the wrong?" },
+    { say: "Student: In what he did." },
+    { say: "Epictetus: Then everyone who heard of it would be unable to work, and they are working. What disturbs you is not what he did, it is what you have decided it means about you." },
+    { say: "People are disturbed not by things, but by the judgments they form about things. Death is not terrible, or Socrates would have thought so. What is terrible is the judgment that death is terrible." },
+    { say: "Epictetus: Notice I have not told you your brother behaved well. He may have behaved very badly. I am telling you where the part you can work on is located, and it is not in him." },
+    { note: true, say: "The claim that we are disturbed by judgments rather than events is the Stoic doctrine of assent, and it is the historical ancestor of cognitive behavioral therapy, whose founders cited Epictetus directly. The Stoics did not claim events are unreal or harmless, only that our distress runs through an evaluation we contribute." }
+  ], () => {
+    openPrompt("judgments", () => {
+      flags.judgmentsDone = true;
+      setObjective("Walk to the lamp shelf, marked with E, and press E there.");
+    });
+  });
+}
+function dlgBeat3() {
+  flags.beat3Done = true;
+  startDlg([
+    { say: "Epictetus: Now the teaching students resist most, and they are right to feel it. Do not seek to have events happen as you wish, but wish them to happen as they do happen, and your life will go well." },
+    { say: "Epictetus: You think that is surrender. Consider what you are actually doing when you demand that the past be different. You are issuing an order to the universe about something already finished, and then treating your failure to be obeyed as an injury." },
+    { say: "If you want a jug, say to yourself that you want a jug, and when it breaks you will not be shaken. If you kiss your child, say that you are kissing a mortal, and when the child must be given back you will not be destroyed." },
+    { say: "Epictetus: Understand the range of this. I do not say to accept an injustice you can act against. Acting is up to you, so act." },
+    { say: "I say that after you have done what is yours to do, the outcome is not yours, and demanding it be otherwise adds a second suffering to the first." },
+    { note: true, say: "The Stoics distinguished between what depends on us and outcomes, and held that virtue lies in choosing and acting well, not in results. This is why Stoics were often politically active, including senators who opposed emperors at the cost of their lives, and why the school taught acceptance of results rather than acceptance of conditions." }
+  ], () => {
+    openPrompt("acceptance", () => {
+      flags.acceptanceDone = true;
+      setObjective("Press E once more at the lamp shelf for the end of the session.");
+    });
+  });
+}
+function dlgClose() {
+  startDlg([
+    { say: "The session breaks up. Epictetus stops you on the way out. Epictetus: You are traveling. Good. Then take this instead of notes." },
+    { say: "Sheep do not bring the shepherd grass to show how much they have eaten, they digest it and produce wool. Do not display your doctrines. Show the work they have done on you." },
+    { say: "Epictetus: My students can all recite the division I gave you this morning. Perhaps two of them will be steady when something is taken from them. The distance between reciting and being steady is the entire subject, and no lecture crosses it for you." },
+    { note: true, say: "Marcus Aurelius, emperor from 161 to 180, kept a copy of Epictetus and wrote his Meditations as private notes to himself, never intending publication. Seneca, a Roman senator and playwright, wrote letters and essays on the same doctrines. Between an enslaved teacher, a senator, and an emperor, Roman Stoicism reached the whole social range of the empire." }
+  ], () => {
+    openPrompt("exercise", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+function nextStationIndex() {
+  if (!flags.beat1Done) return 0;
+  if (!flags.dichotomyDone) return -1;
+  if (!flags.beat2Done) return 1;
+  if (!flags.judgmentsDone) return -1;
+  if (!flags.beat3Done) return 2;
+  if (!flags.acceptanceDone) return -1;
+  if (!flags.beat4Done) { flags.beat4Done = true; return 3; }
+  if (!flags.finalDone) return 3;
+  return -1;
+}
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.friarMet) return;
+  const idx = nextStationIndex();
+  if (idx < 0) return;
+  const st = STATIONS[idx];
+  if (Math.abs(player.x - st.x) < 48) {
+    if (idx === 0) { dlgBeat1(); return; }
+    if (idx === 1) { dlgBeat2(); return; }
+    if (idx === 2) { dlgBeat3(); return; }
+    if (idx === 3 && flags.acceptanceDone && !flags.finalDone) { dlgClose(); return; }
+    return;
+  }
+  setStatus("The next stop, " + st.name + ", is marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_epictetus", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    if (r.response) parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "The School of Epictetus, Report\n";
+  text += "==============================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    if (r.response) text += "Response: " + r.response + "\n";
+    text += "-".repeat(50);
+  });
+  text += "\n\nDiscussion questions:\n";
+  text += "1. Whether the division understates circumstance.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Mackie's question and the best reply.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. Acceptance and resistance.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "School_of_Epictetus_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!flags.started || paused) return;
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right along the road to the school.");
+      });
+    }
+  }
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  player.x += player.vx * dt;
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+  if (!flags.friarMet && !dialogueActive && player.x > 250) {
+    player.x = Math.min(player.x, 250);
+    dlgFriar();
+  }
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawFriar(x, y) {
+  ctx.save();
+  ctx.translate(x, y);
+  // The white tunic.
+  ctx.fillStyle = "#e8e4d8";
+  ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-8, -44); ctx.lineTo(8, -44); ctx.lineTo(15, 0); ctx.lineTo(-15, 0);
+  ctx.closePath(); ctx.fill();
+  // The black cloak over the shoulders.
+  ctx.fillStyle = "#2c2c33";
+  ctx.beginPath();
+  ctx.moveTo(-8, -44); ctx.lineTo(8, -44); ctx.lineTo(12, -14); ctx.lineTo(-12, -14);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = "rgba(40,40,50,0.9)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.stroke();
+  ctx.restore();
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(230,192,115,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 76 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(230,192,115,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 72 + lift);
+}
+function drawCandle(x, y) {
+  const fl = REDUCED_MOTION ? 0 : Math.sin(t * 7 + x) * 1.5;
+  ctx.fillStyle = "#d8d2c2";
+  ctx.fillRect(x - 3, y - 16, 6, 16);
+  ctx.fillStyle = "#ffb84d";
+  ctx.beginPath();
+  ctx.ellipse(x, y - 21 + fl * 0.4, 3, 6 + fl, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(255,184,77,0.12)";
+  ctx.beginPath();
+  ctx.arc(x, y - 18, 30, 0, Math.PI * 2);
+  ctx.fill();
+}
+function drawFig(x, y, color, scale) {
+  const s = scale || 1;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(s, s);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -50, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-8, -43); ctx.lineTo(8, -43); ctx.lineTo(13, 0); ctx.lineTo(-13, 0);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function drawTeacher(x, y) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = npcs.epictetus.color;
+  ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-8, -45); ctx.lineTo(8, -45); ctx.lineTo(13, 0); ctx.lineTo(-13, 0);
+  ctx.closePath(); ctx.fill();
+  // The stick he leans on.
+  ctx.strokeStyle = "#7a6444";
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(14, -34); ctx.lineTo(19, 0); ctx.stroke();
+  ctx.restore();
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, "#7fa8c4");
+  sky.addColorStop(0.7, "#c6cdb8");
+  sky.addColorStop(1, "#d6cba8");
+  ctx.fillStyle = sky;
+  ctx.fillRect(camX, 0, W, H);
+  // Low hills.
+  ctx.fillStyle = "rgba(122,132,100,0.6)";
+  ctx.beginPath();
+  ctx.moveTo(camX, 320); ctx.lineTo(camX + 180, 268); ctx.lineTo(camX + 420, 314);
+  ctx.lineTo(camX + 680, 262); ctx.lineTo(camX + 900, 312); ctx.lineTo(camX + 900, 500); ctx.lineTo(camX, 500);
+  ctx.closePath(); ctx.fill();
+  // Ground and road.
+  ctx.fillStyle = "#c4b892";
+  ctx.fillRect(camX, GROUND, W, H - GROUND);
+  ctx.fillStyle = "#b3a67f";
+  ctx.fillRect(camX, GROUND, W, 7);
+  ctx.fillStyle = "#d0c6a2";
+  ctx.fillRect(camX, GROUND + 10, W, 14);
+  // Cypresses along the road.
+  [200, 620, 1420].forEach(cx0 => {
+    ctx.fillStyle = "#4e6640";
+    ctx.beginPath();
+    ctx.ellipse(cx0, GROUND - 54, 13, 56, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#6a5a44";
+    ctx.fillRect(cx0 - 3, GROUND - 12, 6, 12);
+  });
+
+  // The schoolhouse, a bare portico with a tile roof.
+  const SX = 340;
+  ctx.fillStyle = "rgba(226,218,196,0.9)";
+  ctx.fillRect(SX, 210, 1080, GROUND - 210);
+  ctx.fillStyle = "#a8613f";
+  ctx.fillRect(SX - 16, 190, 1112, 22);
+  ctx.fillStyle = "#8d4f33";
+  for (let rx = SX - 16; rx < SX + 1096; rx += 26) ctx.fillRect(rx, 190, 3, 22);
+  // Doorway at the left end.
+  ctx.fillStyle = "#6a5a44";
+  ctx.fillRect(STATIONS[0].x - 30, 268, 60, GROUND - 268);
+  ctx.fillStyle = "#3e3527";
+  ctx.fillRect(STATIONS[0].x - 22, 278, 44, GROUND - 278);
+  // Columns along the portico.
+  for (let cx0 = SX + 260; cx0 < SX + 1060; cx0 += 190) {
+    ctx.fillStyle = "#ded6bd";
+    ctx.fillRect(cx0 - 10, 212, 20, GROUND - 212);
+    ctx.fillStyle = "#c8bfa2";
+    ctx.fillRect(cx0 - 14, 212, 28, 8);
+  }
+  // Benches, plain and worn.
+  [700, 820, 940].forEach(bx => {
+    ctx.fillStyle = "#8a7550";
+    ctx.fillRect(bx - 42, GROUND - 28, 84, 8);
+    ctx.fillRect(bx - 36, GROUND - 20, 7, 20);
+    ctx.fillRect(bx + 29, GROUND - 20, 7, 20);
+  });
+  // The lamp on its shelf, the only ornament in the room.
+  ctx.fillStyle = "#8a7550";
+  ctx.fillRect(STATIONS[2].x - 24, GROUND - 96, 52, 7);
+  ctx.fillStyle = "#c9a648";
+  ctx.beginPath();
+  ctx.ellipse(STATIONS[2].x, GROUND - 104, 16, 8, 0, 0, Math.PI * 2);
+  ctx.fill();
+  const fl = REDUCED_MOTION ? 0 : Math.sin(t * 7) * 1.6;
+  ctx.fillStyle = "#f4c26a";
+  ctx.beginPath();
+  ctx.ellipse(STATIONS[2].x + 15, GROUND - 110, 3, 6 + fl, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(244,194,106,0.10)";
+  ctx.beginPath(); ctx.arc(STATIONS[2].x + 15, GROUND - 110, 62, 0, Math.PI * 2); ctx.fill();
+
+  // People.
+  if (!flags.friarMet) drawFig(npcs.student.x, GROUND, npcs.student.color);
+  else if (flags.beat2Done) drawFig(820, GROUND, npcs.student.color);
+  else drawFig(770, GROUND, npcs.student.color);
+  drawTeacher(npcs.epictetus.x, GROUND);
+  const idx = nextStationIndex();
+  if (flags.friarMet && idx >= 0) drawMarker(STATIONS[idx].x, GROUND);
+  drawPerson(player.x, GROUND, player.color, player.facing);
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(20,20,16,0.5)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f4f2ea";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("The School of Epictetus", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#d8d2c0";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You are on the road into Nicopolis. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

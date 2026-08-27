@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hypatia of Alexandria</title>
+<style>
+:root{
+  --page:#12141d;
+  --panel:#1a1e2b;
+  --panel-2:#242a3c;
+  --line:#39415e;
+  --text:#f0f2f7;
+  --muted:#a9b1c4;
+  --candle:#e6c073;
+  --candle-deep:#a8862f;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2d3449}
+button.primary{background:var(--candle); border-color:var(--candle-deep); color:#221a08; font-weight:600}
+button.primary:hover{background:#f0d18e}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--candle); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0e1017; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--candle-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#1e2334; border-color:var(--candle)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--candle); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--candle)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--candle)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#10131c; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--candle)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--candle); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#10131c; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--candle)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--candle); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--candle)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>Hypatia of Alexandria</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>The expedition crosses the sea, and the calendar moves to around the year 410. Alexandria has been a Roman city for four centuries, and its most famous teacher is Hypatia, mathematician, astronomer, and head of the city's Platonist school, who lectures publicly to pagans and Christians alike. A student of hers named Synesius meets you at the harbor and walks you through the city to her hall, where the evening's lesson covers what philosophy became under Rome, the Stoic road, the Skeptic road, and her own Platonist road, three schools that all promise peace of mind and disagree about how to reach it. Walk with the arrow keys, press E at each marked stop, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you, and advances the visit at each marked stop. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The Roman World holds two more stops, in preparation. The world map continues north and east.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Epictetus taught that some things are up to us and some are not, and that misery comes from confusing the two. Test the claim against a real difficulty in your own life. What does the division illuminate, and what does it leave out?</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. Sextus Empiricus claimed that for every argument an equally strong opposing argument can be found, and that suspending judgment brings tranquility. Is suspension of judgment actually livable? Identify a belief you could not suspend and still function, and say what that shows about skepticism.</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. Hypatia lectured publicly in a city dividing along religious lines, and her classroom held students from both sides. What conditions does philosophy need from a city in order to exist, and what, if anything, does it owe the city in return?</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> Hypatia taught</p>
+      <label><input type="radio" name="q1" value="Mathematics, astronomy, and Platonist philosophy"> mathematics, astronomy, and Platonist philosophy</label>
+      <label><input type="radio" name="q1" value="Rhetoric and law"> rhetoric and law</label>
+      <label><input type="radio" name="q1" value="Medicine"> medicine</label>
+
+      <p><strong>2.</strong> The Stoic teaching Epictetus put first is that</p>
+      <label><input type="radio" name="q2" value="Some things are up to us and some are not"> some things are up to us and some are not</label>
+      <label><input type="radio" name="q2" value="Pleasure is the only good"> pleasure is the only good</label>
+      <label><input type="radio" name="q2" value="Nothing can be known"> nothing can be known</label>
+
+      <p><strong>3.</strong> Sextus Empiricus taught that suspending judgment is followed by</p>
+      <label><input type="radio" name="q3" value="Tranquility"> tranquility</label>
+      <label><input type="radio" name="q3" value="Despair"> despair</label>
+      <label><input type="radio" name="q3" value="Certainty"> certainty</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_hypatia";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: At the harbor",
+    text: "Before the visit begins, a question the Roman schools all answered differently. What do you most want philosophy to give you?",
+    mcq: ["Knowledge of what reality is", "A way to live well", "Peace of mind", "All three, and I doubt they can be separated"],
+    requireText: true
+  },
+  survival: {
+    title: "Stage 1: What survives",
+    text: "The Serapeum and its books are gone, and most of what Alexandria's libraries held is gone with them. Hypatia's own work is commentary, editing, and teaching, the labor of keeping other minds' work alive and usable. When most of what is written will be lost, what matters most?",
+    mcq: ["Producing original work, since only the new is worth preserving", "Teaching and commentary, since ideas survive in people and copies, not in buildings", "Institutions, since neither books nor students last without them", "Nothing reliably works, and loss is the normal fate of knowledge"],
+    requireText: true
+  },
+  ladder: {
+    title: "Stage 2: The ladder",
+    text: "Hypatia teaches mathematics first, as her Platonist school always has, because its objects are grasped by thought rather than the senses. Is mathematics a ladder toward a higher reality, a useful tool and nothing more, or itself the deepest truth there is?",
+    mcq: ["A ladder, since it trains the mind away from the senses toward what is timeless", "A tool, powerful and human, that describes the world without transcending it", "The truth itself, as the Pythagoreans held", "None of these, and its success is a puzzle no school has solved"],
+    requireText: true
+  },
+  roads: {
+    title: "Stage 3: Three roads",
+    text: "Three Roman-era roads to peace of mind are now on the table. The Stoic road, master the difference between what is up to you and what is not. The Skeptic road, suspend judgment where arguments balance, and tranquility follows. The Platonist road, ascend by study toward what does not change. Which is most livable?",
+    mcq: ["The Stoic road, since the division of control can be practiced daily", "The Skeptic road, since most of our distress rides on judgments we cannot defend", "The Platonist road, since peace that ignores truth is not worth having", "None alone, and a livable philosophy borrows from all three"],
+    requireText: true
+  },
+  teacher: {
+    title: "Stage 4: The teacher and the city",
+    text: "Five years after this evening, in the year 415, Hypatia was attacked in the street and killed by a mob, during a violent conflict between the city's factions. She had taught pagans and Christians side by side for decades, and her door was open to both throughout. Write what you think a teacher owes a divided city, and whether philosophy can do its work without the city's protection.",
+    mcq: null,
+    requireText: true,
+    textHint: "Both parts."
+  }
+};
+
+const quizKeys = [
+  "Mathematics, astronomy, and Platonist philosophy",
+  "Some things are up to us and some are not",
+  "Tranquility"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world: from the harbor of Alexandria through the city
+   to Hypatia's lecture hall.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 1600;
+
+const STATIONS = [
+  { x: 420,  name: "the harbor overlook" },
+  { x: 760,  name: "the Serapeum platform" },
+  { x: 1150, name: "the seat in the hall" },
+  { x: 1150, name: "the seat in the hall" }
+];
+
+const flags = {
+  started: false,
+  firstDone: false,      // stage 0
+  friarMet: false,       // Synesius meets you at the harbor road
+  beat1Done: false,      // the harbor and the city
+  beat2Done: false,      // the Serapeum
+  survivalDone: false,   // stage 1
+  beat3Done: false,      // the lecture
+  ladderDone: false,     // stage 2
+  beat4Done: false,      // the three roads
+  roadsDone: false,      // stage 3
+  finalDone: false
+};
+let paused = false;
+let startTimer = 0;
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  synesius: { x: 300, color: "#6b8f4f" },
+  hypatia:  { x: 1230, color: "#7a5a74" },
+  stoic:    { x: 1300, color: "#8f4f5e" },
+  skeptic:  { x: 1350, color: "#4f8f8a" }
+};
+const keys = {};
+const record = { road: null };
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration, help, dialogue, and the modal
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  speechSynthesis.speak(new SpeechSynthesisUtterance(p.title + ". " + p.text));
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.friarMet) return "Walk right. Synesius meets you on the harbor road.";
+  if (!flags.finalDone) return "Walk to the next marked stop and press E there. The questions appear between the stops.";
+  return "The walk is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  if (c.tag) record.verdicts.push(c.text);
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+function setObjective(txt) { setObjectiveText(txt); }
+function setObjectiveText(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   The visit's conversations
+   ========================================================= */
+function dlgFriar() {
+  flags.friarMet = true;
+  startDlg([
+    { say: "A man in a plain traveling cloak raises a hand as you come up the harbor road. Synesius: You are the traveler asking for the philosopher. I am Synesius." },
+    { say: "I studied with her years ago and I still write to her about every problem I cannot solve, which is most of them. Come up, the lecture is at the eleventh hour and the walk will do you good." },
+    { say: "Synesius: One thing before we start. People arrive here expecting an oracle. What you will get is a mathematician who thinks carefully and expects you to do the same. She will ask you questions, and she will not be satisfied by agreement." },
+    { note: true, say: "Hypatia of Alexandria, born around 355 and killed in 415, taught mathematics, astronomy, and Platonist philosophy in Alexandria, then a Roman city. Synesius of Cyrene was a real student of hers, and seven of his letters to her survive, which are among our best sources for her teaching and her reputation." }
+  ], () => {
+    setObjective("Walk right to the harbor overlook, marked with E, and press E there.");
+  });
+}
+function dlgBeat1() {
+  flags.beat1Done = true;
+  startDlg([
+    { say: "From the overlook the harbor opens below, the lighthouse standing at the end of its causeway, grain ships riding at anchor. Synesius: Four hundred years of Roman rule, and the ships still run the same route, grain out to Rome, ideas in from everywhere. Athens has the name, but the work moved here a long time ago." },
+    { say: "Synesius: Philosophy under Rome changed its questions. The Greeks you have been reading asked what the world is made of and what the good life consists in." },
+    { say: "The schools here are asked something more pressing by people with less control over their lives. How do I stay steady when the world does what it likes with me?" }
+  ], () => {
+    setObjective("Walk on to the Serapeum platform, marked with E.");
+  });
+}
+function dlgBeat2() {
+  flags.beat2Done = true;
+  startDlg([
+    { say: "The road passes a broad stone platform with column stumps and a cleared foundation. Synesius says nothing for a moment. Synesius: The Serapeum stood here." },
+    { say: "It held books, and a good part of what this city knew, and it was pulled down about twenty years ago in the fighting over the temples. People still walk around the edge of it rather than across." },
+    { say: "Synesius: She lectures a few streets from here, and most of what she does is copy, correct, and explain the work of people already dead. Ptolemy's astronomy, Diophantus on numbers, Apollonius on curves. When I called that modest work once, she told me that a book nobody can read is a brick." },
+    { note: true, say: "The Serapeum was destroyed in 391 during conflict over pagan temples in Alexandria. The famous Library had already declined over previous centuries, and no single event ended it. Hypatia's known output was commentary and edition, the work of preserving and clarifying difficult mathematical texts, which is how much of ancient science reached later centuries at all." }
+  ], () => {
+    openPrompt("survival", () => {
+      flags.survivalDone = true;
+      setObjective("Walk on to her hall and take the seat, marked with E.");
+    });
+  });
+}
+function dlgBeat3() {
+  flags.beat3Done = true;
+  startDlg([
+    { say: "The hall is plain and full, students on benches, a bronze astrolabe on a stand beside the lectern. Hypatia is at the board with a diagram of circles when you sit." },
+    { say: "Hypatia: Stay where you are, we are almost through this. The point of the diagram is not the diagram." },
+    { say: "Hypatia: I teach mathematics first, always, and students always ask why, since they came for philosophy. Here is the answer. A circle you draw is smudged, a circle you think is exact. The one you draw is in the world of things that come apart." },
+    { say: "The one you think is not. If any part of you can reach the second kind, then the mind is not simply a report of the eyes, and everything else I teach depends on that." },
+    { say: "Hypatia: Plato called that a turning of the soul. I would put it more plainly. Mathematics is the one training where you can check whether you have stopped guessing." }
+  ], () => {
+    openPrompt("ladder", () => {
+      flags.ladderDone = true;
+      setObjective("Press E at your seat. Two visitors have questions for her.");
+    });
+  });
+}
+function dlgBeat4() {
+  flags.beat4Done = true;
+  startDlg([
+    { say: "Two men are waiting at the front when the lesson breaks. Hypatia: These two argue with me every week, and you should hear them, because between the three of us you have most of the philosophy of this empire. Start, Rufus." },
+    { say: "The first, a Stoic: Rufus: Everything she just said about the timeless is fine and it is not what anyone needs at noon. Here is the whole of it. Some things are up to us and some are not." },
+    { say: "Our judgments, our choices, and what we do are ours. Our bodies, our reputations, our offices, and the crowd outside are not. Confuse the two and you will be miserable and you will blame the wrong thing." },
+    { say: "Rufus: Epictetus was born enslaved and taught this, and a man now on the throne writes it in his notebooks at night on campaign. It works for a slave and an emperor, and I do not know a higher recommendation than that. It is not things that disturb people, it is their judgments about things, and judgments are yours." },
+    { say: "The second, a Skeptic: Theodosia: And I say Rufus is as certain as she is, and neither has earned it. My teacher Sextus was a physician." },
+    { say: "He set out the arguments as he found them, and for every one he found another of equal weight on the other side. If the arguments balance, judgment lifts off you, and what follows, unexpectedly, is quiet. He said tranquility followed suspension like a shadow following a body." },
+    { say: "Hypatia: You will notice all three of us promise you peace of mind. Rufus by mastering the distinction, Theodosia by putting the question down, and I by climbing to what does not change." },
+    { say: "That agreement is worth more attention than our disagreements. Under this empire, philosophy has become largely a set of instructions for living, and the schools compete on results." },
+    { note: true, say: "Stoicism taught that virtue is the only true good and that peace comes from distinguishing what is up to us from what is not. Its surviving Roman sources are Seneca, Epictetus, whose Discourses and Handbook were recorded by his student Arrian, and the emperor Marcus Aurelius, whose Meditations were private notes. Skepticism in Sextus Empiricus, a physician writing around 200, argued that opposing arguments of equal strength produce suspension of judgment, called epoche, and that tranquility, ataraxia, follows it." }
+  ], () => {
+    openPrompt("roads", () => {
+      flags.roadsDone = true;
+      setObjective("Press E at your seat for the end of the visit.");
+    });
+  });
+}
+function dlgClose() {
+  startDlg([
+    { say: "The hall empties. Hypatia puts a hand on the astrolabe and turns it a few degrees. Hypatia: Synesius says you are traveling to see what philosophy has been. Then here is what I would have you carry out of Alexandria." },
+    { say: "This city is arguing with itself about which god is real, and the arguing has stopped being only words. My students include people from every side of it, and they sit on the same benches and do the same proofs, and when they are working nobody can tell which side anyone is on." },
+    { say: "Hypatia: I have been asked to choose a side and speak for it. I keep declining, not out of cowardice, and not because the question does not matter. It is that the moment this room takes a side, it stops being the one place in the city where these people still talk to each other." },
+    { note: true, say: "In 415, during a violent conflict between factions in Alexandria, Hypatia was seized in the street and killed by a mob. Ancient sources differ on the politics behind it and agree on her standing as a teacher. The philosopher Damascius and the church historian Socrates Scholasticus both record her death, and Socrates, a Christian writer, describes her with respect." }
+  ], () => {
+    openPrompt("teacher", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+function nextStationIndex() {
+  if (!flags.beat1Done) return 0;
+  if (!flags.beat2Done) return 1;
+  if (!flags.survivalDone) return -1;
+  if (!flags.beat3Done) return 2;
+  if (!flags.ladderDone) return -1;
+  if (!flags.beat4Done) return 3;
+  if (!flags.roadsDone) return -1;
+  if (!flags.finalDone) return 3;
+  return -1;
+}
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.friarMet) return;
+  const idx = nextStationIndex();
+  if (idx < 0) return;
+  const st = STATIONS[idx];
+  if (Math.abs(player.x - st.x) < 48) {
+    if (idx === 0) { dlgBeat1(); return; }
+    if (idx === 1) { dlgBeat2(); return; }
+    if (idx === 2) { dlgBeat3(); return; }
+    if (idx === 3 && !flags.beat4Done) { dlgBeat4(); return; }
+    if (idx === 3 && flags.roadsDone && !flags.finalDone) { dlgClose(); return; }
+    return;
+  }
+  setStatus("The next stop, " + st.name + ", is marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_hypatia", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    if (r.response) parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "Hypatia of Alexandria, Report\n";
+  text += "==============================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    if (r.response) text += "Response: " + r.response + "\n";
+    text += "-".repeat(50);
+  });
+  text += "\n\nDiscussion questions:\n";
+  text += "1. Epictetus on what is up to us.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Mackie's question and the best reply.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. What philosophy needs from a city.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Hypatia_of_Alexandria_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!flags.started || paused) return;
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right up the harbor road. Someone is waiting for you.");
+      });
+    }
+  }
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  player.x += player.vx * dt;
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+  if (!flags.friarMet && !dialogueActive && player.x > 250) {
+    player.x = Math.min(player.x, 250);
+    dlgFriar();
+  }
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawFriar(x, y) {
+  ctx.save();
+  ctx.translate(x, y);
+  // The white tunic.
+  ctx.fillStyle = "#e8e4d8";
+  ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-8, -44); ctx.lineTo(8, -44); ctx.lineTo(15, 0); ctx.lineTo(-15, 0);
+  ctx.closePath(); ctx.fill();
+  // The black cloak over the shoulders.
+  ctx.fillStyle = "#2c2c33";
+  ctx.beginPath();
+  ctx.moveTo(-8, -44); ctx.lineTo(8, -44); ctx.lineTo(12, -14); ctx.lineTo(-12, -14);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = "rgba(40,40,50,0.9)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.stroke();
+  ctx.restore();
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(230,192,115,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 76 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(230,192,115,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 72 + lift);
+}
+function drawCandle(x, y) {
+  const fl = REDUCED_MOTION ? 0 : Math.sin(t * 7 + x) * 1.5;
+  ctx.fillStyle = "#d8d2c2";
+  ctx.fillRect(x - 3, y - 16, 6, 16);
+  ctx.fillStyle = "#ffb84d";
+  ctx.beginPath();
+  ctx.ellipse(x, y - 21 + fl * 0.4, 3, 6 + fl, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(255,184,77,0.12)";
+  ctx.beginPath();
+  ctx.arc(x, y - 18, 30, 0, Math.PI * 2);
+  ctx.fill();
+}
+function drawFig(x, y, color, scale) {
+  const s = scale || 1;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(s, s);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -50, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-8, -43); ctx.lineTo(8, -43); ctx.lineTo(13, 0); ctx.lineTo(-13, 0);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function drawColumn(x, base, h) {
+  ctx.fillStyle = "#d8d2c0";
+  ctx.fillRect(x - 9, base - h, 18, h);
+  ctx.fillStyle = "#c2bba6";
+  ctx.fillRect(x - 13, base - h - 8, 26, 8);
+  ctx.fillRect(x - 13, base - 6, 26, 6);
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // Bright Mediterranean afternoon.
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, "#5f9fd0");
+  sky.addColorStop(0.7, "#a9cde4");
+  sky.addColorStop(1, "#e0dcc4");
+  ctx.fillStyle = sky;
+  ctx.fillRect(camX, 0, W, H);
+
+  // The sea and the harbor, behind the first stretch of road.
+  ctx.fillStyle = "#3f8ab5";
+  ctx.fillRect(camX, 250, Math.max(0, 900 - camX + 100), 90);
+  ctx.fillStyle = "rgba(255,255,255,0.25)";
+  for (let wx = 0; wx < 1000; wx += 40) {
+    const wy = 268 + ((wx * 7) % 60);
+    if (wy < 336) ctx.fillRect(wx, wy, 16, 2);
+  }
+  // The lighthouse on its causeway.
+  ctx.fillStyle = "#cfc7b0";
+  ctx.fillRect(150, 150, 34, 100);
+  ctx.fillRect(156, 108, 22, 42);
+  ctx.fillRect(160, 84, 14, 24);
+  ctx.fillStyle = "#b3aa92";
+  ctx.fillRect(144, 246, 46, 8);
+  const fl = REDUCED_MOTION ? 0 : Math.sin(t * 4) * 2;
+  ctx.fillStyle = "#f0c060";
+  ctx.beginPath(); ctx.arc(167, 80, 6 + fl, 0, Math.PI * 2); ctx.fill();
+  // Ships at anchor.
+  ctx.fillStyle = "#6a5a44";
+  [300, 380, 470].forEach((sx, i) => {
+    const sy = 292 + i * 14;
+    ctx.fillRect(sx - 22, sy, 44, 8);
+    ctx.fillRect(sx - 1, sy - 26, 3, 26);
+    ctx.fillStyle = "#e6e0cc";
+    ctx.beginPath();
+    ctx.moveTo(sx, sy - 26); ctx.lineTo(sx + 18, sy - 6); ctx.lineTo(sx, sy - 6);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#6a5a44";
+  });
+
+  // The ground and the paved road.
+  ctx.fillStyle = "#cfc4a4";
+  ctx.fillRect(camX, GROUND - 90, W, H - GROUND + 90);
+  ctx.fillStyle = "#bfb494";
+  ctx.fillRect(camX, GROUND, W, 8);
+  ctx.fillStyle = "#d8cfb2";
+  ctx.fillRect(camX, GROUND + 8, W, 16);
+  ctx.strokeStyle = "rgba(150,140,116,0.8)";
+  ctx.lineWidth = 1;
+  for (let px = 0; px < WORLD_W; px += 46) {
+    ctx.beginPath(); ctx.moveTo(px, GROUND + 8); ctx.lineTo(px, GROUND + 24); ctx.stroke();
+  }
+
+  // The harbor overlook: a low parapet and two palms.
+  ctx.fillStyle = "#c2bba6";
+  ctx.fillRect(STATIONS[0].x - 70, GROUND - 34, 140, 10);
+  ctx.fillRect(STATIONS[0].x - 66, GROUND - 24, 8, 24);
+  ctx.fillRect(STATIONS[0].x + 58, GROUND - 24, 8, 24);
+  [STATIONS[0].x - 120, STATIONS[0].x + 116].forEach(px => {
+    ctx.fillStyle = "#8a7550";
+    ctx.fillRect(px - 4, GROUND - 86, 8, 86);
+    ctx.fillStyle = "#6f8f52";
+    for (let i = 0; i < 5; i++) {
+      ctx.save();
+      ctx.translate(px, GROUND - 86);
+      ctx.rotate((i - 2) * 0.5);
+      ctx.beginPath();
+      ctx.ellipse(0, -14, 8, 26, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  });
+
+  // The Serapeum platform: cleared stone, column stumps, rubble.
+  ctx.fillStyle = "#c8bfa4";
+  ctx.fillRect(STATIONS[1].x - 130, GROUND - 22, 300, 22);
+  ctx.fillStyle = "#b6ad92";
+  ctx.fillRect(STATIONS[1].x - 130, GROUND - 26, 300, 6);
+  [-96, -44, 16, 74, 132].forEach((dx, i) => {
+    const hgt = [30, 16, 44, 12, 26][i];
+    ctx.fillStyle = "#d8d2c0";
+    ctx.fillRect(STATIONS[1].x + dx - 12, GROUND - 26 - hgt, 24, hgt);
+    ctx.fillStyle = "#bdb49a";
+    ctx.fillRect(STATIONS[1].x + dx - 14, GROUND - 26 - hgt, 28, 5);
+  });
+  ctx.fillStyle = "#c2b89c";
+  [[-70, 12], [40, 9], [104, 14]].forEach(r => {
+    ctx.beginPath();
+    ctx.ellipse(STATIONS[1].x + r[0], GROUND - 4, r[1], r[1] * 0.6, 0, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Her hall: a colonnade, a lectern, a board, and an astrolabe.
+  const HX = 1020;
+  ctx.fillStyle = "rgba(216,210,192,0.55)";
+  ctx.fillRect(HX, 180, 520, GROUND - 180);
+  ctx.fillStyle = "#c2bba6";
+  ctx.fillRect(HX - 10, 164, 540, 18);
+  for (let cx0 = HX + 20; cx0 < HX + 520; cx0 += 120) drawColumn(cx0, GROUND, 168);
+  // Benches.
+  ctx.fillStyle = "#8a7550";
+  [1100, 1180, 1260].forEach(bx => {
+    ctx.fillRect(bx - 34, GROUND - 26, 68, 7);
+    ctx.fillRect(bx - 30, GROUND - 19, 6, 19);
+    ctx.fillRect(bx + 24, GROUND - 19, 6, 19);
+  });
+  // The board with its circle diagram.
+  ctx.fillStyle = "#3f3a30";
+  ctx.fillRect(1400, 214, 130, 96);
+  ctx.strokeStyle = "#e6e0cc";
+  ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.arc(1452, 258, 34, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(1452, 258, 18, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(1418, 258); ctx.lineTo(1486, 258); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(1452, 224); ctx.lineTo(1452, 292); ctx.stroke();
+  // The lectern and the astrolabe on its stand.
+  ctx.fillStyle = "#8a7550";
+  ctx.fillRect(1350, GROUND - 60, 34, 60);
+  ctx.fillRect(1330, GROUND - 66, 74, 8);
+  ctx.fillStyle = "#6a5a44";
+  ctx.fillRect(1300, GROUND - 40, 6, 40);
+  const spin = REDUCED_MOTION ? 0.6 : t * 0.35;
+  ctx.save();
+  ctx.translate(1303, GROUND - 52);
+  ctx.strokeStyle = "#c9a648";
+  ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.arc(0, 0, 17, 0, Math.PI * 2); ctx.stroke();
+  ctx.save();
+  ctx.scale(Math.max(0.12, Math.abs(Math.cos(spin))), 1);
+  ctx.beginPath(); ctx.arc(0, 0, 17, 0, Math.PI * 2); ctx.stroke();
+  ctx.restore();
+  ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.moveTo(-17, 0); ctx.lineTo(17, 0); ctx.stroke();
+  ctx.restore();
+
+  // The people.
+  if (!flags.friarMet) {
+    drawFig(npcs.synesius.x, GROUND, npcs.synesius.color);
+  } else {
+    const idx = nextStationIndex();
+    const walkX = idx >= 0 ? STATIONS[idx].x - 64 : STATIONS[3].x - 64;
+    if (idx <= 1 && idx >= 0) drawFig(walkX, GROUND, npcs.synesius.color);
+    else drawFig(1120, GROUND, npcs.synesius.color);
+  }
+  drawFig(npcs.hypatia.x, GROUND, npcs.hypatia.color);
+  if (flags.beat4Done || flags.ladderDone) {
+    drawFig(npcs.stoic.x, GROUND, npcs.stoic.color);
+    drawFig(npcs.skeptic.x, GROUND, npcs.skeptic.color);
+  }
+  const idx2 = nextStationIndex();
+  if (flags.friarMet && idx2 >= 0) drawMarker(STATIONS[idx2].x, GROUND);
+  drawPerson(player.x, GROUND, player.color, player.facing);
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(20,22,18,0.5)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f4f2ea";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Hypatia of Alexandria", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#d8d2c0";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You have just come ashore at Alexandria. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

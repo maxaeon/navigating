@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mary in the Black and White Room</title>
+<style>
+:root{
+  --page:#12141d;
+  --panel:#1a1e2b;
+  --panel-2:#242a3c;
+  --line:#39415e;
+  --text:#f0f2f7;
+  --muted:#a9b1c4;
+  --candle:#e6c073;
+  --candle-deep:#a8862f;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2d3449}
+button.primary{background:var(--candle); border-color:var(--candle-deep); color:#221a08; font-weight:600}
+button.primary:hover{background:#f0d18e}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--candle); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0e1017; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--candle-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#1e2334; border-color:var(--candle)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--candle); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--candle)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--candle)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#10131c; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--candle)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--candle); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#10131c; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--candle)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--candle); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--candle)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>Mary in the Black and White Room</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>A viewing gallery above a room with no colour in it, and a three line argument that has occupied philosophy of mind for forty years. Mary has lived her whole life in monochrome and is the world's leading authority on colour vision, holding every physical fact about light, eyes, and brains. This morning she walks out and sees a ripe tomato. If she learns something, then there was a fact she did not have, and she had every physical fact. You will watch the step out, hear the three standard replies from people who disagree with each other, and be told what the argument's author later decided about it. Walk with the arrow keys, press E at each marked spot, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you, and advances the evening at each marked spot. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The Analytic Room holds two more stops, in preparation.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Design your own version of the case using a sense other than sight, and say whether it produces the same intuition as strongly. What does the comparison suggest?</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. The ability reply says Mary gains know-how rather than knowledge that something is so. Give an example of each from ordinary life, then say whether what Mary gains fits either cleanly.</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. Jackson rejected his own argument on the grounds that the intuition is produced by how we represent our own experience. Is a strong and widely shared intuition evidence, and if so, how much?</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> If Mary learns something on leaving the room, the argument concludes</p>
+      <label><input type="radio" name="q1" value="That not every fact is a physical fact"> that not every fact is a physical fact</label>
+      <label><input type="radio" name="q1" value="That colour does not exist"> that colour does not exist</label>
+      <label><input type="radio" name="q1" value="That science is unreliable"> that science is unreliable</label>
+
+      <p><strong>2.</strong> The ability reply says</p>
+      <label><input type="radio" name="q2" value="That she gains an ability rather than a fact"> that she gains an ability rather than a fact</label>
+      <label><input type="radio" name="q2" value="That she was never really in the room"> that she was never really in the room</label>
+      <label><input type="radio" name="q2" value="That colour vision cannot be studied"> that colour vision cannot be studied</label>
+
+      <p><strong>3.</strong> What did the argument's author later decide about it?</p>
+      <label><input type="radio" name="q3" value="He rejected it"> he rejected it</label>
+      <label><input type="radio" name="q3" value="He strengthened it"> he strengthened it</label>
+      <label><input type="radio" name="q3" value="He never returned to it"> he never returned to it</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_mary";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: Before the door opens",
+    text: "Mary has spent her life in a room without colour. She has learned every physical fact about light, eyes, and brains, and she has never seen red. Before the argument: will she learn anything new on the day she walks out?",
+    mcq: ["Yes, and it will be something she did not know", "No, she already knows everything there is to know about it", "She will gain an ability rather than a fact", "I am not sure yet"],
+    requireText: true
+  },
+  complete: {
+    title: "Stage 1: Everything physical",
+    text: "The case only works if Mary really has every physical fact, not merely a lot of them. That means every wavelength, every retinal process, every neural pathway, and every word anyone has said about seeing red. Is such a person even possible?",
+    mcq: ["Yes, it is far-fetched but coherent, which is all the argument needs", "No, and the impossibility is what is wrong with the argument", "Possible in principle and never achievable, which does not matter here", "It depends on what counts as a physical fact"],
+    requireText: true
+  },
+  learns: {
+    title: "Stage 2: The step out",
+    text: "The door opens and Mary sees a ripe tomato. Jackson says she learns something. If she does, then there was a fact she lacked, and she had all the physical facts, so not every fact is physical. Where would you resist?",
+    mcq: ["She learns nothing, and only feels as if she does", "She gains a new ability, not a new fact", "She meets an old fact in a new way", "Nowhere, and the conclusion follows"],
+    requireText: true
+  },
+  replies: {
+    title: "Stage 3: The three replies",
+    text: "Three answers are on the table. The ability reply says she gains know-how rather than a fact. The acquaintance reply says she meets something she already knew about. The old fact new guise reply says one fact can be grasped in two ways. Which does the most work?",
+    mcq: ["The ability reply, since knowing how is not knowing that", "The acquaintance reply, since meeting is not learning", "The old fact in a new guise, since it keeps every fact physical", "None of them, since each renames the difficulty"],
+    requireText: true
+  },
+  verdict: {
+    title: "Stage 4: Your verdict",
+    text: "Jackson himself later rejected the argument he became famous for. Write your own verdict on Mary, then say what would have to be true for you to change your mind, and whether anything could show it.",
+    mcq: null,
+    requireText: true,
+    textHint: "Your verdict, and what would move you."
+  }
+};
+
+const quizKeys = [
+  "That not every fact is a physical fact",
+  "That she gains an ability rather than a fact",
+  "He rejected it"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world: the stove-heated room, with marked spots along
+   it, and the desk where the letters are read.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 1420;
+
+const STATIONS = [
+  { x: 400,  name: "the viewing window" },
+  { x: 760,  name: "the door of the room" },
+  { x: 1120, name: "the seminar table" }
+];
+
+const flags = {
+  started: false,
+  firstDone: false,
+  friarMet: false,
+  beat1Done: false,
+  completeDone: false,
+  beat2Done: false,
+  learnsDone: false,
+  beat3Done: false,
+  repliesDone: false,
+  finalDone: false
+};
+let closeView = null;    // "stick" or "wax" fills the view
+
+let paused = false;
+let startTimer = 0;
+let candleLit = true;
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  researcher: { x: 300, color: "#4a5568" }
+};
+const keys = {};
+const record = { verdicts: [] };
+
+/* Snow at the window. */
+const flakes = [];
+for (let i = 0; i < 50; i++) {
+  flakes.push({ x: (i * 137.3) % 1500, y: (i * 91.7) % 500, s: 0.5 + (i % 3) * 0.4, w: (i % 5) - 2 });
+}
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration, help, dialogue, and the modal
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  speechSynthesis.speak(new SpeechSynthesisUtterance(p.title + ". " + p.text));
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.friarMet) return "Walk right. A researcher is standing at the viewing window.";
+  if (!flags.finalDone) return "Walk to the next marked spot and press E there. The questions appear between the spots.";
+  return "The walk is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.close !== undefined) closeView = step.close === false ? null : step.close;
+
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  if (c.tag) record.verdicts.push(c.text);
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+function setObjective(txt) { setObjectiveText(txt); }
+function setObjectiveText(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   The observation gallery above a room without colour
+   ========================================================= */
+function dlgFriar() {
+  flags.friarMet = true;
+  startDlg([
+    { say: "A researcher is standing at a viewing window with a clipboard she is not writing on. Researcher: You are cleared for the gallery, so you may as well know what you are looking at. Her name is Mary, and this is the last morning of the study." },
+    { say: "Researcher: The room is monochrome. Walls, equipment, food, her own gloves. She has never seen a colour, and she has been in there since infancy." },
+    { say: "Researcher: She is also, by a long way, the world's leading authority on colour vision." },
+    { note: true, say: "The case is Frank Jackson's, from a 1982 paper called Epiphenomenal Qualia and a follow-up in 1986. It is usually called the knowledge argument, and it is one of the most discussed arguments in philosophy of mind. Jackson later changed his mind and rejected it." }
+  ], () => {
+    setObjective("Walk right to the viewing window, marked with E, and press E.");
+  });
+}
+function dlgBeat1() {
+  flags.beat1Done = true;
+  startDlg([
+    { say: "Through the glass Mary is at a screen, working. Researcher: Look at what she has. Not a good education. All of it." },
+    { close: "room",
+      say: "Researcher: Every wavelength and its effect on the retina. Every cone cell, every opponent process, every pathway from eye to cortex. Every measurement anyone has taken." },
+    { close: "room",
+      say: "Researcher: And everything anyone has ever written or said about seeing red, including the poems. She has the complete physical account of what happens when a person looks at a ripe tomato." },
+    { close: false,
+      say: "Researcher: The case only works if that is literal. Not most of the facts. Every physical fact there is.",
+      choices: [
+        { tag: "fanciful", text: "Nobody could actually be in that position.",
+          reply: ["Researcher: Certainly not. It is a thought experiment, and it only has to be coherent, not achievable. If you think the impossibility is doing hidden work, that is a real objection and you should hold on to it."] },
+        { tag: "fine", text: "Far-fetched, but I can imagine it clearly enough.",
+          reply: ["Researcher: That is all the argument asks. If it is coherent, we can ask what follows."] }
+      ] }
+  ], () => {
+    openPrompt("complete", () => {
+      flags.completeDone = true;
+      setObjective("Walk to the door of the room, marked with E.");
+    });
+  });
+}
+function dlgBeat2() {
+  flags.beat2Done = true;
+  startDlg([
+    { say: "At the door there is a keypad and a tray with a single tomato in it. Researcher: This morning she walks out. Watch her face rather than the tomato." },
+    { close: "out",
+      say: "The door opens. Mary stops. Researcher: Now. Does she learn anything?" },
+    { close: "out",
+      say: "Researcher: Almost everyone says yes. That she now knows what it is like to see red, and that she did not know it before, however much she knew about it.",
+      choices: [
+        { tag: "learns", text: "Yes. She has just found something out.",
+          reply: ["Researcher: Then follow it through, because the argument is short and it bites. She had every physical fact. She has just learned a fact. So there is a fact that is not physical."] },
+        { tag: "no", text: "No. She only feels as if she has.",
+          reply: ["Researcher: Then you owe an account of the feeling, since it is very strong and very general. Say what is happening if not learning, and you are already giving one of the standard replies."] }
+      ] },
+    { close: false,
+      say: "Researcher: That is the whole argument. Mary knows all the physical facts. Mary learns something on leaving. Therefore not all facts are physical. Three lines, and forty years of literature." },
+    { note: true, say: "Jackson's target was physicalism, the view that everything is physical. The argument's form is simple enough that most of the debate is about which premise to deny, and the answers have divided philosophers of mind ever since." }
+  ], () => {
+    openPrompt("learns", () => {
+      flags.learnsDone = true;
+      setObjective("Walk to the seminar table, marked with E.");
+    });
+  });
+}
+function dlgBeat3() {
+  flags.beat3Done = true;
+  startDlg([
+    { say: "In a side room three colleagues are already arguing over coffee. Researcher: They will each tell you where the argument fails, and they do not agree." },
+    { say: "First colleague: She gains an ability, not a fact. She can now recognize red, imagine red, remember red. That is knowing how, like learning to ride a bicycle, and no new fact about the world is involved." },
+    { say: "Second colleague: She becomes acquainted with something she already knew about. I can know everything about a city from maps and still be struck on arriving. Being struck is not learning a further fact about the city." },
+    { say: "Third colleague: One fact, two ways of grasping it. She always knew that seeing red is a certain brain state, described physically. Now she grasps the same fact from the inside. Same fact, new guise, and physicalism survives." },
+    { say: "Researcher: Notice that all three accept she is changed, and all three deny that anything non-physical has turned up.",
+      choices: [
+        { tag: "works", text: "One of those seems to work.",
+          reply: ["Researcher: Then say which, and be ready for the reply. Each has a literature attacking it, and the ability reply in particular has to explain why what she gains looks so much like information."] },
+        { tag: "renaming", text: "They all sound like renaming the problem.",
+          reply: ["Researcher: A common reaction, and the defenders would say you are the one renaming. The dispute is about whether the difference between knowing about and undergoing is a difference in facts or only in access."] }
+      ] }
+  ], () => {
+    openPrompt("replies", () => {
+      flags.repliesDone = true;
+      setObjective("Press E once more at the table for the last of the morning.");
+    });
+  });
+}
+function dlgClose() {
+  startDlg([
+    { say: "Researcher: One more thing, because students find it useful and philosophers find it awkward. The man who invented the argument stopped believing it." },
+    { say: "Researcher: Jackson decided years later that the physicalist replies were right, and that the strong intuition about Mary was a trick of how we represent our own experience. He published that too." },
+    { say: "Researcher: Which tells you something worth more than the argument. It is possible to build the most discussed case in your field and then follow the objections against yourself." }
+  ], () => {
+    openPrompt("verdict", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+function nextStationIndex() {
+  if (!flags.beat1Done) return 0;
+  if (!flags.completeDone) return -1;
+  if (!flags.beat2Done) return 1;
+  if (!flags.learnsDone) return -1;
+  if (!flags.beat3Done) return 2;
+  if (!flags.repliesDone) return -1;
+  if (!flags.finalDone) return 2;
+  return -1;
+}
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.friarMet) return;
+  const idx = nextStationIndex();
+  if (idx < 0) return;
+  const st = STATIONS[idx];
+  if (Math.abs(player.x - st.x) < 45) {
+    if (idx === 2 && flags.barnsDone) { dlgClose(); return; }
+    [dlgBeat1, dlgBeat2, dlgBeat3][idx]();
+    return;
+  }
+  setStatus("The next spot, " + st.name + ", is marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_mary", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    if (r.response) parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "Mary in the Black and White Room, Report\n";
+  text += "===========================================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    if (r.response) text += "Response: " + r.response + "\n";
+    text += "-".repeat(50);
+  });
+  text += "\n\nDiscussion questions:\n";
+  text += "1. The whole-series objection.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Modern cosmology and the first cause.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. The gap between a first cause and the God of worship.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Marys_Room_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!REDUCED_MOTION) {
+    flakes.forEach(f => {
+      f.y += (14 + f.s * 16) * dt;
+      f.x += f.w * 6 * dt;
+      if (f.y > 500) { f.y = -4; f.x = (f.x + 137) % 1700; }
+    });
+  }
+  if (!flags.started || paused) return;
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right along the gallery.");
+      });
+    }
+  }
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+  if (!flags.friarMet && !dialogueActive && player.x > 240) {
+    player.x = Math.min(player.x, 240);
+    dlgFriar();
+  }
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawLecturer(x, y) {
+  ctx.save();
+  ctx.translate(x, y);
+  // A modern lecturer: pale jumper, dark trousers, short hair,
+  // and a satchel on one shoulder.
+  ctx.fillStyle = "#3b3b46";
+  ctx.fillRect(-7, -18, 14, 18);
+  ctx.fillRect(-7, -18, 6, 18);
+  ctx.fillStyle = "#8c9bb0";
+  ctx.fillRect(-9, -40, 18, 23);
+  ctx.fillRect(-12, -38, 4, 16);
+  ctx.fillRect(8, -38, 4, 16);
+  ctx.fillStyle = "#c9a98c";
+  ctx.beginPath(); ctx.arc(0, -49, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#4a3f36";
+  ctx.beginPath(); ctx.arc(0, -52, 8, Math.PI, 0); ctx.fill();
+  // The satchel strap and bag.
+  ctx.strokeStyle = "#6b5a45";
+  ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(-7, -40); ctx.lineTo(8, -22); ctx.stroke();
+  ctx.fillStyle = "#7a6750";
+  ctx.fillRect(6, -24, 12, 11);
+  ctx.restore();
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(230,192,115,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 76 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(230,192,115,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 72 + lift);
+}
+
+/* =========================================================
+   Close views. The stick in water and the wax fill the frame
+   while the conversation is looking at them.
+   ========================================================= */
+
+/* A close view is a zoom, not the scene at scale, so it is drawn
+   inside a frame that says as much. */
+function drawCloseFrame(caption) {
+  const pad = 26;
+  ctx.save();
+  ctx.strokeStyle = "rgba(230,221,194,0.55)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(pad, pad, W - pad * 2, H - pad * 2);
+  ctx.fillStyle = "rgba(230,221,194,0.9)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.letterSpacing = "1px";
+  const label = "A CLOSER LOOK";
+  const lw = ctx.measureText(label).width;
+  ctx.fillStyle = "rgba(20,22,31,0.95)";
+  ctx.fillRect(pad + 16, pad - 9, lw + 16, 18);
+  ctx.fillStyle = "rgba(230,221,194,0.9)";
+  ctx.fillText(label, pad + 24, pad + 4);
+  ctx.letterSpacing = "0px";
+  if (caption) {
+    ctx.fillStyle = "#e6ddc2";
+    ctx.font = "15px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText(caption, W / 2, H - pad - 14);
+    ctx.textAlign = "left";
+  }
+  ctx.restore();
+}
+
+function drawRoomClose() {
+  ctx.fillStyle = "#2b2f33";
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = "#3c4044";
+  ctx.fillRect(90, 70, 720, 360);
+  ctx.fillStyle = "#4c5054";
+  ctx.fillRect(90, 330, 720, 100);
+  // Everything she has, stacked on the grey desk.
+  ctx.fillStyle = "#5a5e62";
+  ctx.fillRect(430, 250, 300, 82);
+  ctx.fillStyle = "#8b9094";
+  ctx.fillRect(452, 262, 120, 60);
+  ctx.fillStyle = "#6f7478";
+  for (let i = 0; i < 6; i++) ctx.fillRect(600 + (i % 3) * 34, 252 + Math.floor(i / 3) * 34, 28, 30);
+  // Mary, in grey, working.
+  ctx.fillStyle = "#9aa0a4";
+  ctx.beginPath(); ctx.arc(350, 232, 22, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(330, 254, 40, 78);
+  ctx.fillStyle = "#c6cbcf";
+  ctx.fillRect(318, 262, 12, 48);
+  ctx.fillRect(370, 262, 12, 48);
+  ctx.fillStyle = "rgba(238,242,246,0.75)";
+  ctx.font = "13px 'Segoe UI', sans-serif";
+  ctx.textAlign = "center";
+  ["every wavelength", "every retinal process", "every neural pathway",
+   "everything ever written about red"].forEach((s2, i) => ctx.fillText(s2, 220, 96 + i * 24));
+  ctx.fillText("and no colour anywhere in the room", W / 2, 400);
+  ctx.textAlign = "left";
+  drawCloseFrame("Every physical fact, and none of them seen");
+}
+function drawOutClose() {
+  // The corridor beyond the door, where colour begins.
+  ctx.fillStyle = "#2b2f33";
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = "#3c4044";
+  ctx.fillRect(40, 60, 380, 380);
+  ctx.fillStyle = "#e8eaec";
+  ctx.fillRect(420, 60, 40, 380);
+  const warm = ctx.createLinearGradient(460, 0, 880, 0);
+  warm.addColorStop(0, "#f6efe2");
+  warm.addColorStop(1, "#e8d9bf");
+  ctx.fillStyle = warm;
+  ctx.fillRect(460, 60, 400, 380);
+  // Mary in the doorway, still grey, looking at the one red thing.
+  ctx.fillStyle = "#9aa0a4";
+  ctx.beginPath(); ctx.arc(392, 236, 22, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(372, 258, 40, 86);
+  ctx.fillStyle = "#c6cbcf";
+  ctx.fillRect(360, 266, 12, 52);
+  ctx.fillRect(412, 266, 12, 52);
+  // The tomato on a plain table.
+  ctx.fillStyle = "#b7a98d";
+  ctx.fillRect(600, 320, 170, 12);
+  ctx.fillRect(614, 332, 10, 60);
+  ctx.fillRect(748, 332, 10, 60);
+  ctx.fillStyle = "#c9342b";
+  ctx.beginPath(); ctx.arc(686, 292, 30, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#e0554a";
+  ctx.beginPath(); ctx.arc(676, 282, 11, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#3f7a3a";
+  ctx.fillRect(681, 258, 8, 12);
+  ctx.fillStyle = "rgba(40,36,30,0.8)";
+  ctx.font = "13px 'Segoe UI', sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("the first colour she has ever seen", 686, 400);
+  ctx.textAlign = "left";
+  drawCloseFrame("The step out");
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  if (closeView === "room") { drawRoomClose(); return; }
+  if (closeView === "out") { drawOutClose(); return; }
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // Night outside, lamplight inside.
+  ctx.fillStyle = "#161a26";
+  ctx.fillRect(camX, 0, W, H);
+
+  // A laboratory corridor with a viewing gallery on one side.
+  ctx.fillStyle = "#d6d8da";
+  ctx.fillRect(200, 96, WORLD_W - 300, GROUND - 96);
+  ctx.fillStyle = "#c2c5c8";
+  ctx.fillRect(200, 96, WORLD_W - 300, 14);
+  ctx.fillStyle = "#9aa0a4";
+  ctx.fillRect(200, GROUND - 54, WORLD_W - 300, 5);
+  ctx.fillStyle = "#8d9296";
+  ctx.fillRect(200, GROUND, WORLD_W - 300, H - GROUND);
+  ctx.fillStyle = "#80868a";
+  for (let fx = 200; fx < WORLD_W - 100; fx += 60) ctx.fillRect(fx, GROUND, 4, H - GROUND);
+  // Strip lights along the ceiling.
+  for (let lx = 260; lx < WORLD_W - 160; lx += 150) {
+    ctx.fillStyle = "#f2f4f4";
+    ctx.fillRect(lx, 118, 92, 8);
+    ctx.fillStyle = "rgba(242,244,244,0.10)";
+    ctx.fillRect(lx - 20, 126, 132, 90);
+  }
+
+  // The viewing window into the colourless room.
+  const vw = STATIONS[0].x;
+  ctx.fillStyle = "#6f7478";
+  ctx.fillRect(vw - 130, 168, 260, 176);
+  ctx.fillStyle = "#3c4044";
+  ctx.fillRect(vw - 120, 178, 240, 156);
+  // Inside: grey walls, a grey desk, a screen, and Mary at it.
+  ctx.fillStyle = "#4c5054";
+  ctx.fillRect(vw - 120, 288, 240, 46);
+  ctx.fillStyle = "#5a5e62";
+  ctx.fillRect(vw + 20, 262, 74, 28);
+  ctx.fillStyle = "#8b9094";
+  ctx.fillRect(vw + 26, 268, 62, 16);
+  ctx.fillStyle = "#9aa0a4";
+  ctx.beginPath(); ctx.arc(vw - 30, 250, 11, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(vw - 39, 261, 18, 30);
+  ctx.fillStyle = "#c6cbcf";
+  ctx.fillRect(vw - 44, 264, 6, 20);
+  ctx.fillRect(vw - 22, 264, 6, 20);
+  ctx.fillStyle = "rgba(255,255,255,0.06)";
+  ctx.fillRect(vw - 120, 178, 240, 60);
+
+  // The door of the room, with a keypad and a tray.
+  const dr = STATIONS[1].x;
+  ctx.fillStyle = "#6f7478";
+  ctx.fillRect(dr - 52, GROUND - 176, 104, 176);
+  ctx.fillStyle = "#e8eaec";
+  ctx.fillRect(dr - 42, GROUND - 166, 84, 166);
+  ctx.fillStyle = "#9aa0a4";
+  ctx.fillRect(dr + 26, GROUND - 92, 8, 16);
+  ctx.fillStyle = "#3c4044";
+  ctx.fillRect(dr + 56, GROUND - 120, 22, 30);
+  ctx.fillStyle = "#7fd08a";
+  ctx.fillRect(dr + 61, GROUND - 114, 12, 5);
+  // The tray, and the one thing on it that has a colour.
+  ctx.fillStyle = "#9aa0a4";
+  ctx.fillRect(dr - 96, GROUND - 44, 54, 8);
+  ctx.fillRect(dr - 92, GROUND - 36, 6, 36);
+  ctx.fillRect(dr - 52, GROUND - 36, 6, 36);
+  ctx.fillStyle = "#c9342b";
+  ctx.beginPath(); ctx.arc(dr - 69, GROUND - 54, 12, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#3f7a3a";
+  ctx.fillRect(dr - 71, GROUND - 68, 5, 6);
+
+  // The seminar table, with three chairs and cups.
+  const st = STATIONS[2].x;
+  ctx.fillStyle = "#7a6a58";
+  ctx.fillRect(st - 84, GROUND - 52, 168, 10);
+  ctx.fillRect(st - 74, GROUND - 42, 8, 42);
+  ctx.fillRect(st + 66, GROUND - 42, 8, 42);
+  [-52, 0, 52].forEach(o => {
+    ctx.fillStyle = "#6a6f74";
+    ctx.fillRect(st + o - 26, GROUND - 34, 20, 6);
+    ctx.fillRect(st + o - 24, GROUND - 28, 5, 28);
+    ctx.fillRect(st + o - 11, GROUND - 28, 5, 28);
+    ctx.fillRect(st + o - 11, GROUND - 62, 5, 30);
+    ctx.fillStyle = "#eef1f2";
+    ctx.fillRect(st + o - 6, GROUND - 62, 11, 10);
+  });
+
+  const idx = nextStationIndex();
+  const dX = !flags.friarMet ? npcs.researcher.x
+    : idx >= 0 ? STATIONS[idx].x - 64
+    : STATIONS[2].x - 64;
+  drawLecturer(dX, GROUND);
+  if (flags.friarMet && idx >= 0) drawMarker(STATIONS[idx].x, GROUND);
+  drawPerson(player.x, GROUND, player.color, player.facing);
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(14,16,23,0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f0f2f7";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Mary in the Black and White Room", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#a9b1c4";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You are at the entrance to an observation gallery. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

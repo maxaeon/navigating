@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Physician's Question</title>
+<style>
+:root{
+  --page:#12141d;
+  --panel:#1a1e2b;
+  --panel-2:#242a3c;
+  --line:#39415e;
+  --text:#f0f2f7;
+  --muted:#a9b1c4;
+  --candle:#e6c073;
+  --candle-deep:#a8862f;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2d3449}
+button.primary{background:var(--candle); border-color:var(--candle-deep); color:#221a08; font-weight:600}
+button.primary:hover{background:#f0d18e}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--candle); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0e1017; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--candle-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#1e2334; border-color:var(--candle)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--candle); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--candle)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--candle)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#10131c; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--candle)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--candle); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#10131c; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--candle)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--candle); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--candle)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>The Physician's Question</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>A physician's rooms somewhere in the Roman east, around the year 200. Sextus Empiricus practiced medicine and wrote the fullest surviving account of ancient skepticism, which was not a claim that nothing can be known but a practice, the setting of arguments against arguments until judgment lifts. He agreed to see you between patients on the condition that you bring him something you are certain of. Walk with the arrow keys, press E at each marked stop, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you, and advances the visit at each marked stop. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The Roman World is complete. The world map continues north and east.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. The oldest objection to skepticism is that it refutes itself, since claiming that nothing can be known is itself a knowledge claim. Explain how Sextus tries to escape this, and judge whether the escape works.</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. Modern life requires acting on contested claims constantly, from medical decisions to voting. Describe how someone could use skeptical method responsibly in one such decision, and where the method would have to stop.</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. Sextus promises tranquility as the result of suspending judgment, while the Stoics promise it as the result of correct judgment. Both cannot be describing the same mind. What would count as evidence for one over the other?</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> Ancient skepticism as Sextus describes it is</p>
+      <label><input type="radio" name="q1" value="A practice of setting arguments against arguments until judgment is suspended"> a practice of setting arguments against arguments until judgment is suspended</label>
+      <label><input type="radio" name="q1" value="The doctrine that knowledge is impossible"> the doctrine that knowledge is impossible</label>
+      <label><input type="radio" name="q1" value="The claim that the senses are always wrong"> the claim that the senses are always wrong</label>
+
+      <p><strong>2.</strong> The Greek terms for suspension of judgment and for the tranquility said to follow it are</p>
+      <label><input type="radio" name="q2" value="Epoche and ataraxia"> epoche and ataraxia</label>
+      <label><input type="radio" name="q2" value="Logos and eudaimonia"> logos and eudaimonia</label>
+      <label><input type="radio" name="q2" value="Aporia and arete"> aporia and arete</label>
+
+      <p><strong>3.</strong> Asked how a skeptic can live without beliefs, Sextus answers that skeptics follow</p>
+      <label><input type="radio" name="q3" value="Appearances, custom, and training, without claiming these reveal how things really are"> appearances, custom, and training, without claiming these reveal how things really are</label>
+      <label><input type="radio" name="q3" value="The most probable opinion in each case"> the most probable opinion in each case</label>
+      <label><input type="radio" name="q3" value="Nothing, since skeptics withdraw from ordinary life"> nothing, since skeptics withdraw from ordinary life</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_sextus";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: In the waiting room",
+    text: "He asked you to bring something you are certain of. Before you go in, what kind of thing do you hold with the most confidence?",
+    mcq: ["Mathematical and logical truths", "What I can plainly perceive right now", "Well established scientific results", "Basic moral claims, such as that cruelty is wrong", "Nothing, if I am honest about it"],
+    requireText: true
+  },
+  equipollence: {
+    title: "Stage 1: Equal weights",
+    text: "Sextus claims that for any argument, an argument of equal strength can be set against it, and that this discovery is what drives suspension. Is that claim plausible?",
+    mcq: ["No, since plenty of questions have decisively better arguments on one side", "Sometimes, in contested areas, and not in settled ones", "More often than we admit, since we rarely construct the other side honestly", "Yes, and our confidence usually measures our effort rather than the evidence"],
+    requireText: true
+  },
+  modes: {
+    title: "Stage 2: The modes",
+    text: "The skeptics collected standard patterns of disagreement, called modes. Perception varies with the animal, the person, the sense, and the condition of the observer, and any standard offered to settle the variation itself needs a standard. Which mode has the most force against you?",
+    mcq: ["The variation between observers, since no one is a neutral instrument", "The regress of standards, since every criterion needs another one", "The disagreement among experts, which never fully resolves", "None, since converging evidence overcomes all of them"],
+    requireText: true
+  },
+  living: {
+    title: "Stage 3: How to live without judging",
+    text: "The standing objection is that suspending judgment makes life impossible. Sextus answers that skeptics follow appearances, custom, and training, acting on how things seem without asserting how they are. Is that a real answer or a relabeling of ordinary belief?",
+    mcq: ["A real answer, since acting on appearances differs from asserting truth", "A relabeling, since acting on something is believing it in every sense that matters", "Real for some beliefs and a relabeling for others", "It does not matter, since the practical outcome is identical either way"],
+    requireText: true
+  },
+  test: {
+    title: "Stage 4: The thing you brought",
+    text: "Return to what you named at the start as your most certain conviction. Construct the strongest case you can against it, then say honestly what happened to your confidence, and whether the exercise moved you toward suspension or made you more sure.",
+    mcq: null,
+    requireText: true,
+    textHint: "The conviction, the case against it, and the effect."
+  }
+};
+
+const quizKeys = [
+  "A practice of setting arguments against arguments until judgment is suspended",
+  "Epoche and ataraxia",
+  "Appearances, custom, and training, without claiming these reveal how things really are"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world: the street outside a physician's rooms, the
+   waiting room, and the consulting room behind it.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 1450;
+
+const STATIONS = [
+  { x: 430,  name: "the waiting bench" },
+  { x: 760,  name: "the instrument table" },
+  { x: 1060, name: "the scales" },
+  { x: 1060, name: "the scales" }
+];
+
+const flags = {
+  started: false,
+  firstDone: false,
+  friarMet: false,
+  beat1Done: false,
+  equipollenceDone: false,
+  beat2Done: false,
+  modesDone: false,
+  beat3Done: false,
+  livingDone: false,
+  beat4Done: false,
+  finalDone: false
+};
+let paused = false;
+let startTimer = 0;
+let tilt = 0;          // the scales, which balance as the argument does
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  patient: { x: 300, color: "#6b8f4f" },
+  sextus:  { x: 1160, color: "#4f7a76" }
+};
+const keys = {};
+const record = { verdicts: [] };
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration, help, dialogue, and the modal
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  speechSynthesis.speak(new SpeechSynthesisUtterance(p.title + ". " + p.text));
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.friarMet) return "Walk right. Someone is waiting on the bench inside.";
+  if (!flags.finalDone) return "Walk to the next marked stop and press E there. The questions appear between the stops.";
+  return "The walk is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  if (c.tag) record.verdicts.push(c.text);
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+function setObjective(txt) { setObjectiveText(txt); }
+function setObjectiveText(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   The consultation
+   ========================================================= */
+function dlgFriar() {
+  flags.friarMet = true;
+  startDlg([
+    { say: "A woman waiting on the bench moves her basket to make room. Patient: He will be a while. He is setting a shoulder. You are the one who came to argue, not to be treated." },
+    { say: "Patient: A warning, kindly meant. He does not argue to win. He argues both sides until you cannot tell which one is his, and people find that more unsettling than being beaten." },
+    { note: true, say: "Sextus Empiricus, who wrote around 200, was a physician as well as a philosopher, and his surname reflects the Empiric school of medicine, which distrusted hidden causes and relied on observed patterns. His Outlines of Pyrrhonism is our fullest surviving account of ancient skepticism." }
+  ], () => {
+    setObjective("Walk right to the waiting bench, marked with E, and press E there.");
+  });
+}
+function dlgBeat1() {
+  flags.beat1Done = true;
+  startDlg([
+    { say: "The physician comes through drying his hands, and does not sit. Sextus: You brought me a certainty. Before you produce it, let me tell you what I will do with it, so you cannot say afterward that I tricked you." },
+    { say: "Sextus: I will not tell you that you are wrong. I have no doctrine that you are wrong. I will look for an argument of equal weight on the other side." },
+    { say: "If I find one, and the two stand level, you will notice something happen on its own. Your judgment lifts off. We call that suspension." },
+    { say: "Sextus: And here is the part that surprises people. What follows suspension is not distress but quiet. A painter named Apelles was trying to paint the foam on a horse's mouth and failed and failed, and finally threw his sponge at the picture in disgust, and the mark it made was the foam." },
+    { say: "That is how tranquility arrived for us. We were chasing certainty, we gave up in frustration, and quiet came in behind the failure." }
+  ], () => {
+    openPrompt("equipollence", () => {
+      flags.equipollenceDone = true;
+      setObjective("Walk to the instrument table, marked with E, and press E there.");
+    });
+  });
+}
+function dlgBeat2() {
+  flags.beat2Done = true;
+  startDlg([
+    { say: "At the table he lays out a bronze probe and a cup of water, and stands the probe in the cup." },
+    { say: "Sextus: The probe is bent and the probe is straight. Do not answer quickly. I am not asking which. I am asking what would settle it." },
+    { say: "Sextus: You will say that touch corrects sight. Then touch is your standard. Who appointed it? If you say reason appoints it, then reason is your standard, and reason is what is being disputed." },
+    { say: "Every standard offered needs a standard behind it, and either you stop somewhere without justification or you go on forever." },
+    { say: "Sextus: We collected these patterns into modes, and they are ordinary once you see them. The same water is warm to a cold hand and cool to a hot one." },
+    { say: "Honey seems sweet to me and bitter to a man with jaundice. Neither of us is placed to judge our own case, and no third person stands outside all conditions to judge for us." },
+    { note: true, say: "The modes, or tropes, are the standard patterns of opposition, collected by Aenesidemus in ten and later reduced by Agrippa to five, including disagreement, infinite regress, relativity, hypothesis, and circularity. Agrippa's regress, hypothesis, and circularity are still discussed in modern epistemology as the problem of the criterion." }
+  ], () => {
+    openPrompt("modes", () => {
+      flags.modesDone = true;
+      setObjective("Walk to the scales, marked with E, and press E there.");
+    });
+  });
+}
+function dlgBeat3() {
+  flags.beat3Done = true;
+  startDlg([
+    { say: "He stops at a set of scales on the counter and puts a weight in each pan until they hang level. Sextus: Now the objection everyone brings, and they are right to bring it." },
+    { say: "If you suspend judgment about everything, how do you live? How do you practice medicine? Why do you not walk off a cliff?" },
+    { say: "Sextus: Because suspension is about how things are, not about how they appear. Honey appears sweet to me and I eat it. I do not claim it is sweet in its own nature." },
+    { say: "I follow appearances, the guidance of nature, the pull of feeling, the customs and laws I was raised under, and the training of my craft. That is enough to live by, and it commits me to nothing about hidden reality." },
+    { say: "Sextus: And when a patient is in front of me I treat according to what has been observed to work, which is what my school of medicine holds anyway. My skepticism costs the patient nothing. It costs me only my certainty, and I miss that less than I expected to." },
+    { note: true, say: "Whether Sextus can consistently act while suspending judgment is the central and still unresolved question about ancient skepticism, sometimes called the problem of apraxia. Interpreters divide over whether he suspends only theoretical judgments about hidden natures, or belief of every kind." }
+  ], () => {
+    openPrompt("living", () => {
+      flags.livingDone = true;
+      setObjective("Press E once more at the scales for the last word.");
+    });
+  });
+}
+function dlgClose() {
+  startDlg([
+    { say: "Sextus: You never showed me your certainty. I suspect you have been quietly arguing against it since you sat down, which is what I would have done. So take the exercise with you rather than leaving it here." },
+    { say: "Sextus: One caution before you go, because my own students misuse this. I do not teach that all positions are equally good, and I do not offer suspension as a way out of the labor of thinking." },
+    { say: "It arrives only after you have built the strongest case on both sides and found them level. Anyone who claims to have suspended judgment without doing that work has not suspended anything. They have only stopped." },
+    { note: true, say: "Ancient skepticism reached later philosophy through the rediscovery of Sextus in the sixteenth century, shaping Montaigne and, through him, the doubt with which Descartes opens his Meditations. The road out of this region leads toward that argument." }
+  ], () => {
+    openPrompt("test", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+function nextStationIndex() {
+  if (!flags.beat1Done) return 0;
+  if (!flags.equipollenceDone) return -1;
+  if (!flags.beat2Done) return 1;
+  if (!flags.modesDone) return -1;
+  if (!flags.beat3Done) return 2;
+  if (!flags.livingDone) return -1;
+  if (!flags.finalDone) return 3;
+  return -1;
+}
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.friarMet) return;
+  const idx = nextStationIndex();
+  if (idx < 0) return;
+  const st = STATIONS[idx];
+  if (Math.abs(player.x - st.x) < 48) {
+    if (idx === 0) { dlgBeat1(); return; }
+    if (idx === 1) { dlgBeat2(); return; }
+    if (idx === 2) { dlgBeat3(); return; }
+    if (idx === 3 && flags.livingDone && !flags.finalDone) { dlgClose(); return; }
+    return;
+  }
+  setStatus("The next stop, " + st.name + ", is marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_sextus", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    if (r.response) parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "The Physician Question, Report\n";
+  text += "==============================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    if (r.response) text += "Response: " + r.response + "\n";
+    text += "-".repeat(50);
+  });
+  text += "\n\nDiscussion questions:\n";
+  text += "1. The self-refutation objection.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Mackie's question and the best reply.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. Two routes to tranquility compared.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Physicians_Question_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!flags.started || paused) return;
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right, in through the physician door and past the waiting bench.");
+      });
+    }
+  }
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  player.x += player.vx * dt;
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+  if (!flags.friarMet && !dialogueActive && player.x > 250) {
+    player.x = Math.min(player.x, 250);
+    dlgFriar();
+  }
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawFriar(x, y) {
+  ctx.save();
+  ctx.translate(x, y);
+  // The white tunic.
+  ctx.fillStyle = "#e8e4d8";
+  ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-8, -44); ctx.lineTo(8, -44); ctx.lineTo(15, 0); ctx.lineTo(-15, 0);
+  ctx.closePath(); ctx.fill();
+  // The black cloak over the shoulders.
+  ctx.fillStyle = "#2c2c33";
+  ctx.beginPath();
+  ctx.moveTo(-8, -44); ctx.lineTo(8, -44); ctx.lineTo(12, -14); ctx.lineTo(-12, -14);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = "rgba(40,40,50,0.9)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.stroke();
+  ctx.restore();
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(230,192,115,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 76 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(230,192,115,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 72 + lift);
+}
+function drawCandle(x, y) {
+  const fl = REDUCED_MOTION ? 0 : Math.sin(t * 7 + x) * 1.5;
+  ctx.fillStyle = "#d8d2c2";
+  ctx.fillRect(x - 3, y - 16, 6, 16);
+  ctx.fillStyle = "#ffb84d";
+  ctx.beginPath();
+  ctx.ellipse(x, y - 21 + fl * 0.4, 3, 6 + fl, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(255,184,77,0.12)";
+  ctx.beginPath();
+  ctx.arc(x, y - 18, 30, 0, Math.PI * 2);
+  ctx.fill();
+}
+function drawFig(x, y, color, scale) {
+  const s = scale || 1;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(s, s);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -50, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-8, -43); ctx.lineTo(8, -43); ctx.lineTo(13, 0); ctx.lineTo(-13, 0);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, "#6f92ad");
+  sky.addColorStop(0.7, "#b8bda8");
+  sky.addColorStop(1, "#cdc3a2");
+  ctx.fillStyle = sky;
+  ctx.fillRect(camX, 0, W, H);
+  ctx.fillStyle = "#c0b490";
+  ctx.fillRect(camX, GROUND, W, H - GROUND);
+  ctx.fillStyle = "#b0a37d";
+  ctx.fillRect(camX, GROUND, W, 7);
+
+  // The rooms, plastered walls under a tile roof, open at the street.
+  ctx.fillStyle = "#cfc4a8";
+  ctx.fillRect(300, 176, 1120, GROUND - 176);
+  ctx.fillStyle = "#a8613f";
+  ctx.fillRect(286, 158, 1148, 20);
+  // The arch dividing the waiting room from the consulting room.
+  ctx.fillStyle = "#bdb094";
+  ctx.fillRect(596, 176, 22, GROUND - 176);
+  ctx.fillRect(650, 176, 22, GROUND - 176);
+  ctx.fillStyle = "#bdb094";
+  ctx.beginPath();
+  ctx.arc(634, 262, 40, Math.PI, 0);
+  ctx.lineWidth = 10;
+  ctx.strokeStyle = "#bdb094";
+  ctx.stroke();
+  // A shuttered window in the consulting room.
+  ctx.fillStyle = "#8a7550";
+  ctx.fillRect(1240, 214, 96, 76);
+  ctx.fillStyle = "#dbe6ea";
+  ctx.fillRect(1248, 222, 80, 60);
+  ctx.fillStyle = "#8a7550";
+  ctx.fillRect(1286, 214, 5, 76);
+
+  // The waiting bench.
+  ctx.fillStyle = "#8a7550";
+  ctx.fillRect(STATIONS[0].x - 56, GROUND - 30, 112, 9);
+  ctx.fillRect(STATIONS[0].x - 50, GROUND - 21, 8, 21);
+  ctx.fillRect(STATIONS[0].x + 42, GROUND - 21, 8, 21);
+
+  // The instrument table, with the probe standing in a cup of water.
+  ctx.fillStyle = "#7a6444";
+  ctx.fillRect(STATIONS[1].x - 60, GROUND - 52, 120, 8);
+  ctx.fillRect(STATIONS[1].x - 52, GROUND - 44, 8, 44);
+  ctx.fillRect(STATIONS[1].x + 44, GROUND - 44, 8, 44);
+  ctx.fillStyle = "#b9c9cf";
+  ctx.fillRect(STATIONS[1].x + 4, GROUND - 78, 30, 26);
+  ctx.fillStyle = "#9fb6c0";
+  ctx.fillRect(STATIONS[1].x + 4, GROUND - 70, 30, 18);
+  // The probe, drawn with the break at the waterline that refraction gives it.
+  ctx.strokeStyle = "#c9b060";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(STATIONS[1].x + 10, GROUND - 102);
+  ctx.lineTo(STATIONS[1].x + 17, GROUND - 70);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(STATIONS[1].x + 17, GROUND - 70);
+  ctx.lineTo(STATIONS[1].x + 29, GROUND - 54);
+  ctx.stroke();
+  // Bronze instruments laid out in a row.
+  ctx.fillStyle = "#b08d4a";
+  [-46, -36, -26].forEach(dx => ctx.fillRect(STATIONS[1].x + dx, GROUND - 58, 3, 14));
+
+  // The counter and the scales, hanging level.
+  ctx.fillStyle = "#7a6444";
+  ctx.fillRect(STATIONS[2].x - 70, GROUND - 56, 150, 9);
+  ctx.fillRect(STATIONS[2].x - 62, GROUND - 47, 9, 47);
+  ctx.fillRect(STATIONS[2].x + 62, GROUND - 47, 9, 47);
+  const sway = REDUCED_MOTION ? 0 : Math.sin(t * 1.4) * 0.04;
+  const beam = tilt + sway;
+  ctx.save();
+  ctx.translate(STATIONS[2].x, GROUND - 128);
+  ctx.strokeStyle = "#8a7550";
+  ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(0, 72); ctx.lineTo(0, 0); ctx.stroke();
+  ctx.rotate(beam);
+  ctx.strokeStyle = "#c9a648";
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(-46, 0); ctx.lineTo(46, 0); ctx.stroke();
+  [-46, 46].forEach(px => {
+    ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, 22); ctx.stroke();
+    ctx.fillStyle = "#c9a648";
+    ctx.beginPath();
+    ctx.ellipse(px, 26, 15, 6, 0, 0, Math.PI);
+    ctx.fill();
+  });
+  ctx.restore();
+
+  // People.
+  if (!flags.friarMet) drawFig(npcs.patient.x, GROUND, npcs.patient.color);
+  else drawFig(STATIONS[0].x + 78, GROUND, npcs.patient.color);
+  const idx = nextStationIndex();
+  const sx = flags.friarMet && idx >= 0 ? STATIONS[idx].x + 74 : npcs.sextus.x;
+  drawFig(Math.min(sx, 1320), GROUND, npcs.sextus.color);
+  if (flags.friarMet && idx >= 0) drawMarker(STATIONS[idx].x, GROUND);
+  drawPerson(player.x, GROUND, player.color, player.facing);
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(20,20,16,0.5)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f4f2ea";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("The Physician's Question", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#d8d2c0";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You are outside the physician rooms. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

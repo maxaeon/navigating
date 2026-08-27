@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Watch on the Heath</title>
+<style>
+:root{
+  --page:#12141d;
+  --panel:#1a1e2b;
+  --panel-2:#242a3c;
+  --line:#39415e;
+  --text:#f0f2f7;
+  --muted:#a9b1c4;
+  --candle:#e6c073;
+  --candle-deep:#a8862f;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2d3449}
+button.primary{background:var(--candle); border-color:var(--candle-deep); color:#221a08; font-weight:600}
+button.primary:hover{background:#f0d18e}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--candle); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0e1017; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--candle-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#1e2334; border-color:var(--candle)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--candle); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--candle)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--candle)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#10131c; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--candle)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--candle); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#10131c; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--candle)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--candle); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--candle)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>The Watch on the Heath</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>The road beyond the gatehouse climbs onto open heath, and the region's road takes its last jump. It is now around 1800, and your walking companion is William Paley, archdeacon and author, working out the book he will publish in 1802 as Natural Theology. His argument begins with two objects on this ground, a stone and a watch, and with the different answers each one will bear. When you find the watch you will open the case and look at the works while they run. Walk with the arrow keys, press E at each marked spot, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you, and advances the walk at each marked spot. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The next stop in the region is The Problem of Evil, in the infirmary.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. The most discussed modern descendant of the design argument concerns the constants of physics, which appear finely set for the possibility of life. State the fine tuning argument as strongly as you can, then state the strongest reply to it.</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. Hume observed that the universe resembles an animal or a vegetable at least as much as it resembles a machine, and that generation and growth differ from manufacture. How much of the design argument survives if the analogy is changed from watchmaking to gardening?</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. The objection that a designer would itself need a designer resembles the objection to first cause arguments that everything needs a cause. Are the two objections equally strong, and do the two arguments have equally good replies?</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> Paley's inference from the watch rests on</p>
+      <label><input type="radio" name="q1" value="Parts arranged to accomplish a purpose"> parts arranged to accomplish a purpose</label>
+      <label><input type="radio" name="q1" value="The watch's beauty"> the watch's beauty</label>
+      <label><input type="radio" name="q1" value="The rarity of watches on heaths"> the rarity of watches on heaths</label>
+
+      <p><strong>2.</strong> Hume's Dialogues Concerning Natural Religion, containing the classic objections, appeared</p>
+      <label><input type="radio" name="q2" value="Before Paley's book, so the objections were already in print"> before Paley's book, so the objections were already in print</label>
+      <label><input type="radio" name="q2" value="After Paley's book, as a direct reply"> after Paley's book, as a direct reply</label>
+      <label><input type="radio" name="q2" value="In the same year as Darwin's"> in the same year as Darwin's</label>
+
+      <p><strong>3.</strong> Darwin's contribution to this debate was</p>
+      <label><input type="radio" name="q3" value="A mechanism producing adaptation without foresight"> a mechanism producing adaptation without foresight</label>
+      <label><input type="radio" name="q3" value="A proof that organisms are machines"> a proof that organisms are machines</label>
+      <label><input type="radio" name="q3" value="A defense of Paley's analogy"> a defense of Paley's analogy</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_paley";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: On the heath",
+    text: "Before the walk begins, the general question. Can you tell, just by examining an object, whether it was designed?",
+    mcq: ["Yes, design leaves marks you can see", "Only if you know how such things get made", "No, that judgment comes from experience, not the object", "I am not sure yet"],
+    requireText: true
+  },
+  contrivance: {
+    title: "Stage 1: Contrivance",
+    text: "The stone was allowed to have lain there forever, and the watch was not. Paley's word for the difference is contrivance, parts arranged to accomplish an end. Does contrivance prove a contriver?",
+    mcq: ["Yes, parts arranged for a purpose need a designer", "It shows purpose, but not where the purpose came from", "It only seems proven because we have seen watches made", "It works for watches, and not yet for anything else"],
+    requireText: true
+  },
+  objections: {
+    title: "Stage 2: The objections",
+    text: "The objections were in print before Paley wrote, in Hume's Dialogues. The world is not much like a machine. A designer would need a designer. The evidence fits a committee, an apprentice, or a long series of discarded drafts as well as one perfect author. Which objection is strongest?",
+    mcq: ["The world is more like a living thing than a machine", "A designer would need a designer too", "The evidence fits many possible makers", "None, since the eye still needs explaining"],
+    requireText: true
+  },
+  darwin: {
+    title: "Stage 3: After Darwin",
+    text: "In 1859 Darwin supplied what the argument said was impossible, a mechanism that produces contrivance without foresight, variation and selection accumulating over deep time. What does that do to the design argument?",
+    mcq: ["It defeats the argument for living things", "It moves the argument to the laws of physics", "It leaves it standing, since a designer could use the process", "It shows the argument never rested on evidence"],
+    requireText: true
+  },
+  verdict: {
+    title: "Stage 4: The strongest version",
+    text: "State the strongest version of design reasoning still available today, in the living world, in physics, or somewhere else, and then give your own assessment of whether it succeeds.",
+    mcq: null,
+    requireText: true,
+    textHint: "The strongest version, then your verdict."
+  }
+};
+
+const quizKeys = [
+  "Parts arranged to accomplish a purpose",
+  "Before Paley's book, so the objections were already in print",
+  "A mechanism producing adaptation without foresight"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world: the heath road, with four marked spots along it,
+   and a close view of the watch when the case is opened.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 1600;
+
+const STATIONS = [
+  { x: 420,  name: "the stone" },
+  { x: 740,  name: "the watch" },
+  { x: 1060, name: "the stile" },
+  { x: 1360, name: "the field gate" }
+];
+
+const flags = {
+  started: false,
+  firstDone: false,       // stage 0
+  friarMet: false,        // Paley joins the walk
+  way1Done: false,        // the stone
+  way2Done: false,        // the watch, with the case opened
+  contrivanceDone: false, // stage 1
+  way3Done: false,        // the stile, the objections
+  objectionsDone: false,  // stage 2
+  way4Done: false,        // the gate, after Darwin
+  darwinDone: false,      // stage 3
+  finalDone: false
+};
+let paused = false;
+let startTimer = 0;
+let watchView = false;    // the opened case fills the view
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  paley: { x: 300, color: "#3d3d33" }
+};
+const keys = {};
+const record = { verdicts: [] };
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration, help, dialogue, and the modal
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  speechSynthesis.speak(new SpeechSynthesisUtterance(p.title + ". " + p.text));
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.friarMet) return "Walk right. Paley joins the walk a little way along the road.";
+  if (!flags.finalDone) return "Walk to the next marked spot and press E there. The questions appear between the spots.";
+  return "The walk is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.watch !== undefined) watchView = step.watch;
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  if (c.tag) record.verdicts.push(c.text);
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+function setObjective(txt) { setObjectiveText(txt); }
+function setObjectiveText(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   The walk's conversations. A step with watch true opens the
+   case across the whole view, and watch false closes it.
+   ========================================================= */
+function dlgFriar() {
+  flags.friarMet = true;
+  startDlg([
+    { say: "A stout clergyman with a walking stick falls in beside you where the road leaves the wall. Paley: A good morning for it." },
+    { say: "I am Paley, archdeacon of Carlisle, and I am walking through an argument for a book I am writing, which is the only reliable way to test one. You can be my reader. Readers interrupt, so feel free to interrupt." },
+    { note: true, say: "The region's road has made its last jump. William Paley, 1743 to 1805, published Natural Theology in 1802, opening with the comparison you are about to walk through. The book was standard reading for decades, and Charles Darwin studied it closely as a student." }
+  ], () => {
+    setObjective("Walk right to the first marked spot, the stone, and press E there.");
+  });
+}
+function dlgWay1() {
+  flags.way1Done = true;
+  startDlg([
+    { say: "Paley stops and taps a stone with his stick. Paley: Suppose I hit my foot against this stone and asked how it came to be there." },
+    { say: "I might answer that for anything I knew, it had always been there. And the answer, whatever its faults, would not be absurd. The stone demands no explanation from us." },
+    { say: "Paley: Keep that answer with you as we go. The whole of my argument is that there is a kind of object for which that answer stops working." }
+  ], () => {
+    setObjective("Walk to the next marked spot. Something is catching the light on the path.");
+  });
+}
+function dlgWay2() {
+  flags.way2Done = true;
+  startDlg([
+    { say: "On the path lies a pocket watch, its chain broken. Paley picks it up, listens, and smiles. Paley: Still running. Now suppose I had found this watch on the ground and asked the same question, how it came to be there." },
+    { say: "Could I give the stone's answer, that for anything I knew it had always been there? Open the case with me and say why not." },
+    { watch: true,
+      say: "The case opens, and the works turn under your eyes. Paley: Look at what any answer has to account for. Brass wheels, cut into teeth that catch one another, so no wheel turns without turning the next." },
+    { say: "A spring for the motion, a balance for the measure of it, a glass over the face where metal would have hidden the hour. Every part is shaped, sized, and placed toward one end, the marking of time. Change the parts, or their sizes, or their order, and the end fails." },
+    { watch: true,
+      say: "Paley: What separates this from the stone?",
+      choices: [
+        { text: "The parts are arranged so that together they accomplish an end.",
+          reply: ["Paley: That is the whole of it, and I call it contrivance. The inference, I say, is inevitable. The watch must have had a maker, an artificer who comprehended its construction and designed its use, whether or not we ever meet him, and whether or not it sometimes runs wrong."] },
+        { text: "The watch is rarer than stones.",
+          reply: ["Paley: Rarity is nothing. A strange stone is still a stone. What matters is that the parts are arranged so that together they accomplish an end, and I call that contrivance. From contrivance, I say, the inference to a contriver is inevitable, whether or not we ever meet him."] }
+      ] },
+    { watch: false,
+      say: "Paley closes the case and hands you the watch. Paley: Now the step my book is for. The eye you are reading me with is an instrument for seeing, just as a telescope is. Its parts are fitted to that purpose more finely than any watch." },
+    { say: "If contrivance in the watch proves an artificer, what does contrivance in nature prove? That is my argument. Attack it before the world does." },
+    { note: true, say: "This is the opening of Natural Theology, closely adapted. Paley's inference runs from contrivance, parts arranged to accomplish an end, to an artificer, and his book then catalogs contrivance in living things for three hundred pages, with the eye as the leading case." }
+  ], () => {
+    openPrompt("contrivance", () => {
+      flags.contrivanceDone = true;
+      setObjective("Walk to the stile, marked with E.");
+    });
+  });
+}
+function dlgWay3() {
+  flags.way3Done = true;
+  startDlg([
+    { say: "At the stile Paley sits, and his manner sharpens. Paley: I will tell you what my reviewers will say, because a Scotsman said it all before I ever took up my pen, in dialogues printed after his death." },
+    { say: "First, that my analogy limps. The world is not much like a watch. It grows, it reproduces, it repairs itself. It resembles an animal, or a vegetable, more than an engine, and no one infers a watchmaker from a cabbage." },
+    { say: "Paley: Second, that my artificer explains nothing, since a mind able to design a world is at least as much in need of explanation as the world. And third, that even granting a designer, the evidence cannot tell one author from a committee, or a master from an apprentice working through discarded drafts. The workmanship, they will say, does not certify the workman." },
+    { note: true, say: "All three objections appear in David Hume's Dialogues Concerning Natural Religion, published in 1779, more than twenty years before Natural Theology. Paley knew the arguments and wrote anyway. Whether his book answers Hume or ignores him is still debated." }
+  ], () => {
+    openPrompt("objections", () => {
+      flags.objectionsDone = true;
+      setObjective("Walk to the field gate, marked with E.");
+    });
+  });
+}
+function dlgWay4() {
+  flags.way4Done = true;
+  startDlg([
+    { say: "At the field gate Paley leans and looks over the pasture. Paley: Whatever the philosophers say, I hold one thing with confidence. Contrivance must have a cause somewhere." },
+    { say: "Show me a process with no mind in it that shapes an eye to see, and I will surrender the living world to it. Until then, my watch keeps my argument." },
+    { note: true, say: "In 1859 Charles Darwin published On the Origin of Species. He had admired Paley's book as a student, and he supplied the very thing Paley asked for, a process with no mind in it that shapes instruments. Variation, inheritance, and selection build up over vast stretches of time, and they produce contrivance without foresight. Debate since has moved along two lines, whether selection fully discharges the living cases, and whether design reasoning survives by moving to the physical constants that make selection possible at all." },
+    { say: "Paley: And if such a process were shown to me? Then I would ask what shaped a world in which such a process runs, and we would walk this heath again." },
+    { say: "An argument this old rarely dies from a single objection. It moves to new ground." }
+  ], () => {
+    openPrompt("darwin", () => {
+      flags.darwinDone = true;
+      setObjective("Press E once more at the gate for the end of the walk.");
+    });
+  });
+}
+function dlgClose() {
+  startDlg([
+    { say: "Paley returns the watch to his coat. Paley: Keep the habit, whichever side you land on. When you meet an arrangement of parts that accomplishes an end, ask what the arrangement asks of you." },
+    { say: "Sometimes the answer is a maker. Sometimes it is a process. The failure is to stop asking." }
+  ], () => {
+    openPrompt("verdict", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+function nextStationIndex() {
+  if (!flags.way1Done) return 0;
+  if (!flags.way2Done) return 1;
+  if (!flags.contrivanceDone) return -1;
+  if (!flags.way3Done) return 2;
+  if (!flags.objectionsDone) return -1;
+  if (!flags.way4Done) return 3;
+  if (!flags.darwinDone) return -1;
+  if (!flags.finalDone) return 3;
+  return -1;
+}
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.friarMet) return;
+  const idx = nextStationIndex();
+  if (idx < 0) return;
+  const st = STATIONS[idx];
+  if (Math.abs(player.x - st.x) < 45) {
+    if (idx === 0) { dlgWay1(); return; }
+    if (idx === 1) { dlgWay2(); return; }
+    if (idx === 2) { dlgWay3(); return; }
+    if (idx === 3 && !flags.way4Done) { dlgWay4(); return; }
+    if (idx === 3 && flags.darwinDone && !flags.finalDone) { dlgClose(); return; }
+    return;
+  }
+  setStatus("The next spot, " + st.name + ", is marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_paley", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    if (r.response) parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "The Watch on the Heath, Report\n";
+  text += "==============================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    if (r.response) text += "Response: " + r.response + "\n";
+    text += "-".repeat(50);
+  });
+  text += "\n\nDiscussion questions:\n";
+  text += "1. Fine tuning, stated and answered.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. From watchmaking to gardening.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. The two regress objections compared.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Watch_on_the_Heath_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!flags.started || paused) return;
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right along the heath road. Someone is coming up behind you.");
+      });
+    }
+  }
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+  if (!flags.friarMet && !dialogueActive && player.x > 260) {
+    player.x = Math.min(player.x, 260);
+    dlgFriar();
+  }
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawPaley(x, y) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = "#3d3d33";
+  ctx.beginPath(); ctx.arc(0, -50, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-8, -43); ctx.lineTo(8, -43); ctx.lineTo(14, 0); ctx.lineTo(-14, 0);
+  ctx.closePath(); ctx.fill();
+  // The broad hat and the stick.
+  ctx.fillStyle = "#2c2c24";
+  ctx.fillRect(-13, -58, 26, 4);
+  ctx.fillRect(-6, -66, 12, 8);
+  ctx.strokeStyle = "#6a5a44";
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(16, -30); ctx.lineTo(20, 0); ctx.stroke();
+  ctx.restore();
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(230,192,115,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 76 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(230,192,115,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 72 + lift);
+}
+/* One wheel of the works. A watch wheel usually carries a small
+   pinion on the same arbor, so each location draws a toothed
+   wheel and, when asked, the pinion stacked over its center. */
+function drawWheel(cx, cy, r, teeth, angle, color, pinionR) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle);
+  ctx.fillStyle = color;
+  for (let i = 0; i < teeth; i++) {
+    ctx.save();
+    ctx.rotate((i / teeth) * Math.PI * 2);
+    ctx.fillRect(-r * 0.07, -r - r * 0.12, r * 0.14, r * 0.18);
+    ctx.restore();
+  }
+  ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#3a3428";
+  ctx.beginPath(); ctx.arc(0, 0, r * 0.8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = color;
+  const spokes = r > 30 ? 4 : 3;
+  for (let i = 0; i < spokes; i++) {
+    ctx.save();
+    ctx.rotate((i / spokes) * Math.PI * 2);
+    ctx.fillRect(-r * 0.06, -r * 0.78, r * 0.12, r * 0.78);
+    ctx.restore();
+  }
+  ctx.beginPath(); ctx.arc(0, 0, Math.max(4, r * 0.14), 0, Math.PI * 2); ctx.fill();
+  if (pinionR) {
+    ctx.fillStyle = "#8a7440";
+    for (let i = 0; i < 6; i++) {
+      ctx.save();
+      ctx.rotate((i / 6) * Math.PI * 2);
+      ctx.fillRect(-pinionR * 0.22, -pinionR - 2, pinionR * 0.44, 3.5);
+      ctx.restore();
+    }
+    ctx.beginPath(); ctx.arc(0, 0, pinionR, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+}
+/* The opened case. The train is drawn as a real one runs. The
+   barrel turns the center wheel, whose arbor carries the minute
+   hand. The center wheel turns the third pinion, the third wheel
+   turns the fourth pinion, and the fourth arbor drives the
+   second hand, sixty times the minute hand's rate. A small pair
+   of motion wheels behind the hands gears the hour hand down to
+   a twelfth of the minute hand. Every mesh below turns at the
+   ratio its radii dictate, in the direction the mesh dictates. */
+
+/* A close view is a zoom, not the scene at scale, so it is drawn
+   inside a frame that says as much. */
+function drawCloseFrame(caption) {
+  const pad = 26;
+  ctx.save();
+  ctx.strokeStyle = "rgba(230,221,194,0.55)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(pad, pad, W - pad * 2, H - pad * 2);
+  ctx.fillStyle = "rgba(230,221,194,0.9)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.letterSpacing = "1px";
+  const label = "A CLOSER LOOK";
+  const lw = ctx.measureText(label).width;
+  ctx.fillStyle = "rgba(20,22,31,0.95)";
+  ctx.fillRect(pad + 16, pad - 9, lw + 16, 18);
+  ctx.fillStyle = "rgba(230,221,194,0.9)";
+  ctx.fillText(label, pad + 24, pad + 4);
+  ctx.letterSpacing = "0px";
+  if (caption) {
+    ctx.fillStyle = "#e6ddc2";
+    ctx.font = "15px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText(caption, W / 2, H - pad - 14);
+    ctx.textAlign = "left";
+  }
+  ctx.restore();
+}
+
+function drawWatchView() {
+  ctx.fillStyle = "#141410";
+  ctx.fillRect(0, 0, W, H);
+  const cx = W / 2, cy = 240;
+  const T = REDUCED_MOTION ? 400 : t;
+
+  // Rates. The minute hand makes one turn in four minutes here,
+  // so the second hand is visibly fast and the ratios stay true.
+  const wMin = (Math.PI * 2) / 240;
+  const aMin = 4.7 + wMin * T;                  // the minute hand and center wheel
+  const aSec = 4.7 + wMin * 60 * T;             // the second hand, sixty to one
+  const aHour = 1.6 + (wMin / 12) * T;          // the hour hand, one twelfth
+
+  // The geometry of the train. Meshing wheels sit at a distance
+  // just under the sum of their radii, so the teeth engage.
+  const CENTER_R = 48, CENTER_PIN = 10;
+  const THIRD = { x: cx + 42, y: cy - 34, r: 30, pin: 8 };   // 54 from center
+  const FOURTH = { x: THIRD.x + 32, y: THIRD.y - 12, r: 24, pin: 6 }; // 34 from third
+  const BARREL = { x: cx - 52, y: cy + 46, r: 60 };          // 69 from center, meshing the center pinion
+  const ESCAPE = { x: FOURTH.x + 12, y: FOURTH.y - 25, r: 14, pin: 5 }; // 28 from fourth
+
+  // Angular rates from the meshes, opposite signs at each mesh.
+  const aCenter = aMin;
+  const aBarrel = -(aCenter) * (CENTER_PIN / BARREL.r);
+  const aThird = -(aCenter) * (CENTER_R / THIRD.pin) * 0.02
+              + -(wMin * (CENTER_R / THIRD.pin)) * T;
+  const aFourth = (wMin * (CENTER_R / THIRD.pin) * (THIRD.r / FOURTH.pin)) * T;
+  const aEscape = -(wMin * (CENTER_R / THIRD.pin) * (THIRD.r / FOURTH.pin) * (FOURTH.r / ESCAPE.pin)) * T * 0.2;
+
+  // The case, the band, and the crown.
+  ctx.fillStyle = "#8a7a4e";
+  ctx.beginPath(); ctx.arc(cx, cy, 208, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#a8925e";
+  ctx.beginPath(); ctx.arc(cx, cy, 196, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#2c2820";
+  ctx.beginPath(); ctx.arc(cx, cy, 184, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#8a7a4e";
+  ctx.fillRect(cx - 12, cy - 228, 24, 26);
+
+  // The barrel, the slowest and largest wheel, driving everything.
+  drawWheel(BARREL.x, BARREL.y, BARREL.r, 36, aBarrel, "#b89a54", 0);
+
+  // The train. The center wheel carries a pinion the barrel
+  // drives, the third and fourth carry the pinions the wheel
+  // before them drives.
+  drawWheel(THIRD.x, THIRD.y, THIRD.r, 20, aThird, "#c9b060", THIRD.pin);
+  drawWheel(FOURTH.x, FOURTH.y, FOURTH.r, 16, aFourth, "#b89a54", FOURTH.pin);
+  drawWheel(cx, cy, CENTER_R, 24, aCenter, "#c9b060", CENTER_PIN);
+
+  // The escapement and the balance, at the end of the train.
+  drawWheel(ESCAPE.x, ESCAPE.y, ESCAPE.r, 10, aEscape, "#dfc884", ESCAPE.pin);
+  const bal = REDUCED_MOTION ? 0.4 : Math.sin(t * 5) * 1.1;
+  ctx.save();
+  ctx.translate(ESCAPE.x + 26, ESCAPE.y - 40);
+  ctx.rotate(bal);
+  ctx.strokeStyle = "#dfc884";
+  ctx.lineWidth = 4.5;
+  ctx.beginPath(); ctx.arc(0, 0, 26, 0, Math.PI * 2); ctx.stroke();
+  ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(-26, 0); ctx.lineTo(26, 0); ctx.stroke();
+  ctx.restore();
+  ctx.strokeStyle = "#c9b060";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let a2 = 0; a2 < Math.PI * 5; a2 += 0.12) {
+    const rr = 4 + a2 * 1.7;
+    const px = ESCAPE.x + 26 + Math.cos(a2) * rr;
+    const py = ESCAPE.y - 40 + Math.sin(a2) * rr;
+    if (a2 === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // The motion wheels behind the hands, gearing the hour hand
+  // to a twelfth of the minute hand.
+  drawWheel(cx - 26, cy + 10, 16, 12, -aMin * (10 / 16), "#8a7440", 4);
+  ctx.strokeStyle = "#8a7440";
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(cx, cy, 24, 0, Math.PI * 2); ctx.stroke();
+
+  // The hands, all three from the center arbor.
+  function hand(angle, len, w2, color) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(-w2, 10);
+    ctx.lineTo(-w2 * 0.5, -len);
+    ctx.lineTo(w2 * 0.5, -len);
+    ctx.lineTo(w2, 10);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+  hand(aHour, 96, 6, "#e6ddc2");
+  hand(aMin, 150, 4.5, "#e6ddc2");
+  hand(aSec, 164, 2, "#dfae5c");
+  ctx.fillStyle = "#e6ddc2";
+  ctx.beginPath(); ctx.arc(cx, cy, 7, 0, Math.PI * 2); ctx.fill();
+
+  drawCloseFrame("The case is open, and the works are running");
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+
+  if (watchView) {
+    drawWatchView();
+    return;
+  }
+
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // Morning over the heath.
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, "#a9c2d6");
+  sky.addColorStop(0.7, "#d6d8c6");
+  sky.addColorStop(1, "#c2c0a2");
+  ctx.fillStyle = sky;
+  ctx.fillRect(camX, 0, W, H);
+  // Far hills, and the abbey tower behind, small.
+  ctx.fillStyle = "rgba(120,132,116,0.6)";
+  ctx.beginPath();
+  ctx.moveTo(camX, 330); ctx.lineTo(camX + 200, 280); ctx.lineTo(camX + 460, 322);
+  ctx.lineTo(camX + 700, 274); ctx.lineTo(camX + 900, 320); ctx.lineTo(camX + 900, 500); ctx.lineTo(camX, 500);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "rgba(96,102,116,0.55)";
+  ctx.fillRect(120, 262, 26, 70);
+  ctx.fillRect(112, 254, 42, 10);
+  // The heath.
+  ctx.fillStyle = "#8a9464";
+  ctx.fillRect(camX, GROUND, W, H - GROUND);
+  ctx.fillStyle = "#7a8458";
+  ctx.fillRect(camX, GROUND, W, 6);
+  // The path.
+  ctx.fillStyle = "#c2b28c";
+  ctx.fillRect(camX, GROUND + 12, W, 12);
+  // Gorse and grass tufts.
+  for (let gx0 = 60; gx0 < WORLD_W; gx0 += 90) {
+    ctx.fillStyle = (gx0 % 180 === 60) ? "#6e7a46" : "#94a06a";
+    ctx.beginPath();
+    ctx.arc(gx0, GROUND + 4, 10 + (gx0 % 3) * 4, Math.PI, 0);
+    ctx.fill();
+  }
+  // Yellow gorse bloom on some.
+  ctx.fillStyle = "#d8c24e";
+  [150, 510, 870, 1230, 1500].forEach(gx0 => {
+    ctx.fillRect(gx0 - 6, GROUND - 8, 3, 3);
+    ctx.fillRect(gx0 + 2, GROUND - 12, 3, 3);
+    ctx.fillRect(gx0 + 8, GROUND - 6, 3, 3);
+  });
+
+  // The stone at the first spot.
+  ctx.fillStyle = "#8b8578";
+  ctx.beginPath();
+  ctx.ellipse(STATIONS[0].x, GROUND + 8, 14, 8, 0, Math.PI, 0);
+  ctx.fill();
+  // The watch on the path at the second, glinting until taken.
+  if (!flags.way2Done) {
+    ctx.fillStyle = "#c9b060";
+    ctx.beginPath(); ctx.arc(STATIONS[1].x, GROUND + 14, 7, 0, Math.PI * 2); ctx.fill();
+    const gl = REDUCED_MOTION ? 0.5 : (Math.sin(t * 4) + 1) / 2;
+    ctx.fillStyle = "rgba(255,244,200," + (0.25 + gl * 0.35) + ")";
+    ctx.beginPath(); ctx.arc(STATIONS[1].x, GROUND + 14, 12, 0, Math.PI * 2); ctx.fill();
+  }
+  // The stile at the third.
+  ctx.strokeStyle = "#6a5a44";
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(STATIONS[2].x - 26, GROUND); ctx.lineTo(STATIONS[2].x - 26, GROUND - 44);
+  ctx.moveTo(STATIONS[2].x + 26, GROUND); ctx.lineTo(STATIONS[2].x + 26, GROUND - 44);
+  ctx.moveTo(STATIONS[2].x - 34, GROUND - 20); ctx.lineTo(STATIONS[2].x + 34, GROUND - 20);
+  ctx.moveTo(STATIONS[2].x - 34, GROUND - 38); ctx.lineTo(STATIONS[2].x + 34, GROUND - 38);
+  ctx.stroke();
+  // The field gate at the fourth.
+  ctx.strokeStyle = "#6a5a44";
+  ctx.lineWidth = 4;
+  ctx.strokeRect(STATIONS[3].x - 34, GROUND - 46, 68, 46);
+  ctx.beginPath();
+  ctx.moveTo(STATIONS[3].x - 34, GROUND - 46); ctx.lineTo(STATIONS[3].x + 34, GROUND);
+  ctx.moveTo(STATIONS[3].x - 34, GROUND - 24); ctx.lineTo(STATIONS[3].x + 34, GROUND - 24);
+  ctx.stroke();
+  // The dry wall running from the gate.
+  ctx.fillStyle = "rgba(140,134,120,0.8)";
+  ctx.fillRect(STATIONS[3].x + 34, GROUND - 26, WORLD_W - STATIONS[3].x, 26);
+
+  // Paley, at the active spot, and the marker.
+  const idx = nextStationIndex();
+  const paleyX = !flags.friarMet ? npcs.paley.x
+    : idx >= 0 ? STATIONS[idx].x - 62
+    : STATIONS[3].x - 62;
+  drawPaley(paleyX, GROUND);
+  if (flags.friarMet && idx >= 0) drawMarker(STATIONS[idx].x, GROUND);
+
+  drawPerson(player.x, GROUND, player.color, player.facing);
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(20,20,16,0.5)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f4f2ea";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("The Watch on the Heath", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#c2c0b2";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You are on the heath road above the abbey. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

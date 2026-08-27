@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Clouds of Aristophanes</title>
+<style>
+:root{
+  --page:#171310;
+  --panel:#221c16;
+  --panel-2:#2e261d;
+  --line:#4a3e2f;
+  --text:#f2ede2;
+  --muted:#c0b49e;
+  --gold:#dfae5c;
+  --gold-deep:#a97f3a;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#3a3024}
+button.primary{background:var(--gold); border-color:var(--gold-deep); color:#221609; font-weight:600}
+button.primary:hover{background:#eec37a}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--gold); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#120e0a; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+
+#dialogueBox{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--gold-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open{display:block}
+#dialogueBox.note{background:#2a2318; border-color:var(--gold)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--gold); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--gold)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#191410; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--gold)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--gold); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#191410; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--gold)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--gold); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--gold)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>The Clouds of Aristophanes</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>You are home in Athens, and your jury service has not yet been called. It is the festival of the City Dionysia, and you have a seat at the Theater of Dionysus for a new comedy by Aristophanes called The Clouds, and its target is a philosopher the whole city knows by sight. The play advances with the Continue button, questions appear between the acts, and the evening does not end the way you expect. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The next stop on the map is The Trial of Socrates.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Name a modern comedy, show, or running joke that shapes how people picture some group of experts, and describe what the caricature keeps and what it drops.</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. Was there anything the new education of Socrates' day genuinely deserved mocking for? Is there anything philosophy deserves mocking for now?</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. Plato later shows Aristophanes and Socrates at the same dinner party, apparently on friendly terms. Can you mock a friend's ideas fairly? Where is the line?</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> In The Clouds, Socrates is staged as</p>
+      <label><input type="radio" name="q1" value="A general returning from war"> a general returning from war</label>
+      <label><input type="radio" name="q1" value="A man in a hanging basket who teaches the weaker argument to beat the stronger"> a man in a hanging basket who teaches the weaker argument to beat the stronger</label>
+      <label><input type="radio" name="q1" value="A silent hermit who refuses all students"> a silent hermit who refuses all students</label>
+
+      <p><strong>2.</strong> In the debate between the two Arguments, the winner is</p>
+      <label><input type="radio" name="q2" value="The Right Argument"> the Right Argument</label>
+      <label><input type="radio" name="q2" value="The Wrong Argument"> the Wrong Argument</label>
+      <label><input type="radio" name="q2" value="Neither, the debate is interrupted"> neither, the debate is interrupted</label>
+
+      <p><strong>3.</strong> The play ends with</p>
+      <label><input type="radio" name="q3" value="The school burning while the audience laughs"> the school burning while the audience laughs</label>
+      <label><input type="radio" name="q3" value="Socrates winning the debate"> Socrates winning the debate</label>
+      <label><input type="radio" name="q3" value="Strepsiades paying his debts"> Strepsiades paying his debts</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_clouds";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: Before the play",
+    text: "When people who have never studied philosophy imagine a philosopher, what do they picture, and where does that picture come from?",
+    mcq: ["A dreamer with their head in the clouds", "A dangerous corrupter of the young", "A clever talker who can prove anything", "A harmless sage full of quotations", "Something else"],
+    requireText: true,
+    textHint: "Describe the picture and guess at its source."
+  },
+  caricature: {
+    title: "Stage 1: The caricature",
+    text: "The stage Socrates hangs in a basket, charges fees, studies gnats, and teaches tricks. The real one walked barefoot in the agora and asked questions for free. Caricature works by exaggerating something until it replaces the person. Which exaggeration in this portrait does the most damage, and why?",
+    mcq: ["The basket: he floats above ordinary life", "The fees: he profits from confusion", "The gnats: his questions are useless trivia", "The tricks: he makes the weaker argument beat the stronger"],
+    requireText: true,
+    textHint: "Say why that one, and what it gets wrong on purpose."
+  },
+  agon: {
+    title: "Stage 2: The weaker argument",
+    text: "The Wrong Argument won by mockery, loopholes, and playing to the crowd, and the audience laughed. Describe one place in your own world, advertising, politics, an argument you have watched or had, where the weaker argument is made to appear the stronger, and name the trick that does it.",
+    mcq: null,
+    requireText: true,
+    textHint: "The example, then the trick."
+  },
+  fire: {
+    title: "Stage 3: The fire",
+    text: "The play ends with the school burning and the audience laughing, and no one on stage objects. When does mockery of thinkers stop being harmless, and how much responsibility does a comic writer bear for what an audience comes to believe?",
+    mcq: ["None: a joke is a joke, and audiences form their own beliefs", "Some: repeated mockery shapes what a city believes", "A great deal: repeated mockery can change how a city treats a person"],
+    requireText: true,
+    textHint: "Defend the share of responsibility you chose."
+  },
+  shadows: {
+    title: "Stage 4: The image and the man",
+    text: "You spent the evening watching a false image of a real man, and then you passed the man himself in the street. The city will remember the image. What does tonight suggest it takes to tell an image of a thing from the thing itself?",
+    mcq: null,
+    requireText: true,
+    textHint: "Answer from the evening you just had."
+  }
+};
+
+const quizKeys = [
+  "A man in a hanging basket who teaches the weaker argument to beat the stronger",
+  "The Wrong Argument",
+  "The school burning while the audience laughs"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The scene plan
+   0 exterior   outside the theater, the background, then Stage 0
+   1 findseat   walk in, climb the rows, and take the open seat
+   2 basket     the play, joined late: the Thinkery and the basket,
+                then Stage 1
+   3 agon       the Right and Wrong Arguments debate, the audience
+                votes, the Wrong Argument wins, then Stage 2
+   4 fire       the lessons come home and the Thinkery burns,
+                then Stage 3
+   5 cameo      the walk out, and the man himself, then Stage 4
+   ========================================================= */
+let scene = 0;
+let sceneT = 0;
+let started = false;
+let paused = false;
+let finished = false;
+let agonPick = null;      // the player's guess at the winner
+let fireOn = false;
+let darkness = 0;
+
+const record = { agonPick: null };
+
+/* The walk to the seat. */
+const player = { x: 70, seated: false };
+const SEAT_X = 655;
+const keys = {};
+let walkTarget = null;
+
+const SCENE_CARDS = [
+  [
+    { note: true, say: "It is the festival of the City Dionysia, 423 BC, and crowds from the whole city are climbing toward the Theater of Dionysus on the south slope of the Acropolis. Comic poets compete here for a prize in front of an audience that includes magistrates, farmers, soldiers, and visitors, and the plays name and mock real people who are often sitting in the stands." },
+    { note: true, say: "Today's entry is The Clouds, by Aristophanes. People around you say its target is Socrates, a man half the audience has personally seen asking his questions in the agora." },
+    { say: "Your jury service has not yet been called, so tonight you are only an audience. You are late. The music has already started inside." }
+  ],
+  [],
+  [
+    { speaker: "neighbor", bubble: "You missed little, friend.",
+      say: "The man beside you leans over. Neighbor: You missed little, friend. The old man down there is Strepsiades, deep in debt from his son's racehorses. He has come to this school to learn the argument that wins while owing. Watch the door." },
+    { speaker: "student", bubble: "Your pounding made a thought miscarry.",
+      say: "A student opens the Thinkery door and hushes the old man. Student: Your pounding made a thought miscarry. And these bent-over scholars are investigating what lies beneath the earth. Strepsiades: Then what are their backsides doing aimed at the sky? Student: Learning astronomy on their own." },
+    { speaker: "socrates", bubble: "I walk on air and contemplate the sun.",
+      say: "The stage crane swings a hanging basket out over the roof, and in it sits the play's Socrates. Socrates: Why do you call me, creature of a day? I walk on air and contemplate the sun. I could never discover the things aloft while the earth dragged the moisture of my thought down to itself." },
+    { speaker: "strepsiades", bubble: "Teach me the Unjust Argument!",
+      say: "Strepsiades: Whatever you say, only teach me the Unjust Argument, the one that wins while owing. Socrates: Then the Clouds must meet you, the only goddesses we keep here. And the chorus comes in singing, dressed as clouds, while the old man stares." },
+    { note: true, say: "The real Socrates hung in no basket, took no fees, and ran no school. Aristophanes has stitched him together with every fashionable intellectual of the day, the nature-theorists and the paid rhetoric teachers called sophists, and hung the whole bundle in the air with one famous face on it." }
+  ],
+  [
+    { speaker: "vendor", bubble: "Figs! Barley cakes! Watered wine!",
+      say: "A vendor works along your row with a basket on her hip. Vendor: Figs! Barley cakes! Watered wine! While you dig for a coin, the chorus finishes its song, and two new figures stride out: the Right Argument, upright and stern, and the Wrong Argument, grinning." },
+    { speaker: "neighbor", bubble: "Now comes the debate.",
+      say: "Neighbor: Now comes the debate. The two Arguments will contest who educates the boy, and the winner takes him. Watch the stern one lose his temper." },
+    { speaker: "right", bubble: "I raised the men of Marathon.",
+      say: "Right Argument: I will speak of the old education, which raised the men who fought at Marathon. Boys walked to the music master in good order, sang the old songs in the old keys, and learned shame. Choose me, despise the marketplace chatter, and blush at what deserves a blush." },
+    { speaker: "wrong", bubble: "I take the weaker case, and I win.",
+      say: "Wrong Argument: They call me the Weaker Argument because I was the first to work out how to argue against a just case. That skill is worth more than ten thousand coins. Take the weaker side and win anyway.",
+      choices: [
+        { text: "The Right Argument wins.", tag: "right",
+          reply: ["Your call is recorded. The outcome comes next."] },
+        { text: "The Wrong Argument wins.", tag: "wrong",
+          reply: ["Your call is recorded. The outcome comes next."] }
+      ] },
+    { say: "The Right Argument sputters, out-talked at every turn, until it flings its cloak into the stands and crosses to the other side. The Wrong Argument takes the student. The audience roars with laughter." }
+  ],
+  [
+    { speaker: "neighbor", bubble: "Here is the son, changed.",
+      say: "Your neighbor nudges you. Neighbor: Here is the son, out of the school and changed. Mark how he carries himself now." },
+    { speaker: "pheidippides", bubble: "It was just for me to beat you.",
+      say: "Pheidippides: How sweet it is to know new and clever things. Father, I will now prove to you that it was just for me to beat you." },
+    { speaker: "pheidippides", bubble: "And the argument holds for mother next.",
+      say: "Pheidippides: You beat me as a boy, and you say it was done in love. Then beating is love, and I love you too, father. And the argument holds for mother next. Strepsiades: If this is what the Thinkery teaches, it has taught its last lesson. Bring me the torch!" },
+    { fire: true, speaker: "strepsiades", bubble: "I am walking on air and contemplating the sun.",
+      say: "Strepsiades climbs onto the roof of the Thinkery with fire in his hand, the students scramble out coughing, and a voice from inside cries out asking what on earth he is doing. Strepsiades: I am walking on air and contemplating the sun. The school burns, and the audience laughs." }
+  ],
+  [
+    { say: "The torches are lit and the crowd pours out into the dark streets, still quoting the best lines. You are arguing about the play with strangers, which is what the theater is for." },
+    { say: "Near the edge of the agora, apart from the crowd, a barefoot man in a plain cloak stands listening to the laughter go past. Someone calls out: there he is, the man in the basket! He answers mildly that he has been called worse, and asks the caller what he thinks a just man owes his city." },
+    { say: "The caller hurries on. You slow down. You have seen two versions of the same man tonight: the character in the basket, which the whole city will remember, and the man in the street, still asking questions." }
+  ]
+];
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  const u = new SpeechSynthesisUtterance(p.title + ". " + p.text);
+  speechSynthesis.speak(u);
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+/* =========================================================
+   Cards, with choices where the play demands a vote
+   ========================================================= */
+let dlg = null;
+let dialogueActive = false;
+let bubble = null;   // { who, text } while a speaker's card is up
+const VOICES = {
+  neighbor:     { pitch: 1.0,  rate: 1.0 },
+  vendor:       { pitch: 1.2,  rate: 1.12 },
+  student:      { pitch: 1.15, rate: 1.05 },
+  socrates:     { pitch: 1.25, rate: 0.95 },
+  strepsiades:  { pitch: 0.7,  rate: 0.9 },
+  right:        { pitch: 0.8,  rate: 0.9 },
+  wrong:        { pitch: 1.15, rate: 1.1 },
+  pheidippides: { pitch: 1.05, rate: 1.05 }
+};
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  bubble = step.speaker ? { who: step.speaker, text: step.bubble || null } : null;
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(step.say);
+    const v = step.speaker && VOICES[step.speaker];
+    if (v) { u.pitch = v.pitch; u.rate = v.rate; }
+    speechSynthesis.speak(u);
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  if (c.tag === "right" || c.tag === "wrong") {
+    agonPick = c.tag;
+    record.agonPick = c.text;
+  }
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone;
+    dlg = null;
+    dialogueActive = false;
+    bubble = null;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb();
+  } else {
+    if (dlg.steps[dlg.i].fire) fireOn = true;
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter" || k === " ") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (scene === 1 && started && !paused) {
+    if (k === "arrowleft" || k === "arrowright") { e.preventDefault(); keys[k] = true; walkTarget = null; }
+    if (k === "e" || k === "enter") { e.preventDefault(); trySit(); }
+  }
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+canvas.addEventListener("pointerdown", ev => {
+  if (scene !== 1 || dialogueActive || paused || !started) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = (ev.clientX - rect.left) * (W / rect.width);
+  if (Math.abs(x - SEAT_X) < 40 && Math.abs(player.x - SEAT_X) < 26) { trySit(); return; }
+  walkTarget = Math.min(Math.max(x, 60), 820);
+});
+
+/* =========================================================
+   Reflection modal
+   ========================================================= */
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+
+/* =========================================================
+   Scene flow
+   ========================================================= */
+function setObjective(txt) { objectiveEl.textContent = txt; }
+
+function enterScene(n) {
+  scene = n;
+  sceneT = 0;
+  if (n === 4) fireOn = false;
+  const objectives = [
+    "Outside the theater. Read the narration and continue.",
+    "Find a seat: walk right with the arrow keys, climb the rows, and press E at the open place.",
+    "The play is under way. Read the lines and continue.",
+    "The two Arguments debate. You will be asked to call the winner.",
+    "The play reaches its ending.",
+    "The play is over. The walk home has one more scene."
+  ];
+  setObjective(objectives[n]);
+  if (SCENE_CARDS[n].length) startDlg(SCENE_CARDS[n], () => afterCards(n));
+}
+function afterCards(n) {
+  if (n === 0) openPrompt("first", () => enterScene(1));
+  else if (n === 2) openPrompt("caricature", () => enterScene(3));
+  else if (n === 3) openPrompt("agon", () => enterScene(4));
+  else if (n === 4) openPrompt("fire", () => enterScene(5));
+  else openPrompt("shadows", endGame);
+}
+function trySit() {
+  if (scene !== 1 || player.seated) return;
+  if (Math.abs(player.x - SEAT_X) < 26) {
+    player.seated = true;
+    setStatus("You squeeze into the row just as the old man on stage starts shouting.");
+    enterScene(2);
+  } else {
+    setStatus("The open place is marked. Keep climbing.");
+  }
+}
+/* The seating bank rises in steps to the right. */
+function stepY(x) {
+  if (x < 210) return 430;
+  const tier = Math.min(6, Math.floor((x - 210) / 78));
+  return 430 - tier * 28;
+}
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (started) return;
+  started = true;
+  document.getElementById("startBtn").disabled = true;
+  enterScene(0);
+});
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  finished = true;
+  try { localStorage.setItem("phil_map_clouds", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "The Clouds of Aristophanes, Report\n";
+  text += "==================================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    text += "Response: " + r.response + "\n" + "-".repeat(50);
+  });
+  if (record.agonPick) {
+    text += "\n\nCalled winner of the debate: " + record.agonPick + "\n";
+  }
+  text += "\nDiscussion questions:\n";
+  text += "1. A modern caricature of experts.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. What deserved the mockery.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. Mocking a friend's ideas.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "The_Clouds_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawFigure(x, y, s, color, maskUp) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(s, s);
+  ctx.fillStyle = color;
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  // Actors wear the comic mask: oversized, pale, dark-eyed.
+  if (maskUp) {
+    ctx.fillStyle = "#e8e0cc";
+    ctx.beginPath(); ctx.arc(0, -40, 10, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#221c16";
+    ctx.beginPath();
+    ctx.arc(-3.5, -42, 2, 0, Math.PI * 2);
+    ctx.arc(3.5, -42, 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(0, -35.5, 3.6, 2, 0, 0, Math.PI);
+    ctx.fill();
+  } else {
+    ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+}
+function drawDuskSky(darker) {
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  if (darker) {
+    sky.addColorStop(0, "#0e0c14");
+    sky.addColorStop(1, "#1c1410");
+  } else {
+    sky.addColorStop(0, "#2b2340");
+    sky.addColorStop(0.55, "#6d3f46");
+    sky.addColorStop(1, "#c9803c");
+  }
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, H);
+}
+function drawExterior() {
+  drawDuskSky(false);
+  // The Acropolis: a flat-topped crag off to the left, behind the
+  // theater's outer wall, with open sky beside it.
+  ctx.fillStyle = "rgba(60,50,44,0.9)";
+  ctx.beginPath();
+  ctx.moveTo(-30, 210);
+  ctx.lineTo(30, 128);
+  ctx.lineTo(290, 122);
+  ctx.lineTo(345, 210);
+  ctx.closePath(); ctx.fill();
+  // The temple on the flat top.
+  ctx.fillStyle = "rgba(214,208,190,0.6)";
+  ctx.fillRect(96, 92, 130, 8);
+  for (let i = 0; i < 8; i++) ctx.fillRect(102 + i * 16, 100, 6, 20);
+  ctx.fillRect(92, 120, 138, 6);
+  // The theater's outer wall, with the entrance passage open.
+  ctx.fillStyle = "#6e6152";
+  ctx.fillRect(0, 210, 380, 230);
+  ctx.fillRect(520, 210, 380, 230);
+  ctx.fillStyle = "#5a5044";
+  ctx.fillRect(0, 210, 900, 16);
+  // Wall blocks, so it reads as masonry rather than a curve.
+  ctx.strokeStyle = "rgba(40,34,28,0.35)";
+  ctx.lineWidth = 1.5;
+  for (let y = 246; y < 440; y += 38) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(380, y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(520, y); ctx.lineTo(900, y); ctx.stroke();
+  }
+  // The passage, and lamplight inside it.
+  ctx.fillStyle = "#241d16";
+  ctx.fillRect(380, 226, 140, 214);
+  ctx.fillStyle = "rgba(255,156,63,0.25)";
+  ctx.fillRect(392, 260, 116, 180);
+  // Music drifting out.
+  ctx.fillStyle = "rgba(240,234,208,0.6)";
+  ctx.font = "18px Georgia, serif";
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 2) * 5;
+  ctx.fillText("\u266a", 440, 246 + lift);
+  ctx.fillText("\u266a", 470, 232 - lift);
+  // The ground and the last of the crowd going in.
+  ctx.fillStyle = "#3a3128";
+  ctx.fillRect(0, 440, 900, 60);
+  drawFigure(200, 440, 1, "#33404f", false);
+  drawFigure(258, 440, 0.95, "#4f6b8f", false);
+  drawFigure(316, 440, 1, "#5a4a6e", false);
+  drawFigure(452, 440, 1.05, "#5b84b1", false);
+  // Torch braziers flanking the passage.
+  [352, 548].forEach(x => {
+    ctx.fillStyle = "#4a3c2c";
+    ctx.fillRect(x - 4, 380, 8, 60);
+    ctx.fillStyle = "#ff9c3f";
+    ctx.beginPath(); ctx.arc(x, 372, 9, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#ffd27a";
+    ctx.beginPath(); ctx.arc(x, 370, 4.5, 0, Math.PI * 2); ctx.fill();
+  });
+}
+function drawSeated(x, y, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(x, y - 26, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(x - 6, y - 20, 12, 14);
+  ctx.fillRect(x - 6, y - 6, 13, 4);
+}
+function drawFindSeat() {
+  drawDuskSky(false);
+  // The stage down at the left, already mid-scene.
+  ctx.fillStyle = "#5a4a38";
+  ctx.fillRect(0, 300, 170, 110);
+  ctx.fillStyle = "#6e5c44";
+  ctx.fillRect(0, 410, 170, 30);
+  drawFigure(60, 408, 0.85, "#8f3b3b", true);
+  drawFigure(120, 408, 0.85, "#e0d8c2", true);
+  // The seating bank climbing to the right.
+  ctx.fillStyle = "#6e6152";
+  ctx.beginPath();
+  ctx.moveTo(210, 440);
+  for (let i = 0; i <= 6; i++) {
+    const x0 = 210 + i * 78;
+    const y = 430 - i * 28;
+    ctx.lineTo(x0, y + 10);
+    ctx.lineTo(Math.min(x0 + 78, 900), y + 10);
+  }
+  ctx.lineTo(900, 440);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#7a6c5c";
+  for (let i = 0; i <= 6; i++) {
+    const x0 = 210 + i * 78;
+    const y = 430 - i * 28;
+    ctx.fillRect(x0, y + 6, Math.min(78, 900 - x0), 5);
+  }
+  // The audience already seated, with one open place.
+  const crowd = ["#4f6b8f", "#5a4a6e", "#33404f", "#4f7fb0", "#7b6ea7"];
+  for (let i = 0; i <= 6; i++) {
+    for (let s = 0; s < 2; s++) {
+      const sx = 236 + i * 78 + s * 38;
+      if (Math.abs(sx - SEAT_X) < 22) continue;
+      if (sx > 860) continue;
+      drawSeated(sx, 436 - i * 28, crowd[(i + s) % crowd.length]);
+    }
+  }
+  // The open place, marked.
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3) * 3;
+  ctx.strokeStyle = "rgba(223,174,92,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(SEAT_X, stepY(SEAT_X) - 56 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(223,174,92,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", SEAT_X - 4, stepY(SEAT_X) - 52 + lift);
+  // The player climbing.
+  drawFigure(player.x, stepY(player.x) + 6, 1, "#5b84b1", false);
+}
+function drawTheaterWide() {
+  drawDuskSky(false);
+  // The Acropolis above the theater.
+  ctx.fillStyle = "rgba(60,50,44,0.9)";
+  ctx.beginPath();
+  ctx.moveTo(0, 190);
+  ctx.quadraticCurveTo(450, 96, 900, 190);
+  ctx.lineTo(900, 0); ctx.lineTo(0, 0);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "rgba(214,208,190,0.55)";
+  ctx.fillRect(392, 118, 116, 8);
+  for (let i = 0; i < 8; i++) ctx.fillRect(398 + i * 14, 126, 6, 22);
+  ctx.fillRect(388, 148, 124, 7);
+  // Seating: tiered arcs filled with the audience.
+  for (let r = 0; r < 6; r++) {
+    const y = 210 + r * 34;
+    ctx.strokeStyle = "#6e6152";
+    ctx.lineWidth = 22;
+    ctx.beginPath();
+    ctx.arc(450, 640, 430 - r * 40, Math.PI * 1.22, Math.PI * 1.78);
+    ctx.stroke();
+    ctx.fillStyle = "#4f6b8f";
+    for (let i = 0; i < 24 - r * 2; i++) {
+      const a = Math.PI * 1.25 + (i / (24 - r * 2)) * Math.PI * 0.5;
+      const rr = 430 - r * 40;
+      const px = 450 + Math.cos(a) * rr;
+      const py = 640 + Math.sin(a) * rr;
+      ctx.beginPath(); ctx.arc(px, py - 8, 5, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  // The orchestra circle and the stage building.
+  ctx.fillStyle = "#8d8471";
+  ctx.beginPath();
+  ctx.ellipse(450, 428, 150, 34, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#5a4a38";
+  ctx.fillRect(310, 350, 280, 46);
+  ctx.fillStyle = "#3a2f24";
+  ctx.fillRect(430, 362, 40, 34);
+  drawFigure(360, 396, 0.9, "#8f3b3b", true);
+  drawFigure(540, 396, 0.9, "#4f7fb0", true);
+}
+let basketX = 640;
+function drawStage() {
+  // The close view: the skene as the Thinkery.
+  drawDuskSky(false);
+  ctx.fillStyle = "#5a4a38";
+  ctx.fillRect(60, 150, 780, 260);
+  // The roofline.
+  ctx.fillStyle = "#4a3c2c";
+  ctx.fillRect(52, 142, 796, 22);
+  // Painted backdrop panels on the skene wall.
+  ctx.strokeStyle = "rgba(58,47,36,0.8)";
+  ctx.lineWidth = 3;
+  [270, 420, 570, 720].forEach(x => {
+    ctx.strokeRect(x, 190, 110, 170);
+    ctx.strokeStyle = "rgba(58,47,36,0.45)";
+    ctx.beginPath();
+    ctx.moveTo(x + 55, 190); ctx.lineTo(x + 55, 360);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(58,47,36,0.8)";
+  });
+  // The door.
+  ctx.fillStyle = "#3a2f24";
+  ctx.fillRect(150, 260, 70, 150);
+  ctx.fillStyle = "#2a2118";
+  ctx.fillRect(182, 330, 8, 8);
+  // The stage crane at the right, its arm carrying the basket rope.
+  ctx.fillStyle = "#4a3c2c";
+  ctx.fillRect(816, 154, 10, 256);
+  ctx.fillRect(636, 142, 190, 9);
+  ctx.beginPath();
+  ctx.moveTo(816, 200); ctx.lineTo(700, 151); ctx.lineTo(816, 176);
+  ctx.closePath(); ctx.fill();
+  // The stage floor and the altar of Dionysus at its front.
+  ctx.fillStyle = "#6e5c44";
+  ctx.fillRect(60, 410, 780, 30);
+  ctx.fillStyle = "#8d8471";
+  ctx.fillRect(434, 416, 32, 24);
+  ctx.fillStyle = "#a29a86";
+  ctx.fillRect(430, 412, 40, 6);
+  ctx.fillStyle = "#c0b49e";
+  ctx.font = "15px Georgia, serif";
+  ctx.fillText("THE THINKERY", 128, 244);
+  return 440;
+}
+function drawAudienceRow(withVendor) {
+  // The backs of the heads in the row in front of yours.
+  ctx.fillStyle = "#17120d";
+  for (let x = 40; x < 900; x += 76) {
+    if (withVendor && Math.abs(x - 700) < 40) continue;
+    ctx.beginPath(); ctx.arc(x, 514, 26, 0, Math.PI * 2); ctx.fill();
+  }
+  // The neighbor, half turned toward you.
+  ctx.fillStyle = "#2a2118";
+  ctx.beginPath(); ctx.arc(310, 510, 26, 0, Math.PI * 2); ctx.fill();
+  if (withVendor) {
+    // The vendor standing in the aisle with her basket.
+    ctx.fillStyle = "#241d16";
+    ctx.fillRect(688, 452, 24, 48);
+    ctx.beginPath(); ctx.arc(700, 442, 13, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#4a3c2c";
+    ctx.fillRect(668, 470, 18, 12);
+  }
+}
+function wrapLines(text, max) {
+  const words = text.split(" ");
+  const lines = [];
+  let cur = "";
+  words.forEach(w => {
+    if ((cur + " " + w).trim().length > max) { lines.push(cur.trim()); cur = w; }
+    else cur += " " + w;
+  });
+  if (cur.trim()) lines.push(cur.trim());
+  return lines;
+}
+function drawBubble(ax, ay, text) {
+  const lines = wrapLines(text, 26);
+  ctx.font = "13px 'Segoe UI', sans-serif";
+  let bw = 0;
+  lines.forEach(l => { bw = Math.max(bw, ctx.measureText(l).width); });
+  bw += 22;
+  const bh = lines.length * 17 + 14;
+  let bx = Math.min(Math.max(ax - bw / 2, 8), W - bw - 8);
+  let by = ay - bh - 16;
+  if (by < 6) by = 6;
+  ctx.fillStyle = "rgba(242,237,226,0.96)";
+  ctx.strokeStyle = "#4a3e2f";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(bx + 8, by);
+  ctx.lineTo(bx + bw - 8, by);
+  ctx.quadraticCurveTo(bx + bw, by, bx + bw, by + 8);
+  ctx.lineTo(bx + bw, by + bh - 8);
+  ctx.quadraticCurveTo(bx + bw, by + bh, bx + bw - 8, by + bh);
+  ctx.lineTo(bx + 8, by + bh);
+  ctx.quadraticCurveTo(bx, by + bh, bx, by + bh - 8);
+  ctx.lineTo(bx, by + 8);
+  ctx.quadraticCurveTo(bx, by, bx + 8, by);
+  ctx.closePath();
+  ctx.fill(); ctx.stroke();
+  // The tail toward the speaker.
+  const tx = Math.min(Math.max(ax, bx + 16), bx + bw - 16);
+  ctx.fillStyle = "rgba(242,237,226,0.96)";
+  ctx.beginPath();
+  ctx.moveTo(tx - 8, by + bh);
+  ctx.lineTo(ax, Math.min(ay - 4, by + bh + 14));
+  ctx.lineTo(tx + 8, by + bh);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#221c16";
+  lines.forEach((l, i) => ctx.fillText(l, bx + 11, by + 18 + i * 17));
+}
+function bubbleAnchor(who) {
+  if (scene === 2) {
+    if (who === "neighbor") return [310, 486];
+    if (who === "student") return [252, 372];
+    if (who === "strepsiades") return [196, 368];
+    if (who === "socrates") return [basketX, 186];
+  } else if (scene === 3) {
+    if (who === "vendor") return [700, 430];
+    if (who === "neighbor") return [310, 486];
+    if (who === "right") return [295, 350];
+    if (who === "wrong") return [605, 350];
+  } else if (scene === 4) {
+    if (who === "neighbor") return [310, 486];
+    if (who === "pheidippides") return [470, 366];
+    if (who === "strepsiades") return fireOn ? [300, 106] : [560, 366];
+  }
+  return null;
+}
+function drawBasketScene() {
+  const floor = drawStage();
+  // Students bent toward the ground.
+  [300, 380, 460].forEach(x => {
+    ctx.save();
+    ctx.translate(x, floor);
+    ctx.rotate(0.85);
+    drawFigure(0, 0, 0.85, "#7b6ea7", true);
+    ctx.restore();
+  });
+  // Strepsiades at the door.
+  drawFigure(196, floor, 1, "#8f3b3b", true);
+  // The basket, the rope, and Socrates aloft.
+  const sway = REDUCED_MOTION ? 0 : Math.sin(t * 1.1) * 14;
+  const bx = 640 + sway, by = 232;
+  basketX = bx;
+  ctx.strokeStyle = "#c9b98a";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(640, 151);
+  ctx.lineTo(bx, by - 46);
+  ctx.stroke();
+  ctx.fillStyle = "#8a6a3f";
+  ctx.beginPath();
+  ctx.moveTo(bx - 34, by - 6);
+  ctx.lineTo(bx + 34, by - 6);
+  ctx.lineTo(bx + 26, by + 22);
+  ctx.lineTo(bx - 26, by + 22);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = "#6a4f33";
+  ctx.lineWidth = 2;
+  for (let i = -26; i <= 26; i += 13) {
+    ctx.beginPath(); ctx.moveTo(bx + i, by - 6); ctx.lineTo(bx + i * 0.8, by + 22); ctx.stroke();
+  }
+  drawFigure(bx, by, 0.95, "#e0d8c2", true);
+}
+function drawAgonScene() {
+  const floor = drawStage();
+  ctx.fillStyle = "#c0b49e";
+  ctx.font = "14px Georgia, serif";
+  // Two podiums, two Arguments.
+  ctx.fillStyle = "#4a3c2c";
+  ctx.fillRect(250, floor - 34, 90, 34);
+  ctx.fillRect(560, floor - 34, 90, 34);
+  drawFigure(295, floor - 34, 1.05, "#4f7fb0", true);
+  drawFigure(605, floor - 34, 1.05, "#b5702e", true);
+  ctx.fillStyle = "#e8e0cc";
+  ctx.font = "13px 'Segoe UI', sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("THE RIGHT ARGUMENT", 295, floor + 22);
+  ctx.fillText("THE WRONG ARGUMENT", 605, floor + 22);
+  ctx.textAlign = "left";
+  // The crowd's reaction rises as the debate runs.
+  drawFigure(450, floor, 0.85, "#7b6ea7", true);
+}
+function drawFireScene() {
+  drawDuskSky(true);
+  ctx.fillStyle = "#5a4a38";
+  ctx.fillRect(60, 150, 780, 260);
+  ctx.fillStyle = "#4a3c2c";
+  ctx.fillRect(52, 142, 796, 22);
+  ctx.fillStyle = "#3a2f24";
+  ctx.fillRect(150, 260, 70, 150);
+  ctx.fillStyle = "#6e5c44";
+  ctx.fillRect(60, 410, 780, 30);
+  if (fireOn) {
+    // Flames along the roofline and out the door.
+    for (let i = 0; i < 12; i++) {
+      const fx = 90 + i * 64 + (REDUCED_MOTION ? 0 : Math.sin(t * 5 + i) * 6);
+      const fh = 44 + (REDUCED_MOTION ? 8 : Math.sin(t * 7 + i * 2) * 16);
+      ctx.fillStyle = "#ff9c3f";
+      ctx.beginPath();
+      ctx.moveTo(fx - 16, 152);
+      ctx.quadraticCurveTo(fx, 152 - fh, fx + 16, 152);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#ffd27a";
+      ctx.beginPath();
+      ctx.moveTo(fx - 7, 152);
+      ctx.quadraticCurveTo(fx, 152 - fh * 0.55, fx + 7, 152);
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.fillStyle = "#ff9c3f";
+    ctx.beginPath();
+    ctx.moveTo(160, 410); ctx.quadraticCurveTo(185, 300, 210, 410);
+    ctx.closePath(); ctx.fill();
+    // Students scrambling out, and the old man with his torch.
+    ctx.save(); ctx.translate(300, 440); ctx.rotate(-0.2); drawFigure(0, 0, 0.9, "#7b6ea7", true); ctx.restore();
+    drawFigure(380, 440, 0.9, "#7b6ea7", true);
+  }
+  drawFigure(470, 440, 1, "#4f7fb0", true);
+  if (fireOn) {
+    drawFigure(300, 150, 1, "#8f3b3b", true);
+    ctx.strokeStyle = "#c9b98a";
+    ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(315, 112); ctx.lineTo(336, 78); ctx.stroke();
+    ctx.fillStyle = "#ff9c3f";
+    ctx.beginPath(); ctx.arc(338, 72, 8, 0, Math.PI * 2); ctx.fill();
+  } else {
+    drawFigure(560, 440, 1, "#8f3b3b", true);
+    ctx.strokeStyle = "#c9b98a";
+    ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(575, 400); ctx.lineTo(596, 366); ctx.stroke();
+    ctx.fillStyle = "#ff9c3f";
+    ctx.beginPath(); ctx.arc(598, 360, 8, 0, Math.PI * 2); ctx.fill();
+  }
+}
+function drawCaptureScene() {
+  drawDuskSky(true);
+  ctx.fillStyle = "#221c16";
+  ctx.fillRect(0, 360, W, H - 360);
+  // The crowd streaming home with its torches.
+  for (let i = 0; i < 6; i++) {
+    const x = 90 + i * 118;
+    drawFigure(x, 420, 0.95, "#33404f", false);
+    if (i % 2 === 0) {
+      ctx.fillStyle = "#ff9c3f";
+      ctx.beginPath(); ctx.arc(x + 14, 372, 6, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  // The player, and the barefoot man standing apart, unmasked.
+  drawFigure(452, 428, 1.05, "#5b84b1", false);
+  drawFigure(790, 430, 1.05, "#d8d2c2", false);
+  ctx.fillStyle = "rgba(240,234,208,0.5)";
+  ctx.font = "13px 'Segoe UI', sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("the man himself", 790, 460);
+  ctx.textAlign = "left";
+  // The evening settles rather than going black.
+  darkness = Math.min(0.35, sceneT / 16);
+  ctx.fillStyle = "rgba(6,5,4," + darkness.toFixed(3) + ")";
+  ctx.fillRect(0, 0, W, H);
+}
+
+function render() {
+  ctx.clearRect(0, 0, W, H);
+
+  if (!started) {
+    drawTheaterWide();
+    ctx.fillStyle = "rgba(18,14,10,0.5)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f2ede2";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("The Clouds", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#c0b49e";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+    return;
+  }
+
+  if (scene === 0) drawExterior();
+  else if (scene === 1) drawFindSeat();
+  else if (scene === 2) drawBasketScene();
+  else if (scene === 3) drawAgonScene();
+  else if (scene === 4) drawFireScene();
+  else drawCaptureScene();
+  if (scene >= 2 && scene <= 4) {
+    drawAudienceRow(scene === 3 && bubble && bubble.who === "vendor");
+    if (bubble && bubble.text) {
+      const a = bubbleAnchor(bubble.who);
+      if (a) drawBubble(a[0], a[1], bubble.text);
+    }
+  }
+
+  if (finished) {
+    ctx.fillStyle = "rgba(6,5,4,0.75)";
+    ctx.fillRect(0, 0, W, H);
+  }
+}
+
+/* =========================================================
+   Main loop
+   ========================================================= */
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (started && !paused) sceneT += dt;
+  if (scene === 1 && started && !paused && !dialogueActive && !player.seated) {
+    const speed = 190;
+    let vx = 0;
+    if (keys["arrowleft"]) vx = -speed;
+    if (keys["arrowright"]) vx = speed;
+    if (walkTarget !== null) {
+      const dx = walkTarget - player.x;
+      if (Math.abs(dx) > 6) vx = Math.sign(dx) * speed;
+      else walkTarget = null;
+    }
+    player.x = Math.min(Math.max(player.x + vx * dt, 60), 820);
+  }
+}
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

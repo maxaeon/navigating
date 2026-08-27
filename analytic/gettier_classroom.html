@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knowledge, and Three Awkward Cases</title>
+<style>
+:root{
+  --page:#12141d;
+  --panel:#1a1e2b;
+  --panel-2:#242a3c;
+  --line:#39415e;
+  --text:#f0f2f7;
+  --muted:#a9b1c4;
+  --candle:#e6c073;
+  --candle-deep:#a8862f;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2d3449}
+button.primary{background:var(--candle); border-color:var(--candle-deep); color:#221a08; font-weight:600}
+button.primary:hover{background:#f0d18e}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--candle); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0e1017; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--candle-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#1e2334; border-color:var(--candle)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--candle); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--candle)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--candle)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#10131c; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--candle)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--candle); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#10131c; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--candle)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--candle); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--candle)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>Knowledge, and Three Awkward Cases</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>An empty seminar room, a definition that stood for two thousand years, and three examples that break it. Knowledge has long been analysed as justified true belief: you believe it, it is true, and you have good reason. In 1963 a three page paper showed that all three conditions can be met while the person plainly does not know, and philosophers have been patching the definition ever since. You will meet a stopped clock, a white rock that looks like a sheep, and a valley full of barn fronts left behind by a film crew, and then be asked to repair the definition yourself and break your own repair. Walk with the arrow keys, press E at each marked spot, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you, and advances the evening at each marked spot. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The next stop in The Analytic Room is Mary in the Black and White Room.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. One popular repair says that nothing false may be doing the work in your reasoning. Test it against all three cases in this activity and report where it succeeds and where it struggles.</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. In the barn case, two people in identical mental states differ in whether they know, because of the surrounding countryside. Is that a reason to reject the case, or a discovery about knowledge?</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. Some philosophers conclude that knowledge cannot be analysed into parts and should be treated as basic. What would be gained and lost by accepting that?</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> The definition these cases attack is knowledge as</p>
+      <label><input type="radio" name="q1" value="Justified true belief"> justified true belief</label>
+      <label><input type="radio" name="q1" value="Whatever the majority accepts"> whatever the majority accepts</label>
+      <label><input type="radio" name="q1" value="Belief that cannot be doubted"> belief that cannot be doubted</label>
+
+      <p><strong>2.</strong> The shape shared by all three cases is that</p>
+      <label><input type="radio" name="q2" value="The reason and the truth come apart"> the reason and the truth come apart</label>
+      <label><input type="radio" name="q2" value="The belief turns out to be false"> the belief turns out to be false</label>
+      <label><input type="radio" name="q2" value="The person had no reason at all"> the person had no reason at all</label>
+
+      <p><strong>3.</strong> The barn case adds the point that</p>
+      <label><input type="radio" name="q3" value="Whether you know can depend on facts outside you"> whether you know can depend on facts outside you</label>
+      <label><input type="radio" name="q3" value="Eyesight is unreliable"> eyesight is unreliable</label>
+      <label><input type="radio" name="q3" value="Barns are hard to identify"> barns are hard to identify</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_gettier";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: What knowing takes",
+    text: "Suppose you know something. What has to be true for that to be so? Pick the closest to your own view before the argument starts.",
+    mcq: ["You believe it, and it is true", "You believe it, it is true, and you have good reason", "You believe it and can prove it to someone else", "Knowing is not made of parts like this"],
+    requireText: true
+  },
+  clock: {
+    title: "Stage 1: The clock on the wall",
+    text: "The clock stopped at ten past nine yesterday, and it happens to be exactly ten past nine now. You looked, believed it, and were right, and reading a classroom clock is ordinarily a fine reason. Did you know the time?",
+    mcq: ["Yes, all three conditions were met", "No, being right by luck is not knowing", "Yes for practical purposes, no in the strict sense", "The case shows the third condition was not really met"],
+    requireText: true
+  },
+  sheep: {
+    title: "Stage 2: The thing in the field",
+    text: "You see a white shape in the field and believe there is a sheep there. The shape is a rock. Behind a rise, out of sight, there is a sheep. Your belief is true, and your reason was ordinary eyesight. What is missing?",
+    mcq: ["Nothing is missing, since it is true and reasonably held", "The reason connects to the rock, and the truth comes from the sheep", "The belief is too vague to count either way", "Eyesight was not a good enough reason here"],
+    requireText: true
+  },
+  barns: {
+    title: "Stage 3: The road of facades",
+    text: "The valley is full of barn fronts propped up as scenery, and one real barn among them. You point at the real one and say that is a barn. True, and normally justified. But had you pointed anywhere else you would have been wrong. Does the surrounding fakery matter?",
+    mcq: ["Yes, since you could so easily have been wrong", "No, since you were right about the one you actually saw", "It matters for whether you were lucky, not for whether you knew", "It shows knowledge depends on facts outside the knower"],
+    requireText: true
+  },
+  fix: {
+    title: "Stage 4: Repairing the definition",
+    text: "Three cases, one shape. True belief with a good reason, and the reason does not connect to what makes it true. Write your own repair to the definition of knowledge, then invent a case that would defeat your repair, or explain why you think none exists.",
+    mcq: null,
+    requireText: true,
+    textHint: "Your fourth condition, and a case against it."
+  }
+};
+
+const quizKeys = [
+  "Justified true belief",
+  "The reason and the truth come apart",
+  "Whether you know can depend on facts outside you"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world: the stove-heated room, with marked spots along
+   it, and the desk where the letters are read.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 1420;
+
+const STATIONS = [
+  { x: 400,  name: "the clock" },
+  { x: 760,  name: "the window" },
+  { x: 1120, name: "the far window" }
+];
+
+const flags = {
+  started: false,
+  firstDone: false,
+  friarMet: false,
+  beat1Done: false,
+  clockDone: false,
+  beat2Done: false,
+  sheepDone: false,
+  beat3Done: false,
+  barnsDone: false,
+  finalDone: false
+};
+let closeView = null;    // "stick" or "wax" fills the view
+
+let paused = false;
+let startTimer = 0;
+let candleLit = true;
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  lecturer: { x: 300, color: "#4a5568" }
+};
+const keys = {};
+const record = { verdicts: [] };
+
+/* Snow at the window. */
+const flakes = [];
+for (let i = 0; i < 50; i++) {
+  flakes.push({ x: (i * 137.3) % 1500, y: (i * 91.7) % 500, s: 0.5 + (i % 3) * 0.4, w: (i % 5) - 2 });
+}
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration, help, dialogue, and the modal
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  speechSynthesis.speak(new SpeechSynthesisUtterance(p.title + ". " + p.text));
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.friarMet) return "Walk right. The lecturer is packing up at the front.";
+  if (!flags.finalDone) return "Walk to the next marked spot and press E there. The questions appear between the spots.";
+  return "The walk is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.close !== undefined) closeView = step.close === false ? null : step.close;
+
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  if (c.tag) record.verdicts.push(c.text);
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+function setObjective(txt) { setObjectiveText(txt); }
+function setObjectiveText(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   An empty classroom, a stopped clock, and a view of the valley
+   ========================================================= */
+function dlgFriar() {
+  flags.friarMet = true;
+  startDlg([
+    { say: "A lecturer is packing a satchel at the front of an empty seminar room. Lecturer: You are early, or everyone else has gone. Either way, sit down, because I have three examples and a definition that will not survive them." },
+    { say: "Lecturer: The definition first, and it is old. It goes back to Plato, and it stood for a very long time. Knowledge is justified true belief." },
+    { say: "Lecturer: Three conditions. You believe it. It is true. And you have good reason. Each one looks necessary, and together they look sufficient, and that is what I want to test." },
+    { note: true, say: "The analysis of knowledge as justified true belief is often traced to Plato's Theaetetus, though Plato himself raises problems with it. In 1963 Edmund Gettier published a three page paper offering counterexamples to it, and the resulting literature is still active." }
+  ], () => {
+    setObjective("Walk right to the first marked spot, the clock, and press E.");
+  });
+}
+function dlgBeat1() {
+  flags.beat1Done = true;
+  startDlg([
+    { say: "The lecturer points up at the wall clock. Lecturer: You came in and looked at that. What time did you take it to be?" },
+    { close: "clock",
+      say: "Lecturer: Ten past nine. Now check your own watch." },
+    { close: "clock",
+      say: "Lecturer: Also ten past nine. So your belief was true. And looking at the clock in a seminar room is exactly the sort of reason we accept every day, from everyone." },
+    { close: "clock",
+      say: "Lecturer: One more fact. That clock stopped yesterday morning. It has read ten past nine for twenty six hours.",
+      choices: [
+        { tag: "lucky", text: "Then I was right by luck rather than knowing.",
+          reply: ["Lecturer: That is the reaction almost everyone has. Now say why, because the three conditions were all met and you have just denied the conclusion."] },
+        { tag: "met", text: "But all three conditions were met.",
+          reply: ["Lecturer: They were, exactly as stated. And still almost nobody wants to say you knew the time. So either the intuition is wrong or the definition is incomplete."] }
+      ] },
+    { close: false,
+      say: "Lecturer: Notice what went wrong. Your reason was the clock. What made your belief true was the actual hour, which the clock had nothing to do with. The two came apart, and they happened to agree." }
+  ], () => {
+    openPrompt("clock", () => {
+      flags.clockDone = true;
+      setObjective("Walk to the window, marked with E.");
+    });
+  });
+}
+function dlgBeat2() {
+  flags.beat2Done = true;
+  startDlg([
+    { say: "The window looks out over a sloping field. Lecturer: Second example, and this one is Chisholm's. Look out there and tell me what you see." },
+    { close: "sheep",
+      say: "Lecturer: A white shape on the grass, at that distance, in this light. You believe there is a sheep in the field, and you would be within your rights to say so." },
+    { close: "sheep",
+      say: "Lecturer: The white shape is a rock. I have walked out to it. It is a rock that looks remarkably like a sheep from this window." },
+    { close: "sheep",
+      say: "Lecturer: And behind that rise, out of your sight, there is a sheep. So your belief that there is a sheep in the field is true.",
+      choices: [
+        { tag: "same", text: "The same shape as the clock. My reason points one way and the truth comes from elsewhere.",
+          reply: ["Lecturer: That is the pattern. The rock justified you. The sheep made you right. They have nothing to do with each other, and you were correct anyway."] },
+        { tag: "vague", text: "My belief was too vague to be interesting.",
+          reply: ["Lecturer: It was as precise as most beliefs. There is a sheep in that field. True, believed, reasonably held. And the reason concerns a rock while the truth concerns a sheep."] }
+      ] }
+  ], () => {
+    openPrompt("sheep", () => {
+      flags.sheepDone = true;
+      setObjective("Walk to the far window, marked with E.");
+    });
+  });
+}
+function dlgBeat3() {
+  flags.beat3Done = true;
+  startDlg([
+    { say: "At the far window the valley road runs away into the distance with buildings along it. Lecturer: Third example, from Goldman, and this one changes what the trouble is about." },
+    { close: "barns",
+      say: "Lecturer: A film company worked in that valley last summer and left the scenery standing. Every one of those is a barn front propped up from behind, with nothing inside." },
+    { close: "barns",
+      say: "Lecturer: Except one. The third along is a real barn, and it was there before they came." },
+    { close: "barns",
+      say: "Lecturer: You looked out, you happened to look at the third one, and you thought, there is a barn. True. Justified in the ordinary way, since it looks exactly like a barn, being one." },
+    { close: false,
+      say: "Lecturer: But if your eye had drifted anywhere else along that road you would have believed the same thing and been wrong. Did you know?",
+      choices: [
+        { tag: "no", text: "No, because I could so easily have been wrong.",
+          reply: ["Lecturer: And notice where the trouble is now. Nothing in your head is any different. What changed is the neighbourhood. Whether you know has come to depend on facts outside you that you never saw."] },
+        { tag: "yes", text: "Yes, because I was right about the one I actually saw.",
+          reply: ["Lecturer: A respectable answer, and defended in print. Then knowing survives being surrounded by near misses, and you owe an account of why the clock is different, since it too was one near miss."] }
+      ] },
+    { note: true, say: "The stopped clock comes from Bertrand Russell, the sheep in the field from Roderick Chisholm, and the barn facades from Alvin Goldman by way of Carl Ginet. They are usually grouped with Gettier's own two cases from 1963, which use a different set-up but produce the same pattern." }
+  ], () => {
+    openPrompt("barns", () => {
+      flags.barnsDone = true;
+      setObjective("Press E once more at the far window for the last of it.");
+    });
+  });
+}
+function dlgClose() {
+  startDlg([
+    { say: "Lecturer: So the definition is in trouble, and the trouble is one shape three times. True belief, held for a decent reason, where the reason and the truth have come apart." },
+    { say: "Lecturer: People have added a fourth condition ever since. That nothing false is doing the work in your reasoning. That your belief tracks the truth, so that had it been false you would not have held it. That it came from a reliable process. Each proposal has counterexamples in the literature." },
+    { say: "Lecturer: Some now argue that knowing cannot be broken into parts at all, and should be taken as basic. Your turn. Repair it, and then try to break your own repair, which is the part that teaches you something." }
+  ], () => {
+    openPrompt("fix", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+function nextStationIndex() {
+  if (!flags.beat1Done) return 0;
+  if (!flags.clockDone) return -1;
+  if (!flags.beat2Done) return 1;
+  if (!flags.sheepDone) return -1;
+  if (!flags.beat3Done) return 2;
+  if (!flags.barnsDone) return -1;
+  if (!flags.finalDone) return 2;
+  return -1;
+}
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.friarMet) return;
+  const idx = nextStationIndex();
+  if (idx < 0) return;
+  const st = STATIONS[idx];
+  if (Math.abs(player.x - st.x) < 45) {
+    if (idx === 2 && flags.barnsDone) { dlgClose(); return; }
+    [dlgBeat1, dlgBeat2, dlgBeat3][idx]();
+    return;
+  }
+  setStatus("The next spot, " + st.name + ", is marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_gettier", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    if (r.response) parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "Knowledge, and Three Awkward Cases, Report\n";
+  text += "===========================================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    if (r.response) text += "Response: " + r.response + "\n";
+    text += "-".repeat(50);
+  });
+  text += "\n\nDiscussion questions:\n";
+  text += "1. The whole-series objection.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Modern cosmology and the first cause.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. The gap between a first cause and the God of worship.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Knowledge_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!REDUCED_MOTION) {
+    flakes.forEach(f => {
+      f.y += (14 + f.s * 16) * dt;
+      f.x += f.w * 6 * dt;
+      if (f.y > 500) { f.y = -4; f.x = (f.x + 137) % 1700; }
+    });
+  }
+  if (!flags.started || paused) return;
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right into the seminar room.");
+      });
+    }
+  }
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+  if (!flags.friarMet && !dialogueActive && player.x > 240) {
+    player.x = Math.min(player.x, 240);
+    dlgFriar();
+  }
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawLecturer(x, y) {
+  ctx.save();
+  ctx.translate(x, y);
+  // A modern lecturer: pale jumper, dark trousers, short hair,
+  // and a satchel on one shoulder.
+  ctx.fillStyle = "#3b3b46";
+  ctx.fillRect(-7, -18, 14, 18);
+  ctx.fillRect(-7, -18, 6, 18);
+  ctx.fillStyle = "#8c9bb0";
+  ctx.fillRect(-9, -40, 18, 23);
+  ctx.fillRect(-12, -38, 4, 16);
+  ctx.fillRect(8, -38, 4, 16);
+  ctx.fillStyle = "#c9a98c";
+  ctx.beginPath(); ctx.arc(0, -49, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#4a3f36";
+  ctx.beginPath(); ctx.arc(0, -52, 8, Math.PI, 0); ctx.fill();
+  // The satchel strap and bag.
+  ctx.strokeStyle = "#6b5a45";
+  ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(-7, -40); ctx.lineTo(8, -22); ctx.stroke();
+  ctx.fillStyle = "#7a6750";
+  ctx.fillRect(6, -24, 12, 11);
+  ctx.restore();
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(230,192,115,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 76 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(230,192,115,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 72 + lift);
+}
+
+/* =========================================================
+   Close views. The stick in water and the wax fill the frame
+   while the conversation is looking at them.
+   ========================================================= */
+
+/* A close view is a zoom, not the scene at scale, so it is drawn
+   inside a frame that says as much. */
+function drawCloseFrame(caption) {
+  const pad = 26;
+  ctx.save();
+  ctx.strokeStyle = "rgba(230,221,194,0.55)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(pad, pad, W - pad * 2, H - pad * 2);
+  ctx.fillStyle = "rgba(230,221,194,0.9)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.letterSpacing = "1px";
+  const label = "A CLOSER LOOK";
+  const lw = ctx.measureText(label).width;
+  ctx.fillStyle = "rgba(20,22,31,0.95)";
+  ctx.fillRect(pad + 16, pad - 9, lw + 16, 18);
+  ctx.fillStyle = "rgba(230,221,194,0.9)";
+  ctx.fillText(label, pad + 24, pad + 4);
+  ctx.letterSpacing = "0px";
+  if (caption) {
+    ctx.fillStyle = "#e6ddc2";
+    ctx.font = "15px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText(caption, W / 2, H - pad - 14);
+    ctx.textAlign = "left";
+  }
+  ctx.restore();
+}
+
+function drawClockClose() {
+  ctx.fillStyle = "#1b1f26";
+  ctx.fillRect(0, 0, W, H);
+  const cx = W / 2, cy = 248;
+  ctx.fillStyle = "#4a4438";
+  ctx.beginPath(); ctx.arc(cx, cy, 132, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#f2eee2";
+  ctx.beginPath(); ctx.arc(cx, cy, 116, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#2f2b24";
+  ctx.font = "15px Georgia, serif";
+  ctx.textAlign = "center";
+  for (let i = 1; i <= 12; i++) {
+    const a2 = (i / 12) * Math.PI * 2 - Math.PI / 2;
+    ctx.fillText(String(i), cx + Math.cos(a2) * 94, cy + Math.sin(a2) * 94 + 5);
+  }
+  // Fixed at ten past nine, and not moving.
+  ctx.strokeStyle = "#2f2b24";
+  ctx.lineWidth = 9;
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx - 58, cy - 34); ctx.stroke();
+  ctx.lineWidth = 6;
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + 68, cy - 40); ctx.stroke();
+  ctx.fillStyle = "#2f2b24";
+  ctx.beginPath(); ctx.arc(cx, cy, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "rgba(238,242,246,0.8)";
+  ctx.font = "14px 'Segoe UI', sans-serif";
+  ctx.fillText("ten past nine, and it has read that since yesterday morning", cx, cy + 176);
+  ctx.textAlign = "left";
+  drawCloseFrame("Right about the time, for no reason connected to the time");
+}
+function drawSheepClose() {
+  ctx.fillStyle = "#9fc4dd";
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = "#8fae68";
+  ctx.fillRect(0, 250, W, H - 250);
+  ctx.fillStyle = "#7fa05c";
+  ctx.beginPath();
+  ctx.moveTo(0, 330);
+  ctx.quadraticCurveTo(430, 286, W, 344);
+  ctx.lineTo(W, H); ctx.lineTo(0, H);
+  ctx.closePath(); ctx.fill();
+  // The white shape in the near field.
+  ctx.fillStyle = "#eae6dc";
+  ctx.beginPath(); ctx.ellipse(300, 300, 52, 34, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#dcd6c8";
+  ctx.beginPath(); ctx.ellipse(262, 288, 22, 17, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "rgba(30,40,26,0.75)";
+  ctx.font = "13px 'Segoe UI', sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("what you can see: a rock", 300, 372);
+  // The actual sheep, behind the rise.
+  ctx.fillStyle = "#f4f1e8";
+  ctx.beginPath(); ctx.ellipse(660, 322, 30, 20, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#3a3a3a";
+  ctx.beginPath(); ctx.ellipse(686, 312, 9, 7, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(646, 338, 5, 12);
+  ctx.fillRect(672, 338, 5, 12);
+  ctx.fillStyle = "#7fa05c";
+  ctx.beginPath();
+  ctx.moveTo(520, 400);
+  ctx.quadraticCurveTo(680, 300, 860, 392);
+  ctx.lineTo(860, H); ctx.lineTo(520, H);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "rgba(30,40,26,0.75)";
+  ctx.fillText("what makes it true: a sheep you cannot see", 660, 420);
+  ctx.textAlign = "left";
+  drawCloseFrame("The rock justifies you, the sheep makes you right");
+}
+function drawBarnsClose() {
+  ctx.fillStyle = "#9fc4dd";
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = "#8fae68";
+  ctx.fillRect(0, 268, W, H - 268);
+  ctx.fillStyle = "#c9b68e";
+  ctx.beginPath();
+  ctx.moveTo(360, H); ctx.lineTo(452, 272); ctx.lineTo(486, 272); ctx.lineTo(600, H);
+  ctx.closePath(); ctx.fill();
+  // Fronts along the road, one of them a whole barn.
+  const barns = [
+    { x: 120, y: 400, s: 74, real: false },
+    { x: 268, y: 358, s: 54, real: false },
+    { x: 596, y: 350, s: 58, real: true },
+    { x: 716, y: 384, s: 70, real: false }
+  ];
+  barns.forEach(b => {
+    ctx.fillStyle = b.real ? "#a8503f" : "#9c4b3f";
+    ctx.fillRect(b.x, b.y - b.s, b.s * 1.5, b.s);
+    ctx.fillStyle = "#7f3c32";
+    ctx.beginPath();
+    ctx.moveTo(b.x - 6, b.y - b.s);
+    ctx.lineTo(b.x + b.s * 0.75, b.y - b.s * 1.6);
+    ctx.lineTo(b.x + b.s * 1.5 + 6, b.y - b.s);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#5e2f28";
+    ctx.fillRect(b.x + b.s * 0.55, b.y - b.s * 0.62, b.s * 0.4, b.s * 0.62);
+    if (!b.real) {
+      // A prop from behind: nothing there, and a brace holding it up.
+      ctx.strokeStyle = "rgba(60,50,40,0.85)";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(b.x + b.s * 1.5, b.y - b.s * 0.8);
+      ctx.lineTo(b.x + b.s * 1.5 + 26, b.y);
+      ctx.stroke();
+    }
+  });
+  ctx.fillStyle = "rgba(30,40,26,0.8)";
+  ctx.font = "13px 'Segoe UI', sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("the one you looked at", 640, 300);
+  ctx.fillText("propped up, with nothing behind them", 300, 452);
+  ctx.textAlign = "left";
+  drawCloseFrame("One real barn, and a valley of fronts");
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  if (closeView === "clock") { drawClockClose(); return; }
+  if (closeView === "sheep") { drawSheepClose(); return; }
+  if (closeView === "barns") { drawBarnsClose(); return; }
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // Night outside, lamplight inside.
+  ctx.fillStyle = "#161a26";
+  ctx.fillRect(camX, 0, W, H);
+
+  // A seminar room with two tall windows onto the valley.
+  ctx.fillStyle = "#e2ddd0";
+  ctx.fillRect(200, 96, WORLD_W - 300, GROUND - 96);
+  ctx.fillStyle = "#cfc8b8";
+  ctx.fillRect(200, 96, WORLD_W - 300, 16);
+  ctx.fillStyle = "#b9b2a2";
+  ctx.fillRect(200, GROUND - 60, WORLD_W - 300, 6);
+  ctx.fillStyle = "#8d7f68";
+  ctx.fillRect(200, GROUND, WORLD_W - 300, H - GROUND);
+  ctx.fillStyle = "#7e7159";
+  for (let fx = 200; fx < WORLD_W - 100; fx += 54) ctx.fillRect(fx, GROUND, 3, H - GROUND);
+  // A blackboard behind the lecturer's end.
+  ctx.fillStyle = "#3c4a3f";
+  ctx.fillRect(240, 168, 150, 96);
+  ctx.fillStyle = "#e6e3d6";
+  ctx.font = "13px Georgia, serif";
+  ctx.fillText("knowledge =", 256, 200);
+  ctx.fillText("justified true belief", 256, 222);
+  // Two rows of seminar chairs.
+  [520, 620, 880, 980].forEach(cx3 => {
+    ctx.fillStyle = "#7a6248";
+    ctx.fillRect(cx3 - 22, GROUND - 34, 44, 7);
+    ctx.fillRect(cx3 - 20, GROUND - 27, 6, 27);
+    ctx.fillRect(cx3 + 14, GROUND - 27, 6, 27);
+    ctx.fillRect(cx3 + 14, GROUND - 66, 6, 32);
+  });
+
+  // The clock, stopped, at the first spot.
+  const kx = STATIONS[0].x;
+  ctx.fillStyle = "#4a4438";
+  ctx.beginPath(); ctx.arc(kx, 196, 34, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#f2eee2";
+  ctx.beginPath(); ctx.arc(kx, 196, 29, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = "#2f2b24";
+  ctx.lineWidth = 3;
+  // Ten past nine, and it has not moved since yesterday.
+  ctx.beginPath(); ctx.moveTo(kx, 196); ctx.lineTo(kx - 15, 187); ctx.stroke();
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(kx, 196); ctx.lineTo(kx + 18, 187); ctx.stroke();
+  ctx.fillStyle = "#2f2b24";
+  ctx.beginPath(); ctx.arc(kx, 196, 3, 0, Math.PI * 2); ctx.fill();
+
+  // The near window, with the field and the white shape.
+  const wx4 = STATIONS[1].x;
+  ctx.fillStyle = "#6d6455";
+  ctx.fillRect(wx4 - 78, 150, 156, 210);
+  ctx.fillStyle = "#9fc4dd";
+  ctx.fillRect(wx4 - 68, 160, 136, 190);
+  ctx.fillStyle = "#7fa05c";
+  ctx.fillRect(wx4 - 68, 268, 136, 82);
+  ctx.fillStyle = "#8fae68";
+  ctx.beginPath();
+  ctx.moveTo(wx4 - 68, 300);
+  ctx.quadraticCurveTo(wx4, 276, wx4 + 68, 302);
+  ctx.lineTo(wx4 + 68, 350); ctx.lineTo(wx4 - 68, 350);
+  ctx.closePath(); ctx.fill();
+  // The white shape that is not a sheep.
+  ctx.fillStyle = "#eae6dc";
+  ctx.beginPath(); ctx.ellipse(wx4 - 22, 292, 15, 10, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#d8d3c6";
+  ctx.beginPath(); ctx.ellipse(wx4 - 30, 288, 6, 5, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = "#6d6455";
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(wx4, 160); ctx.lineTo(wx4, 350);
+  ctx.moveTo(wx4 - 68, 255); ctx.lineTo(wx4 + 68, 255);
+  ctx.stroke();
+
+  // The far window, looking down the road of barn fronts.
+  const vx = STATIONS[2].x;
+  ctx.fillStyle = "#6d6455";
+  ctx.fillRect(vx - 78, 150, 156, 210);
+  ctx.fillStyle = "#9fc4dd";
+  ctx.fillRect(vx - 68, 160, 136, 190);
+  ctx.fillStyle = "#8fae68";
+  ctx.fillRect(vx - 68, 272, 136, 78);
+  ctx.fillStyle = "#c9b68e";
+  ctx.beginPath();
+  ctx.moveTo(vx - 20, 350); ctx.lineTo(vx + 4, 274); ctx.lineTo(vx + 16, 274); ctx.lineTo(vx + 40, 350);
+  ctx.closePath(); ctx.fill();
+  // Barn fronts down the road, smaller with distance.
+  [[-52, 320, 26], [-14, 302, 19], [16, 292, 14], [40, 284, 11]].forEach(b => {
+    ctx.fillStyle = "#9c4b3f";
+    ctx.fillRect(vx + b[0], b[1] - b[2], b[2] * 1.4, b[2]);
+    ctx.fillStyle = "#7f3c32";
+    ctx.beginPath();
+    ctx.moveTo(vx + b[0] - 2, b[1] - b[2]);
+    ctx.lineTo(vx + b[0] + b[2] * 0.7, b[1] - b[2] * 1.5);
+    ctx.lineTo(vx + b[0] + b[2] * 1.4 + 2, b[1] - b[2]);
+    ctx.closePath(); ctx.fill();
+  });
+  ctx.strokeStyle = "#6d6455";
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(vx, 160); ctx.lineTo(vx, 350);
+  ctx.moveTo(vx - 68, 255); ctx.lineTo(vx + 68, 255);
+  ctx.stroke();
+
+  const idx = nextStationIndex();
+  const dX = !flags.friarMet ? npcs.lecturer.x
+    : idx >= 0 ? STATIONS[idx].x - 64
+    : STATIONS[2].x - 64;
+  drawLecturer(dX, GROUND);
+  if (flags.friarMet && idx >= 0) drawMarker(STATIONS[idx].x, GROUND);
+  drawPerson(player.x, GROUND, player.color, player.facing);
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(14,16,23,0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f0f2f7";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Knowledge, and Three Awkward Cases", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#a9b1c4";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You are at the door of a seminar room. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

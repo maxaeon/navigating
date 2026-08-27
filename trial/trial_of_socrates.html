@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Trial of Socrates</title>
+<style>
+:root{
+  --page:#141210;
+  --panel:#1f1c18;
+  --panel-2:#2a2620;
+  --line:#453e33;
+  --text:#f2eee6;
+  --muted:#bfb6a6;
+  --ochre:#d9a45b;
+  --ochre-deep:#a4763a;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#363126}
+button.primary{background:var(--ochre); border-color:var(--ochre-deep); color:#221507; font-weight:600}
+button.primary:hover{background:#e8ba78}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--ochre); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#171410; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--ochre-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#28221a; border-color:var(--ochre)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--ochre); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--ochre)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--ochre)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#16130f; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--ochre)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--ochre); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#16130f; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--ochre)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--ochre); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--ochre)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>The Trial of Socrates</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>Athens, 399 BC. Your jury year has brought its first allotment, and it is the case the whole city is talking about: Socrates has been indicted, and you are one of the 501 citizens that will hear the case today. On the way to the court you will pass through the Agora, where he has spent his life asking questions, and you will see the method itself at work before you judge the man. In the court you will hear the charges and the defense, and you will cast a real vote. Walk with the arrow keys, press E to talk, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The sentence waits a month on the sacred ship's return from Delos. The next stop on the map is The Academy of Plato.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Should there be any limits on what teachers may teach or ask in public? If so, who should decide where the limits sit, and how could that power be abused?</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. Describe a modern case where a person's public image, built up over years, decided their fate before any formal judgment did. What could that person have done about it?</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. Socrates refused to bring his weeping family before the jury or to beg, saying a juror should be persuaded, not moved to pity. Was that integrity, arrogance, or both? Say why.</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> The formal charges against Socrates were</p>
+      <label><input type="radio" name="q1" value="Corrupting the young and impiety toward the city's gods"> corrupting the young and impiety toward the city's gods</label>
+      <label><input type="radio" name="q1" value="Theft of public funds"> theft of public funds</label>
+      <label><input type="radio" name="q1" value="Desertion from the army"> desertion from the army</label>
+
+      <p><strong>2.</strong> The jury's vote on guilt was</p>
+      <label><input type="radio" name="q2" value="280 to 221 for guilt"> 280 to 221 for guilt</label>
+      <label><input type="radio" name="q2" value="Unanimous for guilt"> unanimous for guilt</label>
+      <label><input type="radio" name="q2" value="255 to 246 for acquittal"> 255 to 246 for acquittal</label>
+
+      <p><strong>3.</strong> Among those who offered to stand surety for a larger fine was a young man who became Socrates' most famous student, named</p>
+      <label><input type="radio" name="q3" value="Aristotle"> Aristotle</label>
+      <label><input type="radio" name="q3" value="Plato"> Plato</label>
+      <label><input type="radio" name="q3" value="Pericles"> Pericles</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_apology";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: Before the court",
+    text: "Athens allows a citizen to be prosecuted for what he teaches and asks in public. Before you hear this case: should asking questions ever be a crime? What, if anything, should a city be allowed to forbid teaching?",
+    mcq: ["Nothing: questions and teaching should never be crimes", "Some things: direct instruction in harming others, for example", "Whatever the city's laws decide is forbidden", "I am not sure yet"],
+    requireText: true,
+    textHint: "Say why, in a sentence or two."
+  },
+  dilemma: {
+    title: "Stage 1: The dilemma",
+    text: "Euthyphro said the pious is what all the gods love, and Socrates asked: do the gods love it because it is pious, or is it pious because they love it? Apply the same fork to something you consider good. Is it good because an authority approves of it, or does the authority approve of it because it is good? What follows from each answer?",
+    mcq: ["Approval is what makes it good", "Approval, when correct, tracks a goodness that is already there", "It depends on the case"],
+    requireText: true,
+    textHint: "Pick a side of the fork and follow it."
+  },
+  rumor: {
+    title: "Stage 2: Accusers who cannot be questioned",
+    text: "Socrates says his most dangerous accusers are not the three men present but old rumors, which cannot be summoned or cross-examined. As a source of belief, how does a rumor differ from a witness, and what can a person actually do to defend against one?",
+    mcq: null,
+    requireText: true,
+    textHint: "Name at least one difference and one defense."
+  },
+  verdict: {
+    title: "Stage 3: Your vote",
+    text: "You have heard the charges and the defense. Record your vote as a juror, and give the reason for it. The reason is what will be graded, not the direction.",
+    mcq: ["Guilty", "Not guilty"],
+    requireText: true,
+    textHint: "State the reason for your vote."
+  },
+  examined: {
+    title: "Stage 4: The unexamined life",
+    text: "Facing a death sentence, Socrates said the unexamined life is not worth living for a human being, and that he could not keep quiet. Do you agree with him, in whole or in part? What does an examined life require, and what does it cost?",
+    mcq: ["I agree", "I agree in part", "I disagree"],
+    requireText: true,
+    textHint: "Defend your answer."
+  }
+};
+
+const quizKeys = [
+  "Corrupting the young and impiety toward the city's gods",
+  "280 to 221 for guilt",
+  "Plato"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world
+   The Agora runs from the start to the court gate, and the
+   court of the Heliaia lies beyond it.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 1900;
+const GATE_X = 900;
+const JUROR_X = 1620;   // the open place on the jury benches
+
+const flags = {
+  started: false,
+  firstDone: false,     // stage 0
+  euthMet: false,
+  dilemmaDone: false,   // stage 1
+  heraldMet: false,
+  tookPlace: false,
+  prosecutionDone: false,
+  rumorDone: false,     // stage 2
+  defenseDone: false,
+  voteCast: false,
+  verdictDone: false,   // stage 3
+  penaltyDone: false,
+  finalDone: false
+};
+let paused = false;
+let startTimer = 0;
+let trialPhase = 0;   // 0 not begun, 1 prosecution, 2 defense, 3 vote, 4 penalty, 5 done
+                      // drives the water clock
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  euthyphro: { x: 600, color: "#7b5ea7" },
+  socratesAgora: { x: 660, color: "#d8d2c2" },
+  herald: { x: 990, color: "#8f6a3b" },
+  plato: { x: 1560, color: "#4f7fb0" }
+};
+const keys = {};
+
+const record = {
+  vote: null,
+  voteChoiceText: null
+};
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  const u = new SpeechSynthesisUtterance(p.title + ". " + p.text);
+  speechSynthesis.speak(u);
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+/* =========================================================
+   Help
+   ========================================================= */
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.dilemmaDone) return "Walk right. Two men are talking outside the porch of the Royal Stoa, and the conversation starts when you reach them.";
+  if (!flags.tookPlace) return "Continue right, through the gate. The herald states the charge, and an open place on the jury benches is marked with E.";
+  if (!flags.finalDone) return "The trial advances each time you press E at your place on the benches, and the questions appear between the speeches.";
+  return "The trial is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+/* =========================================================
+   Dialogue engine
+   ========================================================= */
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+/* =========================================================
+   Reflection modal
+   ========================================================= */
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (activePrompt.key === "verdict" && sel) record.vote = sel.value;
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+
+function setObjective(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   The Euthyphro conversation, outside the Royal Stoa
+   ========================================================= */
+function dlgEuthyphro() {
+  flags.euthMet = true;
+  startDlg([
+    { say: "Two men stand talking by the porch. The barefoot one you recognize from the streets. The other, Euthyphro, is telling him why he is at the courts today: he is prosecuting his own father over the death of a laborer, and he calls the prosecution pious." },
+    { say: "Socrates: Then you must know precisely what piety is. Teach me, since I am accused of impiety this very morning, and I could use the knowledge. Euthyphro: Easily. The pious is what is dear to the gods." },
+    { say: "Socrates: The gods quarrel, friend. What is dear to one may be hateful to another. Euthyphro: Then the pious is what all the gods love." },
+    { say: "Socrates: One more question, then. Do the gods love the pious because it is pious, or is it pious because they love it?" },
+    { say: "Euthyphro opens his mouth, closes it, and looks at the sun. Euthyphro: Another time, Socrates. I have somewhere urgent to be. And he leaves in the direction he came from." },
+    { note: true, say: "This exchange is adapted from Plato's dialogue Euthyphro, which is set outside these courts on the morning of the trial. The question Socrates asked is still called the Euthyphro dilemma, and philosophers still use it to test any theory that defines goodness by an authority's approval." }
+  ], () => {
+    openPrompt("dilemma", () => {
+      flags.dilemmaDone = true;
+      setObjective("Continue right, through the gate, into the court.");
+    });
+  });
+}
+
+/* =========================================================
+   The court
+   ========================================================= */
+function dlgHerald() {
+  flags.heraldMet = true;
+  startDlg([
+    { say: "Herald: Juror, you are late. The court of 501 is seated. The indictment: Socrates son of Sophroniscus does wrong by corrupting the young, by not acknowledging the gods the city acknowledges, and by introducing new divinities. The penalty proposed is death." },
+    { say: "Herald: Take the open place on the benches. The water clock times each speech, and it is already filled." }
+  ], () => {
+    setObjective("Walk right to the open place on the benches, marked with E, and press E to take it.");
+  });
+}
+function dlgProsecution() {
+  flags.prosecutionDone = true;
+  trialPhase = 1;
+  startDlg([
+    { say: "Meletus speaks for the accusers, with Anytus and Lycon seated behind him. Meletus: You all know this man. He pries into the heavens and under the earth, he makes the weaker argument defeat the stronger, and he teaches the young of this city to do the same." },
+    { say: "Meletus: Ask the fathers of his followers what has become of their sons. The city's gods he treats as material for questions. I ask this court for the penalty written in the indictment." }
+  ], () => {
+    setObjective("Press E at your place to hear the defense begin.");
+    setStatus("The water clock is turned for the defense.");
+  });
+}
+function dlgOldAccusers() {
+  trialPhase = 2;
+  startDlg([
+    { say: "Socrates rises on the speaker's stone. Socrates: Men of Athens, I must answer two sets of accusers, and the older ones are the more dangerous. You heard them years ago, many of you as boys, in a comedy where a Socrates swings in a basket and says he walks on air and makes the weaker argument the stronger." },
+    { say: "Socrates: Those accusers I cannot summon here. I cannot question a rumor, and it cannot blush. I can only tell you that the man in the basket is not me, and argue in the little water I am given." },
+    { note: true, say: "This part of the defense is adapted from Plato's Apology, where Socrates names the comedy of Aristophanes as one source of the old prejudice against him. The Clouds had been staged twenty four years before this trial, and many of the jurors would have seen it." }
+  ], () => {
+    openPrompt("rumor", () => {
+      flags.rumorDone = true;
+      setObjective("Press E at your place to hear the rest of the defense.");
+    });
+  });
+}
+function dlgDefense() {
+  flags.defenseDone = true;
+  startDlg([
+    { say: "Socrates: As for wisdom, my friend Chaerephon once asked the oracle at Delphi whether anyone was wiser than I, and the oracle answered no. This puzzled me, since I know that I know nothing great. So I went to those with reputations for wisdom, the politicians, the poets, the craftsmen, and questioned them." },
+    { say: "Socrates: Each knew something, and each believed he therefore knew everything. I concluded the oracle meant this: the human being is wisest who, like Socrates, knows that his wisdom is worth nothing. Testing that answer is the work I have done in your marketplace ever since, and it has made me poor and made me enemies." },
+    { say: "Socrates: If you kill me, you will not easily find another like me. The god attached me to this city as to a large and well-bred horse that has grown sluggish, and I am the fly that keeps it awake. You can swat me in one motion, and then you will sleep on, unless the god sends someone else to sting you." },
+    { say: "Socrates: I will not weep, and I will not bring my children up here to soften you. A juror ought to be persuaded, not begged. Vote on what I have said." }
+  ], () => {
+    setObjective("Press E at your place to cast your vote.");
+    setStatus("The herald calls for the ballots.");
+  });
+}
+function dlgVote() {
+  trialPhase = 3;
+  startDlg([
+    { say: "Herald: Jurors, come forward by rows. A solid ballot for acquittal, a pierced ballot for guilt. Your row is called.",
+      choices: [
+        { text: "Cast the pierced ballot: guilty.", tag: "guilty",
+          reply: ["You drop the pierced ballot in the urn and return to your place."] },
+        { text: "Cast the solid ballot: not guilty.", tag: "acquit",
+          reply: ["You drop the solid ballot in the urn and return to your place."] }
+      ] }
+  ], tags => {
+    flags.voteCast = true;
+    record.voteChoiceText = tags.length ? tags[0].text : null;
+    openPrompt("verdict", () => {
+      flags.verdictDone = true;
+      startDlg([
+        { note: true, say: "The count is announced: 280 for guilt, 221 for acquittal. Socrates is convicted. A shift of 30 votes would have acquitted him. Your own ballot is recorded in your report beside the historical count." }
+      ], () => {
+        setObjective("Press E at your place for the penalty phase.");
+      });
+    });
+  });
+}
+function dlgPenalty() {
+  flags.penaltyDone = true;
+  trialPhase = 4;
+  startDlg([
+    { say: "Herald: The accusers propose death. The convicted man proposes his own penalty, and the court chooses between the two. Socrates rises again." },
+    { say: "Socrates: What do I deserve, for going to each of you privately and urging you to care for yourselves before your possessions, and for the city before the city's holdings? A man like that deserves what you give your Olympic victors: free meals in the Prytaneum. He needs them more, and he makes you better." },
+    { say: "The benches erupt. When it is quiet enough, he goes on. Socrates: You may tell me: keep silent, Socrates, and live." },
+    { say: "But the greatest good for a human being is to examine, every day, virtue and myself and others, and the unexamined life is not worth living for a human being. I cannot keep silent, and I cannot make you believe that." },
+    { say: "Socrates: If I must name a penalty you might accept: I could pay one mina of silver. Plato here, and Crito, and Critobulus, and Apollodorus tell me to say thirty, and they will stand surety for it. Thirty minae, then." },
+    { say: "On a bench across from yours, a young man who has been writing on a wax tablet all morning looks up at the sound of his own name." },
+    { note: true, say: "The court voted for the death penalty, and ancient sources report that the margin for death was larger than the margin for guilt. The young man with the tablet is Plato. Nearly everything this activity has quoted survives because he wrote it down." }
+  ], () => {
+    setObjective("Press E at your place to hear the last words.");
+  });
+}
+function dlgClose() {
+  trialPhase = 5;
+  startDlg([
+    { say: "Socrates: Now it is time to go, I to die and you to live. Which of us goes to the better thing is unclear to everyone, except to the god." },
+    { say: "The archers form up around him and the court begins to empty. The men beside you are already arguing about the count." }
+  ], () => {
+    openPrompt("examined", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+
+/* The trial advances from the juror's place. */
+function nextCourtStep() {
+  if (!flags.prosecutionDone) { dlgProsecution(); return; }
+  if (!flags.rumorDone) { dlgOldAccusers(); return; }
+  if (!flags.defenseDone) { dlgDefense(); return; }
+  if (!flags.voteCast) { dlgVote(); return; }
+  if (!flags.penaltyDone) { dlgPenalty(); return; }
+  if (!flags.finalDone) { dlgClose(); return; }
+}
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.tookPlace) {
+    if (flags.heraldMet && Math.abs(player.x - JUROR_X) < 30) {
+      flags.tookPlace = true;
+      setStatus("You take the open place on the bench.");
+      setObjective("Press E to begin the proceedings, and after each speech press E again to continue.");
+      return;
+    }
+    if (Math.abs(player.x - npcs.herald.x) < 50 && flags.heraldMet) {
+      startDlg([{ say: "Herald: The benches, juror. The open place is marked." }], () => {});
+      return;
+    }
+    return;
+  }
+  if (Math.abs(player.x - JUROR_X) < 60) {
+    nextCourtStep();
+    return;
+  }
+  setStatus("The proceedings continue from your place on the benches, marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_apology", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "The Trial of Socrates, Juror's Report\n";
+  text += "=====================================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    text += "Response: " + r.response + "\n" + "-".repeat(50);
+  });
+  text += "\n\nThe ballot:\n";
+  text += "Your vote: " + (record.vote || "(none recorded)") + "\n";
+  text += "Historical count: 280 for guilt, 221 for acquittal. The penalty vote went for death by a larger margin.\n";
+  text += "\nDiscussion questions:\n";
+  text += "1. Limits on teaching, and who decides.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. A modern case decided by public image.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. Refusing to beg: integrity or arrogance.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Trial_of_Socrates_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "3") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!flags.started || paused) return;
+
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right through the Agora. Two men are talking outside the porch of the Royal Stoa.");
+      });
+    }
+  }
+
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+  if (flags.tookPlace) player.x = JUROR_X;
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+
+  // The conversation by the stoa begins as you reach it.
+  if (flags.firstDone && !flags.euthMet && !dialogueActive && player.x > 520) {
+    player.x = Math.min(player.x, 520);
+    dlgEuthyphro();
+  }
+  // The gate stays closed until the dilemma question is answered.
+  if (!flags.dilemmaDone && player.x > GATE_X - 60) {
+    player.x = GATE_X - 60;
+  }
+  // The herald meets the late juror inside the gate.
+  if (flags.dilemmaDone && !flags.heraldMet && !dialogueActive && player.x > 940) {
+    player.x = Math.min(player.x, 940);
+    dlgHerald();
+  }
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawRobed(x, y, color, outline) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-7, -44); ctx.lineTo(7, -44); ctx.lineTo(14, 0); ctx.lineTo(-14, 0);
+  ctx.closePath(); ctx.fill();
+  ctx.fillRect(-13, -41, 6, 17);
+  ctx.fillRect(7, -41, 6, 17);
+  if (outline) {
+    ctx.strokeStyle = "rgba(60,50,40,0.85)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-7, -44); ctx.lineTo(7, -44); ctx.lineTo(14, 0); ctx.lineTo(-14, 0);
+    ctx.closePath(); ctx.stroke();
+  }
+  ctx.restore();
+}
+function drawSeatedFig(x, y, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(x, y - 26, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(x - 6, y - 20, 12, 14);
+  ctx.fillRect(x - 6, y - 6, 13, 4);
+}
+function drawColumn(x, gy, h) {
+  ctx.fillStyle = "#ddd6c4";
+  ctx.fillRect(x - 7, gy - h, 14, h);
+  ctx.fillRect(x - 10, gy - h - 6, 20, 6);
+  ctx.fillRect(x - 9, gy - 4, 18, 4);
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(217,164,91,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 66 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(217,164,91,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 62 + lift);
+}
+function drawClock(x, gy) {
+  // The klepsydra: an upper vessel draining into a lower one as the
+  // trial phases pass.
+  ctx.fillStyle = "#6e5c44";
+  ctx.fillRect(x - 3, gy - 96, 6, 96);
+  ctx.fillRect(x - 30, gy - 96, 60, 5);
+  const level = Math.max(0, 1 - trialPhase / 5);
+  ctx.fillStyle = "#c9c2ae";
+  ctx.fillRect(x - 20, gy - 88, 40, 30);
+  ctx.fillStyle = "#5aa7d4";
+  ctx.fillRect(x - 18, gy - 60 - 26 * level, 36, 26 * level);
+  ctx.fillStyle = "#c9c2ae";
+  ctx.fillRect(x - 20, gy - 34, 40, 30);
+  ctx.fillStyle = "#5aa7d4";
+  const lower = 1 - level;
+  ctx.fillRect(x - 18, gy - 6 - 24 * lower, 36, 24 * lower);
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // Sky and ground.
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, "#a8cbe0");
+  sky.addColorStop(0.75, "#e2d9c2");
+  sky.addColorStop(1, "#d0c3a4");
+  ctx.fillStyle = sky;
+  ctx.fillRect(camX, 0, W, H);
+  ctx.fillStyle = "#c2b193";
+  ctx.fillRect(camX, GROUND, W, H - GROUND);
+  ctx.fillStyle = "#a99878";
+  ctx.fillRect(camX, GROUND, W, 8);
+
+  // ---- The Agora ----
+  // The long stoa in the background.
+  ctx.fillStyle = "rgba(216,209,190,0.75)";
+  ctx.fillRect(60, 300, 640, 12);
+  for (let x = 84; x < 690; x += 62) {
+    ctx.fillRect(x, 312, 10, 118);
+  }
+  ctx.fillStyle = "rgba(150,120,90,0.6)";
+  ctx.fillRect(50, 282, 660, 20);
+  // A market stall with an awning and amphorae.
+  ctx.fillStyle = "#8f6a3b";
+  ctx.fillRect(200, 380, 90, 50);
+  ctx.fillStyle = "#b5502e";
+  ctx.beginPath();
+  ctx.moveTo(190, 380); ctx.lineTo(300, 380); ctx.lineTo(286, 356); ctx.lineTo(204, 356);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#a4763a";
+  [214, 240, 266].forEach(ax => {
+    ctx.beginPath();
+    ctx.ellipse(ax, 372, 8, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  // A herm beside the road.
+  ctx.fillStyle = "#ddd6c4";
+  ctx.fillRect(420, GROUND - 66, 16, 66);
+  ctx.beginPath(); ctx.arc(428, GROUND - 74, 9, 0, Math.PI * 2); ctx.fill();
+  // The porch of the Royal Stoa, where the two men talk.
+  ctx.fillStyle = "rgba(150,120,90,0.7)";
+  ctx.fillRect(548, 292, 180, 16);
+  drawColumn(566, GROUND, 122);
+  drawColumn(614, GROUND, 122);
+  drawColumn(662, GROUND, 122);
+  drawColumn(710, GROUND, 122);
+  ctx.fillStyle = "#8a7a5e";
+  ctx.font = "13px Georgia, serif";
+  ctx.fillText("THE ROYAL STOA", 578, 284);
+
+  // ---- The gate ----
+  drawColumn(GATE_X - 24, GROUND, 140);
+  drawColumn(GATE_X + 24, GROUND, 140);
+  ctx.fillStyle = "#c9c2ae";
+  ctx.fillRect(GATE_X - 40, GROUND - 152, 80, 12);
+
+  // ---- The court ----
+  // The enclosure wall.
+  ctx.fillStyle = "rgba(200,190,168,0.6)";
+  ctx.fillRect(950, 290, 900, 14);
+  for (let x = 966; x < 1850; x += 40) {
+    ctx.fillRect(x, 304, 6, 60);
+  }
+  // The speaker's stone, with a dark board behind it, and Socrates
+  // on it once you are inside.
+  ctx.fillStyle = "#6e5c44";
+  ctx.fillRect(1206, GROUND - 122, 78, 96);
+  ctx.fillStyle = "#a99878";
+  ctx.fillRect(1200, GROUND - 26, 90, 26);
+  if (flags.heraldMet) drawRobed(1245, GROUND - 26, "#d8d2c2", true);
+  ctx.fillStyle = "#8a7a5e";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("the speaker's stone", 1194, GROUND + 20);
+  // The accusers' bench.
+  ctx.fillStyle = "#6e5c44";
+  ctx.fillRect(1040, GROUND - 22, 130, 8);
+  ctx.fillRect(1050, GROUND - 14, 8, 14);
+  ctx.fillRect(1152, GROUND - 14, 8, 14);
+  drawSeatedFig(1070, GROUND, "#8f3b3b");
+  drawSeatedFig(1104, GROUND, "#7b5ea7");
+  drawSeatedFig(1138, GROUND, "#4f6b5f");
+  ctx.fillStyle = "#8a7a5e";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("the accusers", 1064, GROUND + 20);
+  // The water clock.
+  drawClock(1345, GROUND);
+  // The urns for the ballots.
+  ctx.fillStyle = "#8f6a3b";
+  [1400, 1428].forEach(ux => {
+    ctx.beginPath();
+    ctx.ellipse(ux, GROUND - 12, 10, 14, 0, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  // The jury benches, two tiers, with the open place marked.
+  const crowd = ["#4f6b8f", "#5a4a6e", "#33404f", "#6b8f4f", "#7b6ea7"];
+  ctx.fillStyle = "#6e5c44";
+  ctx.fillRect(1480, GROUND - 22, 360, 8);
+  ctx.fillRect(1500, GROUND - 52, 320, 8);
+  for (let i = 0; i < 9; i++) {
+    const sx = 1500 + i * 40;
+    if (Math.abs(sx - JUROR_X) < 18) continue;
+    drawSeatedFig(sx, GROUND, crowd[i % crowd.length]);
+  }
+  for (let i = 0; i < 7; i++) {
+    const sx = 1524 + i * 42;
+    if (Math.abs(sx - npcs.plato.x) < 18) continue;
+    drawSeatedFig(sx, GROUND - 30, crowd[(i + 2) % crowd.length]);
+  }
+  // Plato on the upper tier, writing.
+  drawSeatedFig(npcs.plato.x, GROUND - 30, npcs.plato.color);
+  ctx.fillStyle = "#e8e0cc";
+  ctx.fillRect(npcs.plato.x + 6, GROUND - 48, 10, 7);
+  // The open place.
+  if (!flags.tookPlace && flags.heraldMet) drawMarker(JUROR_X, GROUND);
+  if (flags.tookPlace) drawMarker(JUROR_X, GROUND);
+  // The herald.
+  drawPerson(npcs.herald.x, GROUND, npcs.herald.color, 1);
+  ctx.fillStyle = "#6e5c44";
+  ctx.fillRect(npcs.herald.x + 12, GROUND - 58, 4, 58);
+
+  // ---- The Agora pair, both gone to their business once the
+  //      dilemma question is answered ----
+  if (!flags.dilemmaDone) {
+    drawRobed(npcs.socratesAgora.x, GROUND, npcs.socratesAgora.color, true);
+    drawRobed(npcs.euthyphro.x, GROUND, npcs.euthyphro.color);
+  }
+
+  // The player, standing or seated among the jurors.
+  if (flags.tookPlace) {
+    drawSeatedFig(JUROR_X, GROUND, player.color);
+  } else {
+    drawPerson(player.x, player.y, player.color, player.facing);
+  }
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(23,20,16,0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f2eee6";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("The Trial of Socrates", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#bfb6a6";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You stand at the edge of the Agora. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

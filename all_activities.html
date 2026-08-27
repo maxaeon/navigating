@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Navigating Philosophy</title>
+<style>
+:root{
+  --page:#12151c;
+  --panel:#1a1f29;
+  --panel-2:#242b38;
+  --line:#35405a;
+  --text:#eef2f6;
+  --muted:#a7b4c2;
+  --sea:#5aa7d4;
+  --sea-deep:#33769f;
+  --gold:#dfae5c;
+  --good:#8fca7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 60px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:900px; margin:0 auto; padding:0 16px}
+header{padding:32px 0 8px; text-align:center}
+header h1{margin:0 0 10px; font-size:32px}
+header p{max-width:720px; margin:0 auto; color:var(--muted); line-height:1.6}
+
+.start{
+  display:block; max-width:900px; margin:22px auto 6px;
+  background:var(--panel); border:1px solid var(--sea-deep); border-radius:12px;
+  padding:18px 20px; text-decoration:none; color:var(--text);
+}
+.start:hover{background:var(--panel-2)}
+.start h2{margin:0 0 6px; font-size:21px; color:var(--sea)}
+.start p{margin:0; color:var(--muted); line-height:1.55; font-size:15px}
+
+.note{
+  max-width:900px; margin:14px auto 0; color:var(--muted);
+  font-size:14px; line-height:1.55; text-align:center;
+}
+
+h2.section{
+  max-width:900px; margin:30px auto 10px; padding:0 0 6px;
+  border-bottom:1px solid var(--line); font-size:19px; color:var(--gold);
+}
+.group{max-width:900px; margin:0 auto}
+.group > p.lead{color:var(--muted); font-size:14px; line-height:1.55; margin:0 0 12px}
+
+.row{
+  display:flex; gap:14px; align-items:baseline; flex-wrap:wrap;
+  background:var(--panel); border:1px solid var(--line); border-radius:10px;
+  padding:12px 16px; margin-bottom:9px;
+}
+.row .num{
+  min-width:26px; height:26px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--panel-2); border:1px solid var(--line);
+  color:var(--muted); font-size:13px; font-family:Georgia,serif;
+  flex:0 0 auto; align-self:center;
+}
+.row.done .num{background:#2c4423; border-color:var(--good); color:var(--good)}
+.row .body{flex:1 1 340px}
+.row a.title{color:var(--text); font-size:16px; font-weight:600; text-decoration:none}
+.row a.title:hover{color:var(--sea)}
+.row p{margin:3px 0 0; color:var(--muted); font-size:14px; line-height:1.5}
+.row .path{color:#6f7d90; font-size:12px; font-family:ui-monospace,Menlo,Consolas,monospace}
+.row .links{flex:0 0 auto; align-self:center}
+.row .links a{color:var(--sea); font-size:13px; text-decoration:none; margin-left:12px}
+.row .links a:hover{text-decoration:underline}
+
+footer{max-width:900px; margin:34px auto 0; color:var(--muted); font-size:13px; line-height:1.6}
+footer a{color:var(--sea)}
+#progressNote{text-align:center; color:var(--gold); margin:16px auto 0; font-size:15px}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="./shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>Navigating Philosophy</h1>
+    <p class="about-cue">About this page</p>
+    <div class="about" id="aboutText"><p>A route through the history of philosophy, walked one place at a time. Every activity below is a single self-contained page that runs in the browser, records the student's written answers, and produces a report to download and submit. Start at the world map, which unlocks the route in order, or open any single activity directly from the list.</p></div>
+  </div>
+</header>
+
+<a class="start" href="map/world_map.html">
+  <h2>Open the world map</h2>
+  <p>The route hub. It tracks which activities are complete, opens each region in order, and holds the roads between them. This is the link to give students who are walking the whole expedition.</p>
+</a>
+
+<p id="progressNote"></p>
+
+<p class="note">Progress is stored in this browser, so a student who switches browsers or devices starts the map fresh. The activities themselves work in any order, and each one produces its own report.</p>
+
+<h2 class="section">Before the journey</h2>
+<div class="group">
+  <div class="row" data-key="phil_map_prologue">
+    <div class="num">1</div>
+    <div class="body">
+      <a class="title" href="prologue/philosophy_prologue.html">What Philosophy Is</a>
+      <p>The branches of philosophy, ending at a lever beside a trolley track.</p>
+      <p class="path">prologue/philosophy_prologue.html</p>
+    </div>
+    <div class="links"><a href="prologue/README.md">Notes</a></div>
+  </div>
+</div>
+
+<h2 class="section">Ancient Greece</h2>
+<div class="group">
+  <p class="lead">Eight activities walked by a single Athenian juror, from Miletus to the Lyceum. The region map is <span class="path">map/ancient_philosophy_map.html</span>.</p>
+  <div class="row" data-key="phil_map_presocratics">
+    <div class="num">2</div>
+    <div class="body">
+      <a class="title" href="presocratics/presocratics_journey.html">The Presocratics</a>
+      <p>Miletus and the first attempts to explain the world without myth.</p>
+      <p class="path">presocratics/presocratics_journey.html</p>
+    </div>
+    <div class="links"><a href="presocratics/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_ship">
+    <div class="num">3</div>
+    <div class="body">
+      <a class="title" href="ship-of-theseus/ship_of_theseus.html">The Ship of Theseus</a>
+      <p>Identity over time, worked out on the crossing home.</p>
+      <p class="path">ship-of-theseus/ship_of_theseus.html</p>
+    </div>
+    <div class="links"><a href="ship-of-theseus/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_clouds">
+    <div class="num">4</div>
+    <div class="body">
+      <a class="title" href="clouds/the_clouds.html">The Clouds</a>
+      <p>Aristophanes' comedy, and the reputation it built for Socrates.</p>
+      <p class="path">clouds/the_clouds.html</p>
+    </div>
+    <div class="links"><a href="clouds/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_apology">
+    <div class="num">5</div>
+    <div class="body">
+      <a class="title" href="trial/trial_of_socrates.html">The Trial of Socrates</a>
+      <p>The charges, the defense, and the votes, with the student on the jury.</p>
+      <p class="path">trial/trial_of_socrates.html</p>
+    </div>
+    <div class="links"><a href="trial/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_academy">
+    <div class="num">6</div>
+    <div class="body">
+      <a class="title" href="academy/academy_of_plato.html">The Academy of Plato</a>
+      <p>The geometry lesson from the Meno, answered by the student in the sand.</p>
+      <p class="path">academy/academy_of_plato.html</p>
+    </div>
+    <div class="links"><a href="academy/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_cave">
+    <div class="num">7</div>
+    <div class="body">
+      <a class="title" href="platos-cave/platos_cave_simulation.html">The Allegory of the Cave</a>
+      <p>The chained view, the fire, the climb, and the return.</p>
+      <p class="path">platos-cave/platos_cave_simulation.html</p>
+    </div>
+    <div class="links"><a href="platos-cave/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_phaedo">
+    <div class="num">8</div>
+    <div class="body">
+      <a class="title" href="prison/prison_of_socrates.html">The Last Day</a>
+      <p>The prison, the arguments about the soul, and the refusal to escape.</p>
+      <p class="path">prison/prison_of_socrates.html</p>
+    </div>
+    <div class="links"><a href="prison/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_aristotle">
+    <div class="num">9</div>
+    <div class="body">
+      <a class="title" href="aristotle-lyceum/aristotle_lyceum.html">Aristotle's Lyceum</a>
+      <p>Causes, the mean, and the walk that gave the school its name.</p>
+      <p class="path">aristotle-lyceum/aristotle_lyceum.html</p>
+    </div>
+    <div class="links"><a href="aristotle-lyceum/README.md">Notes</a></div>
+  </div>
+</div>
+
+<h2 class="section">On the roads</h2>
+<div class="group">
+  <p class="lead">Situations between regions. The map places them on the routes, and they are not chosen.</p>
+  <div class="row" data-key="phil_map_footbridge">
+    <div class="num">&#9679;</div>
+    <div class="body">
+      <a class="title" href="travel/footbridge_crossing.html">The Bridge Crossing</a>
+      <p>The footbridge case, set against the lever the student pulled in the prologue.</p>
+      <p class="path">travel/footbridge_crossing.html</p>
+    </div>
+    <div class="links"><a href="travel/README.md">Notes</a></div>
+  </div>
+</div>
+
+<h2 class="section">The Monastery</h2>
+<div class="group">
+  <p class="lead">Five arguments about God, from 1078 to about 1800. The region map is <span class="path">monastery/monastery_map.html</span>.</p>
+  <div class="row" data-key="phil_map_anselm">
+    <div class="num">1</div>
+    <div class="body">
+      <a class="title" href="monastery/anselm_argument.html">Anselm's Argument</a>
+      <p>The argument from a definition alone, with Gaunilo's reply in the day's letters.</p>
+      <p class="path">monastery/anselm_argument.html</p>
+    </div>
+    <div class="links"><a href="monastery/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_aquinas">
+    <div class="num">2</div>
+    <div class="body">
+      <a class="title" href="monastery/aquinas_five_ways.html">The Five Ways</a>
+      <p>Five arguments from the world, one at each station of the abbey church.</p>
+      <p class="path">monastery/aquinas_five_ways.html</p>
+    </div>
+    <div class="links"><a href="monastery/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_evil">
+    <div class="num">3</div>
+    <div class="body">
+      <a class="title" href="monastery/problem_of_evil.html">The Problem of Evil</a>
+      <p>The trilemma, the free will defense, soul-making, and Rowe's fawn.</p>
+      <p class="path">monastery/problem_of_evil.html</p>
+    </div>
+    <div class="links"><a href="monastery/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_pascal">
+    <div class="num">4</div>
+    <div class="body">
+      <a class="title" href="monastery/pascals_wager.html">Pascal's Wager</a>
+      <p>Expected value taught at the table, then the wager and its objections.</p>
+      <p class="path">monastery/pascals_wager.html</p>
+    </div>
+    <div class="links"><a href="monastery/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_paley">
+    <div class="num">5</div>
+    <div class="body">
+      <a class="title" href="monastery/paleys_watch.html">The Watch on the Heath</a>
+      <p>The design argument, the opened watch, Hume's objections, and Darwin.</p>
+      <p class="path">monastery/paleys_watch.html</p>
+    </div>
+    <div class="links"><a href="monastery/README.md">Notes</a></div>
+  </div>
+</div>
+
+<h2 class="section">The Roman World</h2>
+<div class="group">
+  <p class="lead">Philosophy under Rome, anchored at Alexandria. The region map is <span class="path">roman/roman_world_map.html</span>.</p>
+  <div class="row" data-key="phil_map_hypatia">
+    <div class="num">1</div>
+    <div class="body">
+      <a class="title" href="roman/hypatia_of_alexandria.html">Hypatia of Alexandria</a>
+      <p>Mathematics, astronomy, and Platonism, taught in a city dividing along religious lines.</p>
+      <p class="path">roman/hypatia_of_alexandria.html</p>
+    </div>
+    <div class="links"><a href="roman/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_epictetus">
+    <div class="num">2</div>
+    <div class="body">
+      <a class="title" href="roman/epictetus_school.html">Epictetus and the Stoics</a>
+      <p>What is up to us, what is not, and why confusing the two causes misery.</p>
+      <p class="path">roman/epictetus_school.html</p>
+    </div>
+    <div class="links"><a href="roman/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_sextus">
+    <div class="num">3</div>
+    <div class="body">
+      <a class="title" href="roman/sextus_skepticism.html">Sextus Empiricus and the Skeptics</a>
+      <p>Suspending judgment where arguments balance, and the calm said to follow.</p>
+      <p class="path">roman/sextus_skepticism.html</p>
+    </div>
+    <div class="links"><a href="roman/README.md">Notes</a></div>
+  </div>
+</div>
+
+<h2 class="section">Early Modern European Philosophy</h2>
+<div class="group">
+  <p class="lead">Descartes, Berkeley, and Hume are live, with Elisabeth and Amo as an optional follow-up. Kant and Wollstonecraft are in preparation. On the world map this region stays hidden until the Monastery is complete.</p>
+  <div class="row" data-key="phil_map_descartes">
+    <div class="num">1</div>
+    <div class="body">
+      <a class="title" href="modern-europe/descartes_meditations.html">Descartes and the Stove-Heated Room</a>
+      <p>The doubt, the one thing that survives it, and Elisabeth of Bohemia's objection.</p>
+      <p class="path">modern-europe/descartes_meditations.html</p>
+    </div>
+    <div class="links"><a href="modern-europe/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_berkeley">
+    <div class="num">2</div>
+    <div class="body">
+      <a class="title" href="modern-europe/berkeley_quad.html">Berkeley and the Tree in the Quad</a>
+      <p>The water and the hands, the master argument, and why the tree stays.</p>
+      <p class="path">modern-europe/berkeley_quad.html</p>
+    </div>
+    <div class="links"><a href="modern-europe/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_hume">
+    <div class="num">3</div>
+    <div class="body">
+      <a class="title" href="modern-europe/hume_edinburgh.html">Hume in Edinburgh</a>
+      <p>Impressions and ideas, the billiard balls, and the problem of tomorrow.</p>
+      <p class="path">modern-europe/hume_edinburgh.html</p>
+    </div>
+    <div class="links"><a href="modern-europe/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_kant">
+    <div class="num">4</div>
+    <div class="body">
+      <a class="title" href="modern-europe/kant_konigsberg.html">Kant in K&#246;nigsberg</a>
+      <p>The Copernican turn, what the mind supplies, and the price of the answer.</p>
+      <p class="path">modern-europe/kant_konigsberg.html</p>
+    </div>
+    <div class="links"><a href="modern-europe/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_elisabeth">
+    <div class="num">&#9679;</div>
+    <div class="body">
+      <a class="title" href="modern-europe/elisabeth_letters.html">Two Objections</a>
+      <p>Optional. Elisabeth at The Hague in 1643, then Amo at Halle in 1734.</p>
+      <p class="path">modern-europe/elisabeth_letters.html</p>
+    </div>
+    <div class="links"><a href="modern-europe/README.md">Notes</a></div>
+  </div>
+  <div class="row">
+    <div class="num">&#9679;</div>
+    <div class="body">
+      <a class="title" href="modern-europe/modern_europe_map.html">Open the region map</a>
+      <p>Rationalism and empiricism, with Descartes, Hume, Kant, and Wollstonecraft planned in that order.</p>
+      <p class="path">modern-europe/modern_europe_map.html</p>
+    </div>
+    <div class="links"><a href="modern-europe/README.md">Notes</a></div>
+  </div>
+</div>
+
+<h2 class="section">The Twentieth Century</h2>
+<div class="group">
+  <p class="lead">Two habits of doing philosophy rather than two sets of doctrines. Region maps at <span class="path">continental/continental_map.html</span> and <span class="path">analytic/analytic_map.html</span>.</p>
+  <div class="row" data-key="phil_map_sisyphus">
+    <div class="num">1</div>
+    <div class="body">
+      <a class="title" href="continental/sisyphus_algiers.html">The Myth of Sisyphus</a>
+      <p>Camus on the absurd, the two exits he refuses, and the rock that will not stay.</p>
+      <p class="path">continental/sisyphus_algiers.html</p>
+    </div>
+    <div class="links"><a href="continental/README.md">Notes</a></div>
+  </div>
+  <div class="row" data-key="phil_map_gettier">
+    <div class="num">1</div>
+    <div class="body">
+      <a class="title" href="analytic/gettier_classroom.html">Knowledge, and Three Awkward Cases</a>
+      <p>A stopped clock, a rock that looks like a sheep, and a valley of barn fronts.</p>
+      <p class="path">analytic/gettier_classroom.html</p>
+    </div>
+    <div class="links"><a href="analytic/README.md">Notes</a></div>
+  </div>  <div class="row" data-key="phil_map_mary">
+    <div class="num">2</div>
+    <div class="body">
+      <a class="title" href="analytic/marys_room.html">Mary in the Black and White Room</a>
+      <p>Every physical fact about colour, and the morning she walks out.</p>
+      <p class="path">analytic/marys_room.html</p>
+    </div>
+    <div class="links"><a href="analytic/README.md">Notes</a></div>
+  </div>
+
+</div>
+
+<h2 class="section">Maps</h2>
+<div class="group">
+  <div class="row">
+    <div class="num">&#9679;</div>
+    <div class="body">
+      <a class="title" href="map/world_map.html">The world map</a>
+      <p>The route hub, in two views, west and the road east.</p>
+      <p class="path">map/world_map.html</p>
+    </div>
+    <div class="links"><a href="map/README.md">Notes</a></div>
+  </div>
+  <div class="row">
+    <div class="num">&#9679;</div>
+    <div class="body">
+      <a class="title" href="map/ancient_philosophy_map.html">The Ancient Greece region map</a>
+      <p>The eight Greek stops in order, with the Athens zoom.</p>
+      <p class="path">map/ancient_philosophy_map.html</p>
+    </div>
+    <div class="links"><a href="map/README.md">Notes</a></div>
+  </div>
+  <div class="row">
+    <div class="num">&#9679;</div>
+    <div class="body">
+      <a class="title" href="monastery/monastery_map.html">The Monastery region map</a>
+      <p>The five arguments about God in order.</p>
+      <p class="path">monastery/monastery_map.html</p>
+    </div>
+    <div class="links"><a href="monastery/README.md">Notes</a></div>
+  </div>
+</div>
+
+<footer class="wrap">
+  <p>Every page here is a single HTML file with no build step and no external dependencies, so the whole folder can be hosted as static files or opened from disk. Each folder holds its activity, a README describing what the activity covers and how to embed it, and screenshots.</p>
+  <p>To embed one activity in a course page, use an iframe pointing at that file, for example <span class="path">&lt;iframe src="prologue/philosophy_prologue.html" width="960" height="1000"&gt;&lt;/iframe&gt;</span>. To assign the whole route, link students to this page or to the world map.</p>
+</footer>
+
+<script>
+"use strict";
+(function () {
+  var done = 0, total = 0;
+  document.querySelectorAll(".row[data-key]").forEach(function (row) {
+    total++;
+    var isDone = false;
+    try { isDone = localStorage.getItem(row.dataset.key) === "1"; }
+    catch (err) { isDone = false; }
+    if (isDone) {
+      done++;
+      row.classList.add("done");
+      row.querySelector(".num").textContent = "\u2713";
+    }
+  });
+  var note = document.getElementById("progressNote");
+  if (!note) return;
+  note.textContent = done === 0
+    ? "No activities completed in this browser yet."
+    : "Completed in this browser: " + done + " of " + total + " activities.";
+})();
+</script>
+<script src="./shared/expedition.js"></script>
+</body>
+</html>

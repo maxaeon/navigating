@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Problem of Evil</title>
+<style>
+:root{
+  --page:#12141d;
+  --panel:#1a1e2b;
+  --panel-2:#242a3c;
+  --line:#39415e;
+  --text:#f0f2f7;
+  --muted:#a9b1c4;
+  --candle:#e6c073;
+  --candle-deep:#a8862f;
+  --good:#8fca7a;
+  --bad:#e08a7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+.controls-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin:16px 0 6px}
+button{
+  padding:9px 16px; font-size:1em; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+}
+button:hover{background:#2d3449}
+button.primary{background:var(--candle); border-color:var(--candle-deep); color:#221a08; font-weight:600}
+button.primary:hover{background:#f0d18e}
+button:disabled{opacity:.45; cursor:not-allowed}
+#objective{
+  max-width:900px; margin:10px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--candle); font-size:15px; text-align:center; min-height:22px;
+}
+canvas#gameCanvas{
+  background:#0e1017; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; touch-action:none;
+}
+#status{
+  max-width:900px; margin:6px auto 0; text-align:center; color:var(--muted);
+  font-size:14px; min-height:20px;
+}
+#keys{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:14px}
+
+#dialogueBox, #helpPanel{
+  display:none; max-width:900px; margin:10px auto 0; padding:14px 16px;
+  background:var(--panel); border:1px solid var(--candle-deep); border-radius:10px; text-align:left;
+}
+
+#dialogueBox.open, #helpPanel.open{display:block}
+#dialogueBox.note{background:#1e2334; border-color:var(--candle)}
+#dlgTag{display:none; margin:0 0 6px; color:var(--candle); font-size:13px;
+  letter-spacing:.6px; text-transform:uppercase}
+#dialogueBox.note #dlgTag{display:block}
+#dialogueLine{margin:0 0 10px; font-size:16px; line-height:1.5}
+#dialogueChoices button{display:block; width:100%; text-align:left; margin:6px 0}
+#dialogueContinue{margin-top:4px}
+#helpPanel p{margin:6px 0; line-height:1.5}
+#helpPanel .help-now{color:var(--candle)}
+
+#touchpad{display:none; max-width:900px; margin:12px auto 0; text-align:center}
+#touchpad button{font-size:20px; padding:12px 20px; margin:4px}
+@media (pointer:coarse){ #touchpad{display:block} }
+
+
+
+.overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.72);
+  align-items:center; justify-content:center; z-index:999; padding:16px;
+}
+.overlay.open{display:flex}
+#modalContent{
+  background:var(--panel); border:1px solid var(--line);
+  padding:22px 24px; width:min(560px,100%); border-radius:12px;
+  text-align:left; font-size:16px; box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+#modalContent h2{margin:0 0 8px; font-size:21px; color:var(--candle)}
+#modalTextPrompt{margin:0 0 12px; line-height:1.5}
+#modalMCQ label{display:block; margin:7px 0; color:var(--text); cursor:pointer}
+#modalText{
+  width:100%; min-height:84px; margin-top:12px; border-radius:8px; border:1px solid var(--line);
+  padding:10px; font-size:15px; background:#10131c; color:var(--text); font-family:inherit;
+}
+#modalButtons{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+
+#endScreen{
+  display:none; position:fixed; inset:0; background:var(--page);
+  padding:30px 16px; overflow:auto; z-index:1000;
+}
+#endScreen.open{display:block}
+#endScreen .wrap{max-width:820px}
+.section-box{background:var(--panel); border:1px solid var(--line); padding:16px 18px; border-radius:10px; margin-bottom:18px}
+.section-box h3{margin:0 0 10px; color:var(--candle)}
+.entry{border-bottom:1px solid var(--line); padding:10px 0}
+.entry:last-child{border-bottom:none}
+.entry .stage-name{color:var(--candle); font-weight:600}
+.entry p{margin:4px 0; line-height:1.5}
+.entry .q{color:var(--muted)}
+textarea{
+  width:100%; border-radius:8px; border:1px solid var(--line); font-size:15px; padding:10px;
+  margin-top:6px; background:#10131c; color:var(--text); font-family:inherit; min-height:70px;
+}
+#quizSection p strong{color:var(--candle)}
+#quizSection label{display:block; margin:5px 0; cursor:pointer}
+#quizSection label.correct{color:var(--good)}
+#quizSection label.incorrect{color:var(--bad)}
+#quizResult{font-size:17px; color:var(--candle); margin-top:12px}
+.end-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
+#nextStop{color:var(--candle)}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>The Problem of Evil</h1>
+    <p class="about-cue">What this activity covers</p>
+    <div class="about" id="aboutText"><p>The abbey's infirmary, on the same winter night. The infirmarer, the monk who nurses the sick, has heard the arguments of the scriptorium and the church, and he has a question of his own, and he asks it where he works: among the beds. If God is all good and all powerful, the infirmary needs explaining. You will walk the hall with him, hear the problem in its oldest form, and test the three most famous answers against what is in front of you. Walk with the arrow keys, press E at each marked bedside, and answer each question when it appears. At the end you can review your responses, answer discussion questions, take a short quiz, and download a report of your work. The scenes here concern illness and loss, handled with restraint. You can skip any question you would rather not answer. In course mode, which your instructor may set for you, the last question asks for a written answer.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls-row">
+    <button id="narrationToggle">Narration is off</button>
+    <button id="helpBtn">Help</button>
+    <button class="primary" id="startBtn">Begin</button>
+  </div>
+
+  <div id="objective" aria-live="polite">Press Begin to start.</div>
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+  <div id="status" aria-live="polite"></div>
+
+  <div id="dialogueBox" aria-live="polite">
+    <p id="dlgTag">Background</p>
+    <p id="dlgNarration"></p>
+    <p id="dlgSpeaker"></p>
+    <p id="dialogueLine"></p>
+    <div id="dialogueChoices"></div>
+    <button id="dialogueContinue">Continue</button>
+  </div>
+  <details id="bgPanel">
+    <summary>Background notes</summary>
+    <div id="bgNotes"></div>
+  </details>
+
+
+  <div id="helpPanel">
+    <p><strong>Controls</strong></p>
+    <p>Move: left and right arrow keys. E engages with whoever is next to you, and advances the night at each marked bedside. Dialogue replies: click them, or press a number key.</p>
+    <p class="help-now" id="helpNow"></p>
+    <p id="helpTip"></p>
+  </div>
+
+  <p id="keys">Move: left and right arrow keys. E engages with whoever is next to you. Dialogue replies: click them, or press a number key.</p>
+
+  <div id="touchpad" aria-label="Touch controls">
+    <button data-k="ArrowLeft" aria-label="Move left">&#8592;</button>
+    <button data-k="ArrowRight" aria-label="Move right">&#8594;</button>
+    <button data-k="e" aria-label="Interact">E</button>
+  </div>
+</div>
+
+<!-- Reflection modal -->
+<div id="modalOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modalContent">
+    <h2 id="modalTitle"></h2>
+    <p id="modalTextPrompt"></p>
+    <div id="modalMCQ"></div>
+    <textarea id="modalText" placeholder="Write your answer here."></textarea>
+    <div id="modalButtons">
+      <button id="speakBtn">Play narration</button>
+      <button class="primary" id="submitPrompt" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- End screen -->
+<div id="endScreen">
+  <div class="wrap">
+    <h1>Activity completed</h1>
+    <p id="nextStop">The next stop in the region is Pascal's Wager, at the gatehouse.</p>
+
+    <div class="section-box">
+      <h3>Your responses at each stage</h3>
+      <div id="reflectionSummary"></div>
+    </div>
+
+    <div class="section-box">
+      <h3>Discussion questions</h3>
+      <p>1. Theodicies explain suffering in general, and bedsides hold particular sufferers. Describe the difference between answering the problem of evil in a seminar and answering it beside a sick friend, and what each setting owes the other.</p>
+      <textarea id="discussion1"></textarea>
+      <p>2. Mackie asked why an all-powerful God could not have made free creatures who always freely choose the good. Explain his point in your own words, and give the best reply you can construct on the other side.</p>
+      <textarea id="discussion2"></textarea>
+      <p>3. Rowe's evidential argument rests on suffering that appears to serve no purpose at all. Can anyone be in a position to judge that suffering is pointless, and can anyone be in a position to judge that it is not? What follows from your answers?</p>
+      <textarea id="discussion3"></textarea>
+    </div>
+
+    <div class="section-box" id="quizSection">
+      <h3>Quiz</h3>
+      <p><strong>1.</strong> The oldest statement of the problem, reported in antiquity under the name of Epicurus, asks how God can be</p>
+      <label><input type="radio" name="q1" value="Both willing and able to prevent evil, given that evil exists"> both willing and able to prevent evil, given that evil exists</label>
+      <label><input type="radio" name="q1" value="Both just and merciful at once"> both just and merciful at once</label>
+      <label><input type="radio" name="q1" value="Both one and three at once"> both one and three at once</label>
+
+      <p><strong>2.</strong> The free will defense, at its strongest, answers for</p>
+      <label><input type="radio" name="q2" value="Moral evil: the harm that free creatures do"> moral evil: the harm that free creatures do</label>
+      <label><input type="radio" name="q2" value="Natural evil: disease, storms, and earthquakes"> natural evil: disease, storms, and earthquakes</label>
+      <label><input type="radio" name="q2" value="All suffering of every kind"> all suffering of every kind</label>
+
+      <p><strong>3.</strong> Rowe's evidential argument turns on the example of</p>
+      <label><input type="radio" name="q3" value="A fawn burned in a forest fire, suffering where no one sees"> a fawn burned in a forest fire, suffering where no one sees</label>
+      <label><input type="radio" name="q3" value="A city destroyed by an earthquake"> a city destroyed by an earthquake</label>
+      <label><input type="radio" name="q3" value="A liar who prospers"> a liar who prospers</label>
+
+      <p><button id="gradeBtn">Grade the quiz</button></p>
+      <p id="quizResult"></p>
+    </div>
+
+    <p>If your instructor assigned this activity for credit, download the reflection report and submit it in Canvas.</p>
+    <div class="end-actions">
+      <button class="primary" id="downloadBtn">Download the reflection report (.txt)</button>
+      <button id="restartBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIVITY_KEY = "phil_map_evil";
+
+/* =========================================================
+   Prompts, quiz key, and log
+   ========================================================= */
+const prompts = {
+  first: {
+    title: "Stage 0: At the infirmary door",
+    text: "Before you go in: does the existence of suffering count as evidence against an all good, all powerful God?",
+    mcq: ["Yes, it is the strongest evidence against", "It counts, but it can be answered", "No, we cannot judge what God should allow", "The question only matters if you already believe", "I am not sure yet"],
+    requireText: true
+  },
+  trilemma: {
+    title: "Stage 1: The old trilemma",
+    text: "The problem in its oldest reported form: if God is willing to prevent evil but not able, God is not all powerful. If able but not willing, not all good. If both able and willing, why is there evil? Which horn would you contest?",
+    mcq: ["Ability, since some goods may require allowing evil", "Willingness, since a good God may have reasons", "The premise, since evil may not be what it seems", "None, because the trilemma stands"],
+    requireText: true
+  },
+  freewill: {
+    title: "Stage 2: The free will defense",
+    text: "The defense says a world with free creatures who can do wrong is more valuable than a world of creatures who cannot, so God permits the possibility of moral evil for the sake of freedom. The brother in the second bed was beaten by robbers. The brother in the first has a fever no one caused. How far does the defense reach?",
+    mcq: ["It covers the robbers, not the fever", "It covers both, if disease came from a fallen world", "It covers neither, since freedom need not allow this much harm", "Free people who always choose well seem possible"],
+    requireText: true
+  },
+  theodicies: {
+    title: "Stage 3: The remaining answers",
+    text: "Two more answers were put to you: that suffering shapes souls the way hardship shapes character, and that this world, evils included, is the best of all possible worlds. Which answer, of all three, is strongest, and does the strongest one succeed?",
+    mcq: ["Free will, and it works where it applies", "Growth through hardship, though the suffering is uneven", "The best possible world, though no one can check it", "None works, since so much suffering seems pointless", "None is needed, since trust can go past explanation"],
+    requireText: true
+  },
+  bedside: {
+    title: "Stage 4: The bedside",
+    text: "The infirmarer asks his real question last: tonight, at one of these beds, a brother will ask him why. Write what you would say at that bedside, and then say whether it is the same thing you would say in a classroom, and why or why not.",
+    mcq: null,
+    requireText: true,
+    textHint: "The bedside answer, then the comparison."
+  }
+};
+
+const quizKeys = [
+  "Both willing and able to prevent evil, given that evil exists",
+  "Moral evil: the harm that free creatures do",
+  "A fawn burned in a forest fire, suffering where no one sees"
+];
+
+let reflectionLog = [];
+let quizScore = null;
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const objectiveEl = document.getElementById("objective");
+const statusEl = document.getElementById("status");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTextPrompt = document.getElementById("modalTextPrompt");
+const modalMCQ = document.getElementById("modalMCQ");
+const modalText = document.getElementById("modalText");
+const submitBtn = document.getElementById("submitPrompt");
+const speakBtn = document.getElementById("speakBtn");
+const endScreen = document.getElementById("endScreen");
+const dlgBox = document.getElementById("dialogueBox");
+const dlgLine = document.getElementById("dialogueLine");
+const dlgChoices = document.getElementById("dialogueChoices");
+const dlgContinue = document.getElementById("dialogueContinue");
+
+const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const W = 900, H = 500;
+
+/* =========================================================
+   The world: the infirmary hall, entered from the cloister
+   door, with marked stops along the beds.
+   ========================================================= */
+const GROUND = 430;
+const WORLD_W = 1500;
+
+const STATIONS = [
+  { x: 430,  name: "the first bed" },
+  { x: 720,  name: "the second bed" },
+  { x: 1010, name: "the window" },
+  { x: 1280, name: "the last bed" }
+];
+
+const flags = {
+  started: false,
+  firstDone: false,     // stage 0
+  friarMet: false,
+  beat1Done: false,
+  trilemmaDone: false,  // stage 1
+  beat2Done: false,
+  freewillDone: false,  // stage 2
+  beat3Done: false,
+  theodiciesDone: false,// stage 3
+  finalDone: false
+};
+let paused = false;
+let startTimer = 0;
+
+const player = {
+  x: 90, y: GROUND, vx: 0,
+  facing: 1, color: "#5b84b1", canMove: false
+};
+const npcs = {
+  infirmarer: { x: 300, color: "#3a3a45" }
+};
+const keys = {};
+const record = { horn: null };
+
+/* The snow, at the door and the window. */
+const flakes = [];
+for (let i = 0; i < 60; i++) {
+  flakes.push({ x: (i * 137.3) % 1500, y: (i * 91.7) % 500, s: 0.5 + (i % 3) * 0.4, w: (i % 5) - 2 });
+}
+</script>
+<script>
+"use strict";
+
+/* =========================================================
+   Narration, help, dialogue, and the modal
+   ========================================================= */
+let narrationOn = false;
+const narrToggle = document.getElementById("narrationToggle");
+narrToggle.addEventListener("click", () => {
+  narrationOn = !narrationOn;
+  narrToggle.textContent = narrationOn ? "Narration is on" : "Narration is off";
+  if (!narrationOn && window.speechSynthesis) speechSynthesis.cancel();
+});
+let activePrompt = null;
+function speakCurrentPrompt() {
+  if (!window.speechSynthesis || !activePrompt) return;
+  speechSynthesis.cancel();
+  const p = prompts[activePrompt.key];
+  speechSynthesis.speak(new SpeechSynthesisUtterance(p.title + ". " + p.text));
+}
+speakBtn.addEventListener("click", speakCurrentPrompt);
+
+const helpPanel = document.getElementById("helpPanel");
+document.getElementById("helpBtn").addEventListener("click", () => {
+  if (helpPanel.classList.contains("open")) { helpPanel.classList.remove("open"); return; }
+  document.getElementById("helpNow").textContent = "What to do now: " + objectiveEl.textContent;
+  document.getElementById("helpTip").textContent = currentTip();
+  helpPanel.classList.add("open");
+});
+function currentTip() {
+  if (!flags.started) return "Press Begin above the game window.";
+  if (!flags.firstDone) return "The first question appears on its own.";
+  if (!flags.friarMet) return "Walk right to the infirmary. The infirmarer meets you at the door.";
+  if (!flags.finalDone) return "Walk to the next marked bedside and press E there. The questions appear between the beds.";
+  return "The walk is over. Fill in the discussion questions, take the quiz, and download the report.";
+}
+
+let dlg = null;
+let dialogueActive = false;
+function startDlg(steps, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  dlg = { steps: steps.slice(), i: 0, tags: [], onDone };
+  dialogueActive = true;
+  renderDlg();
+}
+function renderDlg() {
+  const step = dlg.steps[dlg.i];
+  if (step.note) {
+    addNote(step.say);
+    continueDlg();
+    return;
+  }
+  dlgBox.classList.toggle("note", !!step.note);
+  renderCardText(step.say);
+  dlgChoices.innerHTML = "";
+  if (step.choices) {
+    dlgContinue.style.display = "none";
+    step.choices.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.textContent = (idx + 1) + ". " + c.text;
+      b.addEventListener("click", () => pickChoice(idx));
+      dlgChoices.appendChild(b);
+    });
+  } else {
+    dlgContinue.style.display = "inline-block";
+  }
+  dlgBox.classList.add("open");
+  if (narrationOn && window.speechSynthesis && !step.choices) {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(step.say));
+  }
+}
+function pickChoice(idx) {
+  const step = dlg.steps[dlg.i];
+  if (!step.choices || !step.choices[idx]) return;
+  const c = step.choices[idx];
+  dlg.tags.push({ tag: c.tag || null, text: c.text });
+  if (c.tag) record.verdicts.push(c.text);
+  const replies = c.reply.map(s => ({ say: s }));
+  dlg.steps.splice(dlg.i + 1, 0, ...replies);
+  dlg.i++;
+  renderDlg();
+}
+function continueDlg() {
+  if (!dlg) return;
+  const step = dlg.steps[dlg.i];
+  if (step.choices) return;
+  dlg.i++;
+  if (dlg.i >= dlg.steps.length) {
+    const cb = dlg.onDone, tags = dlg.tags;
+    dlg = null;
+    dialogueActive = false;
+    dlgBox.classList.remove("open");
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (cb) cb(tags);
+  } else {
+    renderDlg();
+  }
+}
+dlgContinue.addEventListener("click", continueDlg);
+
+
+function addNote(text) {
+  const box = document.getElementById("bgNotes");
+  if (!box) return;
+  if (!box.dataset.headed) {
+    box.dataset.headed = "1";
+    const h = document.createElement("p");
+    h.className = "bg-head";
+    h.textContent = "Notes gathered during this activity";
+    box.appendChild(h);
+  }
+  const p = document.createElement("p");
+  p.textContent = text;
+  box.appendChild(p);
+}
+
+
+function openPrompt(key, onDone) {
+  if (typeof clearStatus === "function") clearStatus();
+  const p = prompts[key];
+  activePrompt = { key, onDone };
+  paused = true;
+  modalTitle.textContent = p.title;
+  modalTextPrompt.textContent = p.text;
+  modalMCQ.innerHTML = "";
+  if (p.mcq) {
+    p.mcq.forEach(opt => {
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "promptMCQ"; inp.value = opt;
+      inp.addEventListener("change", validatePrompt);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(" " + opt));
+      modalMCQ.appendChild(lab);
+    });
+  }
+  modalText.value = "";
+  modalText.placeholder = p.mcq
+    ? "Optional: add a comment or explanation."
+    : (p.textHint || "Write your answer here.");
+  submitBtn.disabled = true;
+  const skipBtn = document.getElementById("skipPrompt");
+  if (skipBtn) skipBtn.style.display = promptRequired(key) ? "none" : "inline-block";
+  overlay.classList.add("open");
+  modalText.focus();
+  if (narrationOn) speakCurrentPrompt();
+}
+function validatePrompt() {
+  const p = prompts[activePrompt.key];
+  let ok;
+  if (p.mcq) {
+    ok = !!document.querySelector('input[name="promptMCQ"]:checked');
+  } else {
+    ok = modalText.value.trim().length > 0;
+  }
+  if (typeof promptRequired === "function" && promptRequired(activePrompt.key)) {
+    ok = ok && modalText.value.trim().length > 0;
+  }
+  submitBtn.disabled = !ok;
+}
+modalText.addEventListener("input", validatePrompt);
+submitBtn.addEventListener("click", () => {
+  const p = prompts[activePrompt.key];
+  const sel = document.querySelector('input[name="promptMCQ"]:checked');
+  reflectionLog.push({
+    stage: p.title,
+    prompt: p.text,
+    choice: p.mcq ? (sel ? sel.value : null) : null,
+    response: modalText.value.trim()
+  });
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlay.classList.remove("open");
+  paused = false;
+  const cb = activePrompt.onDone;
+  activePrompt = null;
+  if (typeof saveProgress === "function") saveProgress();
+  if (cb) cb();
+});
+function setObjective(txt) { setObjectiveText(txt); }
+function setObjectiveText(txt) { objectiveEl.textContent = txt; }
+
+
+/* =========================================================
+   The night's conversations
+   ========================================================= */
+function dlgFriar() {
+  flags.friarMet = true;
+  startDlg([
+    { say: "The infirmarer meets you at the door with a lamp, keeping his voice low. Infirmarer: Come in, but quietly, they are sleeping. You have been to the scriptorium and the church. Good." },
+    { say: "The prior of Bec proved God from a definition, and the friar tonight proved him from a bell rope, and I nurse this hall, and I have a question that both proofs leave standing." },
+    { say: "Infirmarer: It is an old question, older than this house. Walk the beds with me, and I will ask it properly, and you will test the answers I have collected against what is actually here." },
+    { note: true, say: "The problem of evil is the oldest and most discussed argument against the existence of an all good, all powerful God. Its classic statement is reported from antiquity under the name of Epicurus, and every major tradition of philosophy and theology has produced answers, called theodicies, and objections to the answers." }
+  ], () => {
+    setObjective("Walk right to the first marked bed, and press E there.");
+  });
+}
+function dlgBeat1() {
+  flags.beat1Done = true;
+  startDlg([
+    { say: "By the first bed a brother sleeps, flushed with fever, his breathing loud in the quiet hall. Infirmarer: Brother Osmund." },
+    { say: "A fever out of nowhere, ten days now. No one struck him, no one wronged him, nothing he did brought it. It simply came." },
+    { say: "Infirmarer: Now the question, in the old form. If God is willing to prevent this and not able, then he is not all powerful." },
+    { say: "If he is able and not willing, then he is not all good. If he is both able and willing, then why is Osmund burning? And if he is neither, why call him God?" }
+  ], () => {
+    openPrompt("trilemma", () => {
+      flags.trilemmaDone = true;
+      setObjective("Walk to the next marked bed, and press E there.");
+    });
+  });
+}
+function dlgBeat2() {
+  flags.beat2Done = true;
+  startDlg([
+    { say: "The second bed holds a younger man, an arm splinted, a healing cut above one eye. Infirmarer: A traveler like you. Robbers on the north road did this, three men who chose to do it and could have chosen otherwise." },
+    { say: "Infirmarer: Here is the first answer I have collected, the free will defense. A world with free creatures who can do wrong is worth more than a world of puppets who cannot, and the wrong they do is the price of the freedom." },
+    { say: "Augustine argued so, and many since. For this bed, the answer at least addresses the case: a free choice did this." },
+    { say: "Infirmarer: But walk back to the first bed in your mind. No one chose Osmund's fever." },
+    { say: "And a philosopher will one day press harder still: if God can do anything, why not free creatures who always freely choose the good? Is that a contradiction, or only a world God did not make?" },
+    { note: true, say: "The free will defense is the oldest and most defended theodicy, developed by Augustine and given its modern form by Alvin Plantinga." },
+    { say: "Its standing limits are the two the infirmarer names: natural evil, which no creature chooses, and J. L. Mackie's question of 1955, why omnipotence could not have made free creatures who always choose well." }
+  ], () => {
+    openPrompt("freewill", () => {
+      flags.freewillDone = true;
+      setObjective("Walk to the window, marked with E.");
+    });
+  });
+}
+function dlgBeat3() {
+  flags.beat3Done = true;
+  startDlg([
+    { say: "At the window the snow is still coming down over the dark woods. Infirmarer: Two more answers, and I will give them to you looking outward, since neither one fits inside a sickroom easily. The second says that hardship shapes souls the way training shapes a body, and that a world with real difficulty grows courage, patience, and compassion that an easy world never could." },
+    { say: "Infirmarer: The third is grander. It says that God, seeing every possible world, made the best one, and that the evils in it are the unavoidable cost of the best overall arrangement, like the dissonances a composer keeps because the whole is better with them." },
+    { say: "Infirmarer: Against both, I give you one picture a philosopher will one day use. Somewhere out in woods like those, lightning starts a fire, and a fawn is burned, and lies in agony for days, and dies, and no human being ever knows." },
+    { say: "No soul is schooled by it. No freedom required it. If even one suffering is truly pointless, what happens to the answers?" },
+    { note: true, say: "The soul-making theodicy descends from Irenaeus and was given its modern form by John Hick. The best possible world is Leibniz's, from 1710, mocked by Voltaire in Candide." },
+    { say: "The fawn is William Rowe's example, from 1979, the centerpiece of the evidential problem of evil: not that evil is logically incompatible with God, but that apparently pointless suffering is strong evidence against him. The standing reply, called skeptical theism, is that we are in no position to judge which sufferings are pointless." }
+  ], () => {
+    openPrompt("theodicies", () => {
+      flags.theodiciesDone = true;
+      setObjective("Walk to the last marked bed, and press E there.");
+    });
+  });
+}
+function dlgClose() {
+  startDlg([
+    { say: "The last bed is beside the lamp shelf, and the old man in it is awake, watching the ceiling calmly. The infirmarer straightens his blanket and steps back to you." },
+    { say: "Infirmarer: Brother Maurus there is ninety, and he is not afraid, and some night soon he will ask me why anyway. Not as an argument. As a question, from a bed." },
+    { say: "Infirmarer: You have heard everything I have collected. So I will ask you the only way the question ever really arrives." }
+  ], () => {
+    openPrompt("bedside", () => {
+      flags.finalDone = true;
+      endGame();
+    });
+  });
+}
+function nextStationIndex() {
+  if (!flags.beat1Done) return 0;
+  if (!flags.trilemmaDone) return -1;
+  if (!flags.beat2Done) return 1;
+  if (!flags.freewillDone) return -1;
+  if (!flags.beat3Done) return 2;
+  if (!flags.theodiciesDone) return -1;
+  if (!flags.finalDone) return 3;
+  return -1;
+}
+
+/* =========================================================
+   Interaction
+   ========================================================= */
+function tryInteract() {
+  if (paused || !player.canMove) return;
+  if (dialogueActive) { continueDlg(); return; }
+  if (!flags.friarMet) return;
+  const idx = nextStationIndex();
+  if (idx < 0) return;
+  const st = STATIONS[idx];
+  if (Math.abs(player.x - st.x) < 45) {
+    if (idx === 0) { dlgBeat1(); return; }
+    if (idx === 1) { dlgBeat2(); return; }
+    if (idx === 2) { dlgBeat3(); return; }
+    if (idx === 3) { dlgClose(); return; }
+    return;
+  }
+  setStatus("The next stop, " + st.name + ", is marked with E.");
+}
+
+/* =========================================================
+   End screen, quiz, and report
+   ========================================================= */
+function endGame() {
+  try { localStorage.setItem("phil_map_evil", "1"); } catch (err) { /* storage is optional */ }
+  const summary = document.getElementById("reflectionSummary");
+  summary.innerHTML = "";
+  reflectionLog.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    const parts = [];
+    parts.push('<p class="stage-name">' + escapeHtml(r.stage) + '</p>');
+    parts.push('<p class="q">' + escapeHtml(r.prompt) + '</p>');
+    if (r.choice) parts.push('<p>Choice: ' + escapeHtml(r.choice) + '</p>');
+    if (r.response) parts.push('<p>Response: ' + escapeHtml(r.response) + '</p>');
+    div.innerHTML = parts.join("");
+    summary.appendChild(div);
+  });
+  hideCourseworkIfRelaxed();
+  if (typeof clearProgress === "function") clearProgress();
+  endScreen.classList.add("open");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+document.getElementById("gradeBtn").addEventListener("click", () => {
+  const answers = [];
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    const sel = document.querySelector('input[name=q' + i + ']:checked');
+    answers.push(sel ? sel.value : null);
+  }
+  answers.forEach((val, i) => { if (val === quizKeys[i]) score++; });
+  quizScore = { answers, score };
+  document.querySelectorAll("#quizSection label").forEach(lab => {
+    lab.classList.remove("correct", "incorrect");
+    const inp = lab.querySelector("input");
+    if (inp && inp.checked) {
+      lab.classList.add(quizKeys[Number(inp.name.slice(1)) - 1] === inp.value ? "correct" : "incorrect");
+    }
+  });
+  document.getElementById("quizResult").textContent =
+    "You answered " + score + " of 3 correctly." +
+    (score === 3 ? "" : " The report shows the correct answers.");
+});
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const d1 = document.getElementById("discussion1").value.trim();
+  const d2 = document.getElementById("discussion2").value.trim();
+  const d3 = document.getElementById("discussion3").value.trim();
+  let text = "The Problem of Evil, Report\n";
+  text += "===========================\n\nResponses at each stage:\n";
+  reflectionLog.forEach(r => {
+    text += "\n" + r.stage + "\nPrompt: " + r.prompt + "\n";
+    if (r.choice) text += "Choice: " + r.choice + "\n";
+    if (r.response) text += "Response: " + r.response + "\n";
+    text += "-".repeat(50);
+  });
+  text += "\n\nDiscussion questions:\n";
+  text += "1. The seminar and the bedside.\n" + (d1 || "(no answer)") + "\n\n";
+  text += "2. Mackie's question and the best reply.\n" + (d2 || "(no answer)") + "\n\n";
+  text += "3. Judging pointlessness, in either direction.\n" + (d3 || "(no answer)") + "\n\n";
+  text += "Quiz:\n";
+  if (quizScore) {
+    quizScore.answers.forEach((ans, i) => {
+      text += "Question " + (i + 1) + ". Selected: " + (ans || "(no answer)") + " | Correct: " + quizKeys[i] + "\n";
+    });
+    text += "Score: " + quizScore.score + " of 3\n";
+  } else {
+    text += "(quiz not taken)\n";
+  }
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "Problem_of_Evil_Report.txt"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+
+/* =========================================================
+   Input
+   ========================================================= */
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (overlay.classList.contains("open")) return;
+  if (dialogueActive) {
+    if (k === "e" || k === "enter") { e.preventDefault(); continueDlg(); }
+    if (k >= "1" && k <= "2") {
+      const step = dlg && dlg.steps[dlg.i];
+      if (step && step.choices) pickChoice(Number(k) - 1);
+    }
+    return;
+  }
+  if (["arrowleft", "arrowright"].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === "e") tryInteract();
+});
+document.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
+document.querySelectorAll("#touchpad button").forEach(btn => {
+  const k = btn.dataset.k.toLowerCase();
+  const down = ev => {
+    ev.preventDefault();
+    if (dialogueActive) { if (k === "e") continueDlg(); return; }
+    keys[k] = true;
+    if (k === "e") tryInteract();
+  };
+  const up = ev => { ev.preventDefault(); keys[k] = false; };
+  btn.addEventListener("pointerdown", down);
+  btn.addEventListener("pointerup", up);
+  btn.addEventListener("pointercancel", up);
+  btn.addEventListener("pointerleave", up);
+});
+
+/* =========================================================
+   Update
+   ========================================================= */
+let camX = 0;
+let last = performance.now();
+let t = 0;
+function update(dt) {
+  if (typeof tickStatus === "function") tickStatus();
+  t += dt;
+  if (!REDUCED_MOTION) {
+    flakes.forEach(f => {
+      f.y += (14 + f.s * 16) * dt;
+      f.x += f.w * 6 * dt;
+      if (f.y > 500) { f.y = -4; f.x = (f.x + 137) % 1700; }
+    });
+  }
+  if (!flags.started || paused) return;
+  if (!flags.firstDone && activePrompt === null) {
+    startTimer += dt;
+    if (startTimer > 2.5) {
+      openPrompt("first", () => {
+        flags.firstDone = true;
+        player.canMove = true;
+        setObjective("Walk right, in through the infirmary door. The infirmarer is waiting with a lamp.");
+      });
+    }
+  }
+  const speed = 210;
+  player.vx = 0;
+  if (player.canMove && !dialogueActive) {
+    if (keys["arrowleft"])  { player.vx = -speed; player.facing = -1; }
+    if (keys["arrowright"]) { player.vx =  speed; player.facing =  1; }
+  }
+  if (player.vx !== 0) moveTarget = null;
+  player.x += player.vx * dt;
+  if (typeof applyPointerWalk === "function") applyPointerWalk(dt);
+  if (player.x < 70) player.x = 70;
+  if (player.x > WORLD_W - 60) player.x = WORLD_W - 60;
+  if (!flags.friarMet && !dialogueActive && player.x > 230) {
+    player.x = Math.min(player.x, 230);
+    dlgFriar();
+  }
+
+  const camTarget = Math.min(Math.max(player.x - 430, 0), WORLD_W - W);
+  camX += (camTarget - camX) * Math.min(1, dt * (REDUCED_MOTION ? 8 : 3));
+}
+
+/* =========================================================
+   Drawing
+   ========================================================= */
+function drawPerson(x, y, color, facing) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -38, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(-6, -31, 12, 20);
+  ctx.fillRect(-6, -11, 5, 11);
+  ctx.fillRect(1, -11, 5, 11);
+  ctx.fillRect(-10, -29, 4, 15);
+  ctx.fillRect(6, -29, 4, 15);
+  ctx.restore();
+}
+function drawFriar(x, y) {
+  ctx.save();
+  ctx.translate(x, y);
+  // The white tunic.
+  ctx.fillStyle = "#e8e4d8";
+  ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-8, -44); ctx.lineTo(8, -44); ctx.lineTo(15, 0); ctx.lineTo(-15, 0);
+  ctx.closePath(); ctx.fill();
+  // The black cloak over the shoulders.
+  ctx.fillStyle = "#2c2c33";
+  ctx.beginPath();
+  ctx.moveTo(-8, -44); ctx.lineTo(8, -44); ctx.lineTo(12, -14); ctx.lineTo(-12, -14);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = "rgba(40,40,50,0.9)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(0, -52, 9, 0, Math.PI * 2); ctx.stroke();
+  ctx.restore();
+}
+function drawMarker(x, y) {
+  const lift = REDUCED_MOTION ? 0 : Math.sin(t * 3 + x) * 3;
+  ctx.strokeStyle = "rgba(230,192,115,0.95)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y - 76 + lift, 8, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(230,192,115,0.95)";
+  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.fillText("E", x - 4, y - 72 + lift);
+}
+function drawCandle(x, y) {
+  const fl = REDUCED_MOTION ? 0 : Math.sin(t * 7 + x) * 1.5;
+  ctx.fillStyle = "#d8d2c2";
+  ctx.fillRect(x - 3, y - 16, 6, 16);
+  ctx.fillStyle = "#ffb84d";
+  ctx.beginPath();
+  ctx.ellipse(x, y - 21 + fl * 0.4, 3, 6 + fl, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(255,184,77,0.12)";
+  ctx.beginPath();
+  ctx.arc(x, y - 18, 30, 0, Math.PI * 2);
+  ctx.fill();
+}
+function drawBed(x, occupied, sitting) {
+  ctx.fillStyle = "#57503f";
+  ctx.fillRect(x - 44, GROUND - 26, 88, 8);
+  ctx.fillRect(x - 42, GROUND - 18, 7, 18);
+  ctx.fillRect(x + 35, GROUND - 18, 7, 18);
+  ctx.fillStyle = "#c9c2ae";
+  ctx.fillRect(x - 44, GROUND - 34, 88, 8);
+  if (occupied) {
+    if (sitting) {
+      ctx.fillStyle = "#d8d2c2";
+      ctx.beginPath(); ctx.arc(x - 22, GROUND - 52, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.fillRect(x - 30, GROUND - 46, 16, 14);
+      ctx.strokeStyle = "rgba(40,48,60,0.9)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(x - 22, GROUND - 52, 8, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = "#8b93a4";
+      ctx.fillRect(x - 14, GROUND - 40, 56, 8);
+    } else {
+      ctx.fillStyle = "#8b93a4";
+      ctx.fillRect(x - 38, GROUND - 42, 76, 10);
+      ctx.fillStyle = "#d8d2c2";
+      ctx.beginPath(); ctx.arc(x - 32, GROUND - 44, 7, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+}
+function drawMonkFig(x, y, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, -50, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-8, -43); ctx.lineTo(8, -43); ctx.lineTo(13, 0); ctx.lineTo(-13, 0);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // The winter night outside.
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, "#1c2338");
+  sky.addColorStop(0.7, "#2c3450");
+  sky.addColorStop(1, "#3c455e");
+  ctx.fillStyle = sky;
+  ctx.fillRect(camX, 0, W, H);
+  ctx.fillStyle = "#dfe5ec";
+  ctx.fillRect(camX, GROUND, W, H - GROUND);
+
+  // The infirmary hall, the near wall cut away from the door on.
+  ctx.fillStyle = "#565d6e";
+  ctx.fillRect(240, 168, WORLD_W - 320, 20);
+  ctx.fillStyle = "#454b5a";
+  ctx.fillRect(240, 188, WORLD_W - 320, GROUND - 188);
+  ctx.fillStyle = "#7d8494";
+  ctx.fillRect(240, GROUND, WORLD_W - 320, H - GROUND);
+  // The door at the west end.
+  ctx.fillStyle = "#1c2338";
+  ctx.fillRect(256, 268, 50, GROUND - 268);
+  // Stone courses.
+  ctx.fillStyle = "#3b414e";
+  for (let bx = 320; bx < WORLD_W - 120; bx += 66) {
+    ctx.fillRect(bx, 214, 50, 3);
+    ctx.fillRect(bx + 26, 268, 50, 3);
+    ctx.fillRect(bx, 322, 50, 3);
+  }
+  // The window at station 3, dark, with snow beyond.
+  ctx.fillStyle = "#2a2f3a";
+  ctx.fillRect(STATIONS[2].x - 26, 210, 52, 92);
+  ctx.fillStyle = "#1c2338";
+  ctx.fillRect(STATIONS[2].x - 20, 216, 40, 80);
+  ctx.fillStyle = "#2a2f3a";
+  ctx.fillRect(STATIONS[2].x - 2, 210, 4, 92);
+  // Lamps along the hall.
+  [520, 900, 1240].forEach(lx => {
+    ctx.fillStyle = "#3a3a45";
+    ctx.fillRect(lx - 2, 188, 4, 26);
+    ctx.fillStyle = "#ffb84d";
+    ctx.beginPath(); ctx.arc(lx, 222, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "rgba(255,184,77,0.10)";
+    ctx.beginPath(); ctx.arc(lx, 226, 60, 0, Math.PI * 2); ctx.fill();
+  });
+  // The beds: fevered brother, injured traveler, and the old man,
+  // who sits up. A fourth bed stands empty near the door.
+  drawBed(340, false, false);
+  drawBed(STATIONS[0].x, true, false);
+  drawBed(STATIONS[1].x, true, false);
+  drawBed(STATIONS[3].x, true, true);
+  // The lamp shelf by the last bed.
+  ctx.fillStyle = "#57503f";
+  ctx.fillRect(STATIONS[3].x + 70, GROUND - 60, 40, 6);
+  ctx.fillStyle = "#ffb84d";
+  ctx.beginPath(); ctx.arc(STATIONS[3].x + 90, GROUND - 66, 5, 0, Math.PI * 2); ctx.fill();
+
+  // Snow at the door and past the window.
+  ctx.fillStyle = "rgba(240,244,250,0.85)";
+  flakes.forEach(f => {
+    const outside = f.x < 240;
+    const inWindow = f.x > STATIONS[2].x - 20 && f.x < STATIONS[2].x + 20 && f.y > 214 && f.y < 298;
+    if (!(outside || inWindow)) return;
+    ctx.beginPath();
+    ctx.arc(f.x, f.y, f.s + 0.6, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // The infirmarer, at the active bedside, and the marker.
+  const idx = nextStationIndex();
+  const infX = !flags.friarMet ? npcs.infirmarer.x
+    : idx >= 0 ? STATIONS[idx].x - 66
+    : STATIONS[3].x - 66;
+  drawMonkFig(infX, GROUND, npcs.infirmarer.color);
+  if (flags.friarMet && idx >= 0) drawMarker(STATIONS[idx].x, GROUND);
+
+  drawPerson(player.x, GROUND, player.color, player.facing);
+
+  ctx.restore();
+
+  if (!flags.started) {
+    ctx.fillStyle = "rgba(14,16,23,0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f0f2f7";
+    ctx.font = "26px 'Iowan Old Style', 'Palatino Linotype', Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("The Problem of Evil", W / 2, H / 2 - 12);
+    ctx.font = "15px 'Segoe UI', sans-serif";
+    ctx.fillStyle = "#a9b1c4";
+    ctx.fillText("Press Begin to start.", W / 2, H / 2 + 18);
+    ctx.textAlign = "left";
+  }
+}
+
+/* =========================================================
+   Main loop and start
+   ========================================================= */
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (flags.started) return;
+  flags.started = true;
+  setObjective("You stand in the cloister outside the infirmary. The first question will appear in a moment.");
+  document.getElementById("startBtn").disabled = true;
+});
+
+
+
+
+
+
+
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

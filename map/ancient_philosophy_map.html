@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ancient Philosophy Activity Map</title>
+<style>
+:root{
+  --page:#101319;
+  --panel:#1a2029;
+  --panel-2:#232b37;
+  --line:#334050;
+  --text:#eef2f6;
+  --muted:#a7b4c2;
+  --aegean:#5aa7d4;
+  --aegean-deep:#33769f;
+  --done:#8fca7a;
+  --locked:#5a6474;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 48px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+#progressLine{
+  max-width:900px; margin:16px auto 0; padding:8px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px 8px 0 0;
+  color:var(--aegean); font-size:15px; text-align:center;
+}
+canvas#mapCanvas{
+  background:#0c1016; display:block; margin:0 auto;
+  border:1px solid var(--line); border-radius:0 0 8px 8px;
+  width:100%; max-width:900px; height:auto; cursor:pointer;
+}
+#cards{max-width:900px; margin:18px auto 0; display:grid; gap:14px}
+.card{
+  background:var(--panel); border:1px solid var(--line); border-radius:10px;
+  padding:16px 18px; display:flex; flex-wrap:wrap; gap:12px; align-items:center;
+}
+.card.skipped{opacity:.75}
+.card.skipped .num{border-color:#8a7a4e; color:#c9b060}
+.skipBtn{background:transparent; font-size:13px; padding:6px 12px}
+.card.locked{opacity:.55}
+.card .num{
+  flex:0 0 auto; width:38px; height:38px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:Georgia,serif; font-size:18px;
+  background:var(--panel-2); border:2px solid var(--aegean-deep); color:var(--aegean);
+}
+.card.done .num{background:var(--done); border-color:var(--done); color:#14210f}
+.card.locked .num{border-color:var(--locked); color:var(--locked)}
+.card .body{flex:1 1 300px}
+.card h3{margin:0 0 4px; font-size:19px}
+.card .place{color:var(--muted); font-size:14px; margin:0 0 6px}
+.card .desc{margin:0; line-height:1.5; font-size:15px}
+.card .actions{flex:0 0 auto; display:flex; flex-direction:column; gap:8px}
+button, a.btn{
+  padding:9px 16px; font-size:15px; border:1px solid var(--line); border-radius:8px;
+  cursor:pointer; background:var(--panel-2); color:var(--text);
+  text-decoration:none; display:inline-block; text-align:center;
+}
+button:hover, a.btn:hover{background:#2c3644}
+a.btn.primary{background:var(--aegean); border-color:var(--aegean-deep); color:#0c1622; font-weight:600}
+a.btn.primary:hover{background:#7cbde2}
+button:disabled, a.btn.disabled{opacity:.45; cursor:not-allowed; pointer-events:none}
+.done-tag{color:var(--done); font-size:14px}
+#storageNote{max-width:900px; margin:14px auto 0; color:var(--muted); font-size:14px; text-align:center}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>Ancient Philosophy Activity Map</h1>
+    <p class="about-cue">About this page</p>
+    <div class="about" id="aboutText"><p>The interactive activities for this unit follow the same road that the ideas took: they begin on the Ionian coast with the first philosophers, cross the Aegean to Plato's cave, and end at Aristotle's Lyceum in Athens. Complete each activity to unlock the next. Finishing an activity means reaching its end screen and downloading the reflection report, which you submit in Canvas. Click a location on the map, or use the list below it.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="progressLine"></div>
+  <canvas id="mapCanvas" width="900" height="520"></canvas>
+  <div id="cards"></div>
+  <p id="storageNote"></p>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   Configuration. To add a future activity, add an entry here.
+   file: the page to open, relative to this map file. Use null
+   while the activity is still in preparation.
+   node: where its marker sits on the map canvas.
+   key: the completion key the activity writes when its end
+   screen is reached (localStorage.setItem(key, "1")).
+   ========================================================= */
+const ACTIVITIES = [
+  {
+    key: "phil_map_presocratics",
+    title: "The Presocratic Philosophers",
+    place: "Miletus and the Ionian coast",
+    desc: "Walk the coast road, test each thinker's first principle with your own hands, and give your own answer at the start and again at the end.",
+    file: "../presocratics/presocratics_journey.html",
+    node: { x: 715, y: 330 }
+  },
+  {
+    key: "phil_map_ship",
+    title: "The Ship of Theseus",
+    place: "At sea, crossing the Aegean",
+    desc: "Work your passage home to Athens for your jury year as the ship's carpenter, replace the timbers as they fail, and answer, port by port, whether she is still the same ship.",
+    file: "../ship-of-theseus/ship_of_theseus.html",
+    node: { x: 548, y: 236 }
+  },
+  {
+    key: "phil_map_clouds",
+    title: "The Clouds of Aristophanes",
+    place: "The Theater of Dionysus, Athens, 423 BC",
+    desc: "Take a seat at the City Dionysia and watch the comedy that taught Athens to laugh at philosophers, then answer for what the laughter did.",
+    file: "../clouds/the_clouds.html",
+    area: "athens",
+    node: { x: 455, y: 330 }
+  },
+  {
+    key: "phil_map_apology",
+    title: "The Trial of Socrates",
+    place: "The Agora, Athens, 399 BC",
+    desc: "Walk the Agora, watch Socrates question Euthyphro on the way to court, then sit as one of the 501 jurors, hear the defense, and cast your vote.",
+    file: "../trial/trial_of_socrates.html",
+    area: "athens",
+    node: { x: 340, y: 210 }
+  },
+  {
+    key: "phil_map_academy",
+    title: "The Academy of Plato",
+    place: "The grove of Akademos, outside the walls",
+    desc: "During the month of the sacred ship, walk out to the grove where Plato will one day teach, and answer the geometry lesson from the Meno yourself, question by question, in the sand.",
+    file: "../academy/academy_of_plato.html",
+    area: "athens",
+    node: { x: 148, y: 158 }
+  },
+  {
+    key: "phil_map_cave",
+    title: "The Allegory of the Cave",
+    place: "The grove of Akademos, during the month of the sacred ship",
+    desc: "The young note-taker from the trial asks you to imagine yourself chained in a cave, and the story becomes yours to live: freed, up to the fire, out into daylight, and back down to attempt a rescue.",
+    file: "../platos-cave/platos_cave_simulation.html",
+    area: "athens",
+    node: { x: 180, y: 390 }
+  },
+  {
+    key: "phil_map_phaedo",
+    title: "The Prison of Socrates",
+    place: "The state prison, Athens, 399 BC",
+    desc: "Visit on the last day: Crito presses the escape plan, Socrates answers with the Laws, and the evening ends with a debt of one rooster.",
+    file: "../prison/prison_of_socrates.html",
+    area: "athens",
+    node: { x: 282, y: 248 }
+  },
+  {
+    key: "phil_map_aristotle",
+    title: "Aristotle at the Lyceum",
+    place: "The Lyceum, Athens",
+    desc: "Walk the colonnade with Aristotle: sort living beings by their capacities, give the four causes of a statue, and place three responses on the line of the mean.",
+    file: "../aristotle-lyceum/aristotle_lyceum.html",
+    area: "athens",
+    node: { x: 700, y: 250 }
+  }
+];
+const ENFORCE_ORDER = true;
+
+/* =========================================================
+   Completion state. The activities write their keys when the
+   end screen is reached. If the browser blocks storage, every
+   activity is left open and a note explains why.
+   ========================================================= */
+let storageOk = true;
+const memoryDone = {};
+function isDone(key) {
+  if (memoryDone[key]) return true;
+  try { return localStorage.getItem(key) === "1"; }
+  catch (err) { storageOk = false; return false; }
+}
+
+/* Skipping. A stop can be set aside and still count, so one
+   difficult stop never blocks the rest of the route. */
+function skipKey(k) { return k + "_skipped"; }
+
+const MINUTES = {"phil_map_prologue": "about 10 minutes", "phil_map_presocratics": "about 20 minutes", "phil_map_ship": "about 15 minutes", "phil_map_clouds": "about 15 minutes", "phil_map_apology": "about 25 minutes", "phil_map_academy": "about 20 minutes", "phil_map_cave": "about 20 minutes", "phil_map_phaedo": "about 20 minutes", "phil_map_aristotle": "about 25 minutes", "phil_map_anselm": "about 20 minutes", "phil_map_aquinas": "about 20 minutes", "phil_map_evil": "about 20 minutes", "phil_map_pascal": "about 20 minutes", "phil_map_paley": "about 20 minutes", "phil_map_footbridge": "about 10 minutes"};
+function isSkipped(k) {
+  try { return localStorage.getItem(skipKey(k)) === "1"; }
+  catch (err) { return false; }
+}
+function setSkipped(k, on) {
+  try {
+    if (on) localStorage.setItem(skipKey(k), "1");
+    else localStorage.removeItem(skipKey(k));
+  } catch (err) { /* storage is optional */ }
+}
+function isSettled(k) { return isDone(k) || isSkipped(k); }
+function markDone(key) {
+  memoryDone[key] = true;
+  try { localStorage.setItem(key, "1"); } catch (err) { storageOk = false; }
+  refresh();
+}
+function isUnlocked(i) {
+  if (!ENFORCE_ORDER || !storageOk) return true;
+  // The nearest earlier stop that is actually available decides.
+  for (let j = i - 1; j >= 0; j--) {
+    if (ACTIVITIES[j].file !== null) return isSettled(ACTIVITIES[j].key);
+  }
+  return true;
+}
+
+/* =========================================================
+   The cards under the map
+   ========================================================= */
+const cardsEl = document.getElementById("cards");
+function buildCards() {
+  cardsEl.innerHTML = "";
+  ACTIVITIES.forEach((a, i) => {
+    const done = isDone(a.key);
+    const unlocked = isUnlocked(i) && a.file !== null;
+    const card = document.createElement("div");
+    card.className = "card" + (done ? " done" : "") + (unlocked || done ? "" : " locked");
+
+    const num = document.createElement("div");
+    num.className = "num";
+    num.textContent = done ? "\u2713" : isSkipped(a.key) ? "\u2013" : String(i + 1);
+    card.appendChild(num);
+
+    const body = document.createElement("div");
+    body.className = "body";
+    const h = document.createElement("h3");
+    h.textContent = a.title;
+    const place = document.createElement("p");
+    place.className = "place";
+    place.textContent = a.place + (MINUTES[a.key] ? "  \u00b7  " + MINUTES[a.key] : "");
+    const desc = document.createElement("p");
+    desc.className = "desc";
+    desc.textContent = a.file === null ? "In preparation. This stop is not yet available."
+      : (unlocked || done) ? a.desc
+      : "Locked. Complete the previous activity to open this one.";
+    body.appendChild(h);
+    body.appendChild(place);
+    body.appendChild(desc);
+    card.appendChild(body);
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+    if (a.file !== null) {
+      const open = document.createElement("a");
+      open.className = "btn primary" + (unlocked || done ? "" : " disabled");
+      open.href = a.file;
+      open.target = "_blank";
+      open.rel = "noopener";
+      open.textContent = "Open the activity";
+      actions.appendChild(open);
+      if (done) {
+        const tag = document.createElement("span");
+        tag.className = "done-tag";
+        tag.textContent = "Completed";
+        actions.appendChild(tag);
+      } else if (unlocked) {
+        const mark = document.createElement("button");
+        mark.textContent = "I finished this activity and downloaded my report";
+        mark.addEventListener("click", () => markDone(a.key));
+        actions.appendChild(mark);
+      }
+    }
+    if (a.file !== null) {
+      const sk = document.createElement("button");
+      sk.className = "skipBtn";
+      sk.textContent = isSkipped(a.key) ? "Skipped, undo" : "Skip for now";
+      sk.title = "Set this stop aside. It still counts toward finishing the region, and you can come back to it.";
+      sk.addEventListener("click", () => { setSkipped(a.key, !isSkipped(a.key)); refresh(); });
+      actions.appendChild(sk);
+    }
+    card.appendChild(actions);
+    cardsEl.appendChild(card);
+  });
+
+  const doneCount = ACTIVITIES.filter(a => a.file !== null && isDone(a.key)).length;
+  const total = ACTIVITIES.filter(a => a.file !== null).length;
+  document.getElementById("progressLine").textContent =
+    doneCount === total
+      ? "All " + total + " activities are complete."
+      : doneCount + " of " + total + " activities complete. Next: " + nextTitle();
+  document.getElementById("storageNote").textContent = storageOk
+    ? "Finishing an activity unlocks the next one on its own. If the map does not notice, use the button on the activity's card."
+    : "This browser is blocking site storage, so the map cannot track completion. All activities are left open. Your downloaded reports are still the record of your work.";
+}
+function nextTitle() {
+  for (let i = 0; i < ACTIVITIES.length; i++) {
+    if (ACTIVITIES[i].file !== null && !isDone(ACTIVITIES[i].key)) return ACTIVITIES[i].title;
+  }
+  return "";
+}
+
+/* =========================================================
+   The map
+   ========================================================= */
+const canvas = document.getElementById("mapCanvas");
+const ctx = canvas.getContext("2d");
+const MW = 900, MH = 520;
+
+let view = "aegean";
+const ATHENS_CLUSTER = { x: 345, y: 300 };
+function athensStops() { return ACTIVITIES.filter(a => a.area === "athens"); }
+function athensState() {
+  const stops = athensStops();
+  const avail = stops.filter(a => a.file !== null);
+  const done = avail.length > 0 && avail.every(a => isDone(a.key));
+  const firstIdx = ACTIVITIES.indexOf(stops[0]);
+  const unlocked = isUnlocked(firstIdx);
+  return { done, unlocked, count: stops.length };
+}
+
+function drawMap() {
+  if (view === "athens") { drawAthens(); return; }
+  ctx.clearRect(0, 0, MW, MH);
+
+  // The sea.
+  const sea = ctx.createLinearGradient(0, 0, 0, MH);
+  sea.addColorStop(0, "#27476b");
+  sea.addColorStop(1, "#1b3350");
+  ctx.fillStyle = sea;
+  ctx.fillRect(0, 0, MW, MH);
+
+  // Mainland Greece at the left: a rough Attica and Peloponnese.
+  ctx.fillStyle = "#5f7a4c";
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(430, 0);
+  ctx.lineTo(410, 70);
+  ctx.lineTo(440, 130);
+  ctx.lineTo(400, 195);
+  ctx.lineTo(425, 250);
+  ctx.lineTo(390, 300);
+  ctx.lineTo(415, 350);
+  ctx.lineTo(360, 385);
+  ctx.lineTo(300, 370);
+  ctx.lineTo(255, 400);
+  ctx.lineTo(280, 445);
+  ctx.lineTo(230, 490);
+  ctx.lineTo(150, 470);
+  ctx.lineTo(110, 500);
+  ctx.lineTo(60, 460);
+  ctx.lineTo(90, 400);
+  ctx.lineTo(40, 360);
+  ctx.lineTo(0, 380);
+  ctx.closePath();
+  ctx.fill();
+
+  // The Ionian coast of Asia Minor at the right.
+  ctx.beginPath();
+  ctx.moveTo(MW, 0);
+  ctx.lineTo(560, 0);
+  ctx.lineTo(600, 60);
+  ctx.lineTo(570, 120);
+  ctx.lineTo(620, 170);
+  ctx.lineTo(590, 230);
+  ctx.lineTo(650, 280);
+  ctx.lineTo(620, 330);
+  ctx.lineTo(690, 380);
+  ctx.lineTo(660, 430);
+  ctx.lineTo(720, 470);
+  ctx.lineTo(700, 520);
+  ctx.lineTo(MW, 520);
+  ctx.closePath();
+  ctx.fill();
+
+  // Shorelines.
+  ctx.strokeStyle = "rgba(220,236,247,0.35)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Islands of the Aegean.
+  ctx.fillStyle = "#5f7a4c";
+  const islands = [
+    [470, 150, 34, 10, 0.5], [500, 250, 14, 8, 0], [540, 300, 10, 6, 0.3],
+    [470, 330, 12, 7, 0.2], [520, 380, 16, 8, 0.1], [450, 420, 12, 6, 0],
+    [560, 200, 9, 5, 0.4], [420, 470, 60, 14, 0.1]
+  ];
+  islands.forEach(s => {
+    ctx.beginPath();
+    ctx.ellipse(s[0], s[1], s[2], s[3], s[4], 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Labels.
+  ctx.fillStyle = "rgba(238,242,246,0.8)";
+  ctx.font = "15px Georgia, serif";
+  ctx.fillText("ATHENS", 300, 235);
+  ctx.fillText("MILETUS", 700, 372);
+  ctx.font = "italic 15px Georgia, serif";
+  ctx.fillStyle = "rgba(220,236,247,0.55)";
+  ctx.fillText("The Aegean Sea", 445, 60);
+  ctx.fillText("Ionia", 740, 250);
+  ctx.fillText("Crete", 400, 495);
+
+  // The route, drawn through the available stops in order.
+  ctx.strokeStyle = "rgba(232,222,180,0.75)";
+  ctx.lineWidth = 2.5;
+
+  // A little ship on the sea leg.
+  const shipStop = ACTIVITIES.find(a => a.key === "phil_map_ship");
+  if (shipStop) {
+    const sn = shipStop.node;
+    ctx.fillStyle = "#c9b98a";
+    ctx.beginPath();
+    ctx.moveTo(sn.x - 26, sn.y + 26);
+    ctx.lineTo(sn.x + 26, sn.y + 26);
+    ctx.lineTo(sn.x + 16, sn.y + 36);
+    ctx.lineTo(sn.x - 16, sn.y + 36);
+    ctx.closePath(); ctx.fill();
+    ctx.fillRect(sn.x - 2, sn.y + 4, 3, 22);
+    ctx.beginPath();
+    ctx.moveTo(sn.x + 2, sn.y + 6);
+    ctx.quadraticCurveTo(sn.x + 20, sn.y + 14, sn.x + 2, sn.y + 24);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // The Athens cluster: one large marker opens the city view.
+  const as = athensState();
+  ctx.beginPath();
+  ctx.arc(ATHENS_CLUSTER.x, ATHENS_CLUSTER.y, 21, 0, Math.PI * 2);
+  ctx.fillStyle = as.done ? "#8fca7a" : as.unlocked ? "#5aa7d4" : "#3a4454";
+  ctx.fill();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = as.done ? "#c2e6b2" : as.unlocked ? "#bfe0f2" : "#5a6474";
+  ctx.stroke();
+  ctx.fillStyle = as.done || as.unlocked ? "#0c1622" : "#8b95a5";
+  ctx.font = "bold 13px Georgia, serif";
+  ctx.textAlign = "center";
+  ctx.fillText(as.done ? "\u2713" : String(as.count), ATHENS_CLUSTER.x, ATHENS_CLUSTER.y + 5);
+  ctx.textAlign = "left";
+  ctx.font = "13px 'Segoe UI', sans-serif";
+  const clLabel = "Athens: " + as.count + " stops. Click to look closer.";
+  const clw = ctx.measureText(clLabel).width;
+  ctx.fillStyle = "rgba(12,16,22,0.75)";
+  ctx.fillRect(ATHENS_CLUSTER.x - clw - 33, ATHENS_CLUSTER.y - 21, clw + 10, 20);
+  ctx.fillStyle = as.done || as.unlocked ? "#eef2f6" : "#8b95a5";
+  ctx.fillText(clLabel, ATHENS_CLUSTER.x - clw - 28, ATHENS_CLUSTER.y - 6);
+
+  // The nodes outside Athens.
+  ACTIVITIES.forEach((a, i) => {
+    if (!a.node || a.area === "athens") return;
+    const done = isDone(a.key);
+    const unlocked = isUnlocked(i) && a.file !== null;
+    const n = a.node;
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, 15, 0, Math.PI * 2);
+    ctx.fillStyle = done ? "#8fca7a" : unlocked ? "#5aa7d4" : "#3a4454";
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = done ? "#c2e6b2" : unlocked ? "#bfe0f2" : "#5a6474";
+    ctx.stroke();
+    ctx.fillStyle = done || unlocked ? "#0c1622" : "#8b95a5";
+    ctx.font = "bold 14px Georgia, serif";
+    ctx.textAlign = "center";
+    const num = ACTIVITIES.filter(b => b.node).indexOf(a) + 1;
+    ctx.fillText(done ? "\u2713" : String(num), n.x, n.y + 5);
+    ctx.textAlign = "left";
+    // Name plaque beside the node, kept inside the canvas.
+    ctx.font = "13px 'Segoe UI', sans-serif";
+    const label = a.title;
+    const tw = ctx.measureText(label).width;
+    const leftSide = n.x + 30 + tw > MW;
+    const lx = leftSide ? n.x - 22 - tw : n.x + 22;
+    const ly = n.y - 8;
+    ctx.fillStyle = "rgba(12,16,22,0.75)";
+    ctx.fillRect(lx - 5, ly - 13, tw + 10, 20);
+    ctx.fillStyle = done || unlocked ? "#eef2f6" : "#8b95a5";
+    ctx.fillText(label, lx, ly + 2);
+  });
+  drawWorldButton();
+}
+
+/* A compass, so north is never in doubt. */
+function drawCompass(cx, cy, r) {
+  ctx.save();
+  ctx.fillStyle = "rgba(12,16,22,0.55)";
+  ctx.beginPath(); ctx.arc(cx, cy, r + 8, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = "rgba(238,242,246,0.85)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(cx, cy, r + 8, 0, Math.PI * 2); ctx.stroke();
+  // The north half, filled.
+  ctx.fillStyle = "#eef2f6";
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - r);
+  ctx.lineTo(cx + r * 0.34, cy + r * 0.28);
+  ctx.lineTo(cx, cy + r * 0.06);
+  ctx.closePath(); ctx.fill();
+  // The south half, outlined.
+  ctx.fillStyle = "rgba(238,242,246,0.35)";
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - r);
+  ctx.lineTo(cx - r * 0.34, cy + r * 0.28);
+  ctx.lineTo(cx, cy + r * 0.06);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#eef2f6";
+  ctx.font = "bold 12px 'Segoe UI', sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("N", cx, cy - r - 12);
+  ctx.textAlign = "left";
+  ctx.restore();
+}
+
+function drawWorldButton() {
+  drawCompass(838, 74, 22);
+  ctx.fillStyle = "rgba(12,16,22,0.8)";
+  ctx.fillRect(14, 14, 176, 30);
+  ctx.fillStyle = "#eef2f6";
+  ctx.font = "14px 'Segoe UI', sans-serif";
+  ctx.fillText("\u2190 Back to the world map", 24, 34);
+}
+function drawAthens() {
+  ctx.clearRect(0, 0, MW, MH);
+  // The Attic countryside.
+  const g = ctx.createLinearGradient(0, 0, 0, MH);
+  g.addColorStop(0, "#6d8556");
+  g.addColorStop(1, "#55693f");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, MW, MH);
+  // The city wall, a rough ring.
+  ctx.strokeStyle = "#c9c2ae";
+  ctx.lineWidth = 7;
+  ctx.beginPath();
+  ctx.ellipse(400, 265, 235, 165, 0.05, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(214,208,190,0.25)";
+  ctx.fill();
+  // Streets and blocks inside the wall.
+  ctx.fillStyle = "rgba(226,220,204,0.55)";
+  for (let i = 0; i < 14; i++) {
+    const bx = 240 + (i * 73) % 330;
+    const by = 165 + (i * 47) % 190;
+    if (Math.hypot(bx - 400, by - 265) < 190) ctx.fillRect(bx, by, 26, 16);
+  }
+  // The acropolis, with the theater cut into its south slope.
+  ctx.fillStyle = "#8d8471";
+  ctx.beginPath();
+  ctx.ellipse(470, 292, 90, 44, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#d6d0be";
+  ctx.fillRect(438, 262, 66, 6);
+  for (let i = 0; i < 6; i++) ctx.fillRect(442 + i * 11, 268, 4, 13);
+  ctx.fillRect(436, 281, 70, 5);
+  // The theater: concentric seating arcs below the hill.
+  ctx.strokeStyle = "#e2dcc8";
+  ctx.lineWidth = 3;
+  for (let r = 12; r <= 32; r += 7) {
+    ctx.beginPath();
+    ctx.arc(455, 336, r, Math.PI * 1.05, Math.PI * 1.95, false);
+    ctx.stroke();
+  }
+  // The grove of Akademos northwest of the wall.
+  ctx.fillStyle = "#4e6b3c";
+  for (const [tx, ty] of [[128, 168], [158, 150], [182, 172], [148, 188]]) {
+    ctx.beginPath(); ctx.arc(tx, ty, 12, 0, Math.PI * 2); ctx.fill();
+  }
+  // The Lyceum grove east of the wall.
+  ctx.fillStyle = "#4e6b3c";
+  for (const [tx, ty] of [[672, 262], [706, 244], [728, 270], [688, 284]]) {
+    ctx.beginPath(); ctx.arc(tx, ty, 13, 0, Math.PI * 2); ctx.fill();
+  }
+  // The cave in the hills southwest of the city.
+  ctx.fillStyle = "#6f6250";
+  ctx.beginPath();
+  ctx.moveTo(120, 412);
+  ctx.quadraticCurveTo(180, 344, 246, 412);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#171310";
+  ctx.beginPath();
+  ctx.ellipse(181, 404, 20, 15, 0, Math.PI, 0);
+  ctx.fill();
+  // Labels.
+  ctx.fillStyle = "rgba(20,24,16,0.75)";
+  ctx.font = "15px Georgia, serif";
+  ctx.fillText("ATHENS", 372, 152);
+  ctx.font = "italic 13px Georgia, serif";
+  ctx.fillText("the Acropolis", 386, 272);
+  ctx.fillText("the city wall", 236, 158);
+  // The route through the four stops.
+  ctx.strokeStyle = "rgba(240,234,208,0.85)";
+  ctx.lineWidth = 2.5;
+  // The stop nodes.
+  ACTIVITIES.forEach(a => {
+    if (a.area !== "athens") return;
+    const i = ACTIVITIES.indexOf(a);
+    const done = isDone(a.key);
+    const unlocked = isUnlocked(i) && a.file !== null;
+    const n = a.node;
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, 15, 0, Math.PI * 2);
+    ctx.fillStyle = done ? "#8fca7a" : unlocked ? "#5aa7d4" : "#3a4454";
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = done ? "#c2e6b2" : unlocked ? "#bfe0f2" : "#5a6474";
+    ctx.stroke();
+    ctx.fillStyle = done || unlocked ? "#0c1622" : "#8b95a5";
+    ctx.font = "bold 14px Georgia, serif";
+    ctx.textAlign = "center";
+    const num = ACTIVITIES.filter(b => b.node).indexOf(a) + 1;
+    ctx.fillText(done ? "\u2713" : String(num), n.x, n.y + 5);
+    ctx.textAlign = "left";
+    ctx.font = "13px 'Segoe UI', sans-serif";
+    const label = a.title;
+    const tw = ctx.measureText(label).width;
+    const leftSide = n.x + 30 + tw > MW;
+    const lx = leftSide ? n.x - 22 - tw : n.x + 22;
+    const ly = n.y - 8;
+    ctx.fillStyle = "rgba(12,16,22,0.75)";
+    ctx.fillRect(lx - 5, ly - 13, tw + 10, 20);
+    ctx.fillStyle = done || unlocked ? "#eef2f6" : "#8b95a5";
+    ctx.fillText(label, lx, ly + 2);
+  });
+  // The way back.
+  ctx.fillStyle = "rgba(12,16,22,0.8)";
+  ctx.fillRect(14, 14, 176, 30);
+  ctx.fillStyle = "#eef2f6";
+  ctx.font = "14px 'Segoe UI', sans-serif";
+  ctx.fillText("\u2190 Back to the sea map", 24, 34);
+}
+
+canvas.addEventListener("click", ev => {
+  const rect = canvas.getBoundingClientRect();
+  const x = (ev.clientX - rect.left) * (MW / rect.width);
+  const y = (ev.clientY - rect.top) * (MH / rect.height);
+  if (view === "aegean") {
+    if (x < 200 && y < 50) {
+      window.location.href = "world_map.html";
+      return;
+    }
+    if (Math.hypot(x - ATHENS_CLUSTER.x, y - ATHENS_CLUSTER.y) < 26) {
+      view = "athens";
+      drawMap();
+      return;
+    }
+    ACTIVITIES.forEach((a, i) => {
+      if (!a.node || a.area === "athens") return;
+      const d = Math.hypot(x - a.node.x, y - a.node.y);
+      if (d < 20 && a.file !== null && isUnlocked(i)) {
+        window.open(a.file, "_blank", "noopener");
+      }
+    });
+  } else {
+    if (x < 200 && y < 50) {
+      view = "aegean";
+      drawMap();
+      return;
+    }
+    ACTIVITIES.forEach((a, i) => {
+      if (a.area !== "athens") return;
+      const d = Math.hypot(x - a.node.x, y - a.node.y);
+      if (d < 20 && a.file !== null && isUnlocked(i)) {
+        window.open(a.file, "_blank", "noopener");
+      }
+    });
+  }
+});
+
+/* Re-read completion whenever the student returns to this tab,
+   so finishing a game unlocks the next stop on its own. */
+window.addEventListener("focus", refresh);
+function refresh() {
+  buildCards();
+  drawMap();
+}
+refresh();
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

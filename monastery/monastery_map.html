@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Monastery</title>
+<style>
+:root{
+  --page:#141721;
+  --panel:#1c2030;
+  --panel-2:#262c40;
+  --line:#3a4260;
+  --text:#eef1f7;
+  --muted:#a8b0c4;
+  --ice:#a9c3dd;
+  --ice-deep:#6284a6;
+  --gold:#dfae5c;
+  --good:#8fca7a;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--text);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  margin:0; padding:0 0 40px;
+}
+h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; letter-spacing:.3px}
+.wrap{max-width:960px; margin:0 auto; padding:0 16px}
+header{padding:26px 0 6px; text-align:center}
+header h1{margin:0 0 8px; font-size:30px}
+header p{max-width:760px; margin:0 auto; color:var(--muted); line-height:1.55}
+canvas#mapCanvas{
+  background:#10131c; display:block; margin:14px auto 0;
+  border:1px solid var(--line); border-radius:10px;
+  width:100%; max-width:900px; height:auto; cursor:pointer;
+}
+#progressLine{max-width:900px; margin:8px auto 0; text-align:center; color:var(--muted); font-size:15px; min-height:22px}
+.cards{max-width:900px; margin:18px auto 0}
+.card{
+  background:var(--panel); border:1px solid var(--line); border-radius:10px;
+  padding:14px 16px; margin-bottom:12px; display:flex; gap:14px; align-items:center;
+  flex-wrap:wrap;
+}
+.card .num{
+  min-width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-family:Georgia,serif; font-weight:bold; font-size:15px;
+  background:var(--panel-2); border:2px solid var(--line); color:var(--muted);
+}
+.card.done .num{background:#2c4423; border-color:var(--good); color:var(--good)}
+.card.open .num{background:#1d3247; border-color:var(--ice); color:var(--ice)}
+.card .body{flex:1 1 320px}
+.card h3{margin:0 0 4px; font-size:18px}
+.card .place{color:var(--gold); font-size:13px; margin:0 0 6px}
+.card p{margin:0; color:var(--muted); font-size:14px; line-height:1.5}
+.card button{
+  padding:8px 16px; font-size:15px; border-radius:8px; border:1px solid var(--line);
+  background:var(--panel-2); color:var(--text); cursor:pointer;
+}
+.card button:hover{background:#2e3650}
+.card.open button.go{background:var(--ice); border-color:var(--ice-deep); color:#101724; font-weight:600}
+.card.skipped{opacity:.75}
+.card.skipped .num{border-color:#8a7a4e; color:#c9b060}
+.skipBtn{background:transparent; font-size:13px; padding:6px 12px}
+.card.locked{opacity:.55}
+.card.locked button{cursor:not-allowed}
+#storageNote{max-width:900px; margin:10px auto 0; color:var(--muted); font-size:13px; text-align:center}
+/* Kept inline on purpose: if the shared stylesheet fails to load,
+   the description must still stay closed rather than fill the page. */
+.about{display:none}
+.about-wrap{position:relative; display:inline-block}
+</style>
+<link rel="stylesheet" href="../shared/expedition.css">
+</head>
+<body>
+
+<header class="wrap">
+  <div class="about-wrap">
+    <h1>The Monastery</h1>
+    <p class="about-cue">About this page</p>
+    <div class="about" id="aboutText"><p>An abbey in Normandy, in winter, and a unit on arguments about God. The traveler arrives seeking shelter and finds a house full of people who argue about the highest things as a daily discipline. Each stop below is an activity, and the route runs from the scriptorium outward. The stops jump across centuries on purpose: the unit is organized by its question, not by its dates, and each activity states its real time and place.</p></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <canvas id="mapCanvas" width="900" height="520"></canvas>
+  <p id="progressLine"></p>
+  <div class="cards" id="cardList"></div>
+  <p id="storageNote"></p>
+</div>
+
+<script>
+"use strict";
+
+const ACTIVITIES = [
+  {
+    key: "phil_map_footbridge",
+    optional: true,
+    title: "The Bridge Crossing",
+    place: "On the road north, before the abbey",
+    desc: "A situation on the road rather than a destination. You will recognize its shape from the prologue, and this version is harder.",
+    file: "../travel/footbridge_crossing.html",
+    node: { x: 120, y: 400 }
+  },
+  {
+    key: "phil_map_anselm",
+    title: "Anselm's Argument",
+    place: "The scriptorium, 1078",
+    desc: "Take shelter at the abbey of Bec, meet the prior at his desk, and work through the argument that tries to prove God from a definition alone, with Gaunilo's island waiting in the day's letters.",
+    file: "anselm_argument.html",
+    node: { x: 430, y: 250 }
+  },
+  {
+    key: "phil_map_aquinas",
+    title: "The Five Ways",
+    place: "The abbey church, two centuries on",
+    desc: "Walk the church with Thomas Aquinas, station by station: the bell rope, the candles, a memorial slab, the light in the windows, and the swallows under the eaves, one argument at each stop.",
+    file: "aquinas_five_ways.html",
+    node: { x: 560, y: 190 }
+  },
+  {
+    key: "phil_map_evil",
+    title: "The Problem of Evil",
+    place: "The infirmary, the same winter night",
+    desc: "Walk the beds with the infirmarer: the old trilemma at a fever no one caused, the free will defense at an injury someone chose, the fawn at the window, and the question asked the only way it ever really arrives.",
+    file: "problem_of_evil.html",
+    node: { x: 620, y: 300 }
+  },
+  {
+    key: "phil_map_pascal",
+    title: "Pascal's Wager",
+    place: "The gatehouse table, around 1660",
+    desc: "Learn to price a bet from the man who helped invent the mathematics, watch the famous wager fill a slate square by square, attack it where you think it is weakest, and hear Pascal answer the strongest objection himself.",
+    file: "pascals_wager.html",
+    node: { x: 300, y: 330 }
+  },
+  {
+    key: "phil_map_paley",
+    title: "The Watch on the Heath",
+    place: "The heath road, around 1800",
+    desc: "Walk the road with William Paley, hear why the stone and the watch deserve different answers, open the case and watch the works run, then test the argument against Hume's objections and Darwin's mechanism.",
+    file: "paleys_watch.html",
+    node: { x: 160, y: 400 }
+  }
+];
+const ENFORCE_ORDER = true;
+
+let storageOk = true;
+function isDone(key) {
+  try { return localStorage.getItem(key) === "1"; }
+  catch (err) { storageOk = false; return false; }
+}
+
+/* Skipping. A stop can be set aside and still count, so one
+   difficult stop never blocks the rest of the route. */
+function skipKey(k) { return k + "_skipped"; }
+
+const MINUTES = {"phil_map_footbridge": "about 10 minutes", "phil_map_prologue": "about 10 minutes", "phil_map_presocratics": "about 20 minutes", "phil_map_ship": "about 15 minutes", "phil_map_clouds": "about 15 minutes", "phil_map_apology": "about 25 minutes", "phil_map_academy": "about 20 minutes", "phil_map_cave": "about 20 minutes", "phil_map_phaedo": "about 20 minutes", "phil_map_aristotle": "about 25 minutes", "phil_map_anselm": "about 20 minutes", "phil_map_aquinas": "about 20 minutes", "phil_map_evil": "about 20 minutes", "phil_map_pascal": "about 20 minutes", "phil_map_paley": "about 20 minutes", "phil_map_footbridge": "about 10 minutes"};
+function isSkipped(k) {
+  try { return localStorage.getItem(skipKey(k)) === "1"; }
+  catch (err) { return false; }
+}
+function setSkipped(k, on) {
+  try {
+    if (on) localStorage.setItem(skipKey(k), "1");
+    else localStorage.removeItem(skipKey(k));
+  } catch (err) { /* storage is optional */ }
+}
+function isSettled(k) { return isDone(k) || isSkipped(k); }
+function isUnlocked(i) {
+  if (!ENFORCE_ORDER) return true;
+  if (!storageOk) return true;
+  for (let j = i - 1; j >= 0; j--) {
+    if (ACTIVITIES[j].file !== null && !ACTIVITIES[j].optional) return isSettled(ACTIVITIES[j].key);
+  }
+  return true;
+}
+
+const canvas = document.getElementById("mapCanvas");
+const ctx = canvas.getContext("2d");
+const MW = 900, MH = 520;
+
+function drawMap() {
+  ctx.clearRect(0, 0, MW, MH);
+  // A winter sky over snowfields.
+  const sky = ctx.createLinearGradient(0, 0, 0, MH);
+  sky.addColorStop(0, "#39435e");
+  sky.addColorStop(0.6, "#5a6884");
+  sky.addColorStop(1, "#8b95ab");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, MW, 300);
+  ctx.fillStyle = "#dfe5ec";
+  ctx.fillRect(0, 300, MW, MH - 300);
+  // Bare woods along the horizon.
+  ctx.strokeStyle = "rgba(60,58,70,0.7)";
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 26; i++) {
+    const tx = 20 + i * 35, th = 24 + (i * 7) % 18;
+    ctx.beginPath();
+    ctx.moveTo(tx, 300); ctx.lineTo(tx, 300 - th);
+    ctx.moveTo(tx, 300 - th * 0.6); ctx.lineTo(tx - 7, 300 - th * 0.85);
+    ctx.moveTo(tx, 300 - th * 0.5); ctx.lineTo(tx + 7, 300 - th * 0.8);
+    ctx.stroke();
+  }
+  // The abbey: church with tower, cloister square, outbuildings.
+  ctx.fillStyle = "#9aa2b2";
+  ctx.fillRect(520, 160, 120, 80);          // church body
+  ctx.beginPath();
+  ctx.moveTo(510, 160); ctx.lineTo(580, 122); ctx.lineTo(650, 160);
+  ctx.closePath(); ctx.fill();              // church roof
+  ctx.fillRect(628, 108, 26, 132);          // tower
+  ctx.beginPath();
+  ctx.moveTo(624, 108); ctx.lineTo(641, 84); ctx.lineTo(658, 108);
+  ctx.closePath(); ctx.fill();
+  // The cloister: a square of walks with an open garth.
+  ctx.strokeStyle = "#9aa2b2";
+  ctx.lineWidth = 12;
+  ctx.strokeRect(400, 220, 130, 100);
+  ctx.fillStyle = "#c9d2dc";
+  ctx.fillRect(418, 238, 94, 64);
+  // The scriptorium range and the infirmary.
+  ctx.fillStyle = "#8b93a4";
+  ctx.fillRect(392, 226, 76, 44);
+  ctx.fillRect(590, 280, 84, 46);
+  // The gatehouse and the wall.
+  ctx.fillStyle = "#8b93a4";
+  ctx.fillRect(282, 306, 56, 50);
+  ctx.fillStyle = "#77808f";
+  ctx.fillRect(160, 336, 122, 10);
+  ctx.fillRect(338, 336, 240, 10);
+  // The road out, and the bridge over the frozen stream.
+  ctx.strokeStyle = "#b9c0cc";
+  ctx.lineWidth = 14;
+  ctx.beginPath();
+  ctx.moveTo(310, 356);
+  ctx.quadraticCurveTo(240, 380, 160, 400);
+  ctx.quadraticCurveTo(90, 418, 20, 450);
+  ctx.stroke();
+  // Snow falling, sparse.
+  ctx.fillStyle = "rgba(240,244,250,0.8)";
+  for (let i = 0; i < 40; i++) {
+    ctx.beginPath();
+    ctx.arc((i * 97) % MW, (i * 53) % MH, 1.6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // Labels.
+  ctx.fillStyle = "rgba(20,23,33,0.7)";
+  ctx.font = "italic 13px Georgia, serif";
+  ctx.fillText("the abbey church", 508, 152);
+  ctx.fillText("the cloister", 424, 214);
+
+  // The route between the stops.
+  ctx.strokeStyle = "rgba(240,234,208,0.9)";
+  ctx.lineWidth = 2.5;
+
+  // The nodes.
+  ACTIVITIES.forEach((a, i) => {
+    const done = isDone(a.key);
+    const unlocked = isUnlocked(i) && a.file !== null;
+    const n = a.node;
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, 15, 0, Math.PI * 2);
+    ctx.fillStyle = done ? "#8fca7a" : unlocked ? "#a9c3dd" : "#3a4260";
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = done ? "#c2e6b2" : unlocked ? "#dce9f4" : "#5a6480";
+    ctx.stroke();
+    ctx.fillStyle = done || unlocked ? "#101724" : "#8b93a8";
+    ctx.font = "bold 14px Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText(done ? "\u2713" : String(i + 1), n.x, n.y + 5);
+    ctx.textAlign = "left";
+    ctx.font = "13px 'Segoe UI', sans-serif";
+    const label = a.title;
+    const tw = ctx.measureText(label).width;
+    const leftSide = n.x + 30 + tw > MW - 6;
+    const lx = leftSide ? n.x - 22 - tw : n.x + 22;
+    const ly = n.y - 8;
+    ctx.fillStyle = "rgba(20,23,33,0.78)";
+    ctx.fillRect(lx - 5, ly - 13, tw + 10, 20);
+    ctx.fillStyle = done || unlocked ? "#eef1f7" : "#8b93a8";
+    ctx.fillText(label, lx, ly + 2);
+  });
+
+  // The way back to the world map.
+  ctx.fillStyle = "rgba(20,23,33,0.8)";
+  ctx.fillRect(14, 14, 176, 30);
+  ctx.fillStyle = "#eef1f7";
+  ctx.font = "14px 'Segoe UI', sans-serif";
+  ctx.fillText("\u2190 Back to the world map", 24, 34);
+}
+
+function refresh() {
+  drawMap();
+  const list = document.getElementById("cardList");
+  list.innerHTML = "";
+  ACTIVITIES.forEach((a, i) => {
+    const done = isDone(a.key);
+    const unlocked = isUnlocked(i) && a.file !== null;
+    const card = document.createElement("div");
+    card.className = "card " + (done ? "done" : unlocked ? "open" : "locked");
+    const num = document.createElement("div");
+    num.className = "num";
+    num.textContent = done ? "\u2713" : isSkipped(a.key) ? "\u2013" : String(i + 1);
+    const body = document.createElement("div");
+    body.className = "body";
+    const h = document.createElement("h3");
+    h.textContent = a.title;
+    const place = document.createElement("p");
+    place.className = "place";
+    place.textContent = a.place + (MINUTES[a.key] ? "  \u00b7  " + MINUTES[a.key] : "");
+    const p = document.createElement("p");
+    p.textContent = a.desc;
+    body.appendChild(h); body.appendChild(place); body.appendChild(p);
+    card.appendChild(num); card.appendChild(body);
+    const btn = document.createElement("button");
+    if (a.file === null) {
+      btn.textContent = "In preparation";
+      btn.disabled = true;
+    } else if (!unlocked && !done) {
+      btn.textContent = "Locked";
+      btn.disabled = true;
+    } else {
+      btn.className = "go";
+      btn.textContent = done ? "Play again" : "Start";
+      btn.addEventListener("click", () => window.open(a.file, "_blank", "noopener"));
+    }
+    card.appendChild(btn);
+    if (a.file !== null) {
+      const sk = document.createElement("button");
+      sk.className = "skipBtn";
+      sk.textContent = isSkipped(a.key) ? "Skipped, undo" : "Skip for now";
+      sk.title = "Set this stop aside. It still counts toward finishing the region, and you can come back to it.";
+      sk.addEventListener("click", () => { setSkipped(a.key, !isSkipped(a.key)); refresh(); });
+      card.appendChild(sk);
+    }
+    list.appendChild(card);
+  });
+  const next = ACTIVITIES.find((a, i) => a.file !== null && !isDone(a.key) && isUnlocked(i));
+  document.getElementById("progressLine").textContent =
+    next ? "Next: " + next.title + "." : "Every open stop in this region is complete.";
+  document.getElementById("storageNote").textContent = storageOk ? "" :
+    "This browser is blocking saved progress, so completion cannot be tracked automatically here.";
+}
+canvas.addEventListener("click", ev => {
+  const rect = canvas.getBoundingClientRect();
+  const x = (ev.clientX - rect.left) * (MW / rect.width);
+  const y = (ev.clientY - rect.top) * (MH / rect.height);
+  if (x < 200 && y < 50) {
+    window.location.href = "../map/world_map.html";
+    return;
+  }
+  ACTIVITIES.forEach((a, i) => {
+    if (a.file === null) return;
+    const d = Math.hypot(x - a.node.x, y - a.node.y);
+    if (d < 20 && (isUnlocked(i) || isDone(a.key))) {
+      window.open(a.file, "_blank", "noopener");
+    }
+  });
+});
+window.addEventListener("focus", refresh);
+refresh();
+</script>
+<script src="../shared/expedition.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+/* Navigating Philosophy, shared styles.
+   Loaded by every activity after its own stylesheet. */
+
+#modeToggle{background:#2a3550; border-color:#46557a}
+#skipPrompt{background:transparent; border-color:#46557a}
+.gloss{border-bottom:1px dotted currentColor; cursor:help; position:relative}
+.gloss-tip{position:absolute; left:0; bottom:130%; z-index:20; display:block;
+  min-width:200px; max-width:280px; padding:7px 9px; border-radius:7px;
+  background:#0f1420; color:#eef2f6; border:1px solid #46557a;
+  font-size:13px; line-height:1.4; font-weight:400;
+  box-shadow:0 6px 20px rgba(0,0,0,.6);}
+
+#dlgNarration{margin:0 0 10px; font-style:italic; opacity:.82; line-height:1.5}
+#dlgSpeaker{margin:0 0 3px; font-weight:600; letter-spacing:.3px; font-size:14px;
+  text-transform:uppercase; opacity:.9}
+#dialogueLine.speech{margin:0 0 10px; padding-left:12px; border-left:2px solid currentColor; line-height:1.5}
+
+.about-wrap{position:relative; display:inline-block; max-width:820px}
+.about-wrap h1{margin:0; cursor:pointer; display:inline-block}
+.about-wrap h1::after{
+  content:"i"; display:inline-flex; align-items:center; justify-content:center;
+  width:19px; height:19px; margin-left:10px; vertical-align:middle;
+  border:1px solid currentColor; border-radius:50%;
+  font-family:Georgia,serif; font-size:12px; font-style:italic; opacity:.55;
+}
+.about-wrap h1:hover::after, .about-wrap.open h1::after{opacity:1}
+.about-cue{margin:4px 0 0; font-size:13px; opacity:.55}
+.about-wrap.open .about-cue{visibility:hidden}
+.about{
+  display:none; position:absolute; left:50%; transform:translateX(-50%);
+  top:100%; z-index:40; width:min(760px, 88vw);
+  margin-top:6px; padding:14px 18px; border-radius:10px;
+  text-align:left; line-height:1.55; font-size:15px;
+  background:#141821; border:1px solid rgba(160,176,200,.45);
+  box-shadow:0 10px 34px rgba(0,0,0,.65);
+}
+.about p{margin:0}
+.about-wrap:hover .about, .about-wrap:focus-within .about, .about-wrap.open .about{display:block}
+@media (pointer:coarse){ .about-wrap:hover .about{display:none} .about-wrap.open .about{display:block} }
+
+#bgPanel{max-width:900px; margin:10px auto 0; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:4px 16px 12px}
+#bgPanel summary{cursor:pointer; padding:8px 0; font-weight:600}
+#bgPanel a{color:#8fb7dd}
+#bgPanel p{margin:8px 0; line-height:1.5}
+.bg-head{font-weight:600}
